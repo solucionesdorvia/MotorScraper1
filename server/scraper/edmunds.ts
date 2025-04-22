@@ -53,7 +53,7 @@ export async function scrapeEdmunds(make: string, model: string, year?: string):
           model,
           mileage: vehicle.mileage,
           location: vehicle.dealerLocation || vehicle.distance?.label || 'Unknown',
-          imageUrl: vehicle.photos?.primary?.url || '',
+          imageUrl: vehicle.photos?.primary?.url || vehicle.photoInfo?.thumbnail || vehicle.photoInfo?.large || '',
           sourceUrl: `https://www.edmunds.com${vehicle.link}`,
           source: 'edmunds',
           transmission: vehicle.transmission || undefined,
@@ -80,7 +80,20 @@ export async function scrapeEdmunds(make: string, model: string, year?: string):
         const priceText = $(element).find('.inventory-listing-price').text().trim();
         const price = extractPrice(priceText);
         
-        const imageUrl = $(element).find('.inventory-listing-image img').attr('src') || '';
+        // Try multiple different selectors for the image
+        let imageUrl = $(element).find('.inventory-listing-image img').attr('src');
+        
+        if (!imageUrl) {
+          // Try other image selectors
+          imageUrl = $(element).find('.vehicle-image img').attr('src');
+        }
+        
+        if (!imageUrl) {
+          // Fallback to any image within the listing
+          imageUrl = $(element).find('img').attr('src');
+        }
+        
+        imageUrl = imageUrl || '';
         const sourceUrl = 'https://www.edmunds.com' + ($(element).find('a.inventory-listing-link').attr('href') || '');
         
         // Extract location

@@ -38,7 +38,9 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         alt={vehicle.title} 
         className="w-full h-48 object-cover cursor-pointer"
         onClick={openSourcePage}
+        loading="lazy"
         onError={(e) => {
+          console.log("Error loading image:", vehicle.imageUrl);
           const target = e.target as HTMLImageElement;
           target.src = getDefaultImageUrl(vehicle.make);
         }}

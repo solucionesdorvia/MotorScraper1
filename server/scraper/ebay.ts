@@ -38,7 +38,20 @@ export async function scrapeEbay(make: string, model: string, year?: string): Pr
       const priceText = $(element).find('.s-item__price').text().trim();
       const price = extractPrice(priceText);
       
-      const imageUrl = $(element).find('.s-item__image-img').attr('src') || '';
+      // Try multiple different selectors for the image
+      let imageUrl = $(element).find('.s-item__image-img').attr('src');
+      
+      if (!imageUrl || imageUrl.includes('s-l225')) {
+        // Try to get a higher resolution image
+        imageUrl = $(element).find('.s-item__image-img').attr('data-src');
+      }
+      
+      if (!imageUrl) {
+        // Fallback to any image tag within the item
+        imageUrl = $(element).find('img').attr('src');
+      }
+      
+      imageUrl = imageUrl || '';
       const sourceUrl = $(element).find('.s-item__link').attr('href') || '';
       
       // Extract location from subtitle or shipping info
