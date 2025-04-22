@@ -23,8 +23,28 @@ export function formatMileage(mileage: number | undefined): string {
 }
 
 export function getDefaultImageUrl(make: string): string {
-  // Base64 encoded SVG placeholder of a car silhouette
-  return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2YzZjRmNiIvPjxwYXRoIGQ9Ik0yMDkuNiAzNjIuN2MtNS42IDAtMTAuMS00LjUtMTAuMS0xMC4xIDAtNS42IDQuNS0xMC4xIDEwLjEtMTAuMSA1LjYgMCAxMC4xIDQuNSAxMC4xIDEwLjEgMCA1LjYtNC41IDEwLjEtMTAuMSAxMC4xek01OTAuNCAzNjIuN2MtNS42IDAtMTAuMS00LjUtMTAuMS0xMC4xIDAtNS42IDQuNS0xMC4xIDEwLjEtMTAuMSA1LjYgMCAxMC4xIDQuNSAxMC4xIDEwLjEgMCA1LjYtNC41IDEwLjEtMTAuMSAxMC4xeiIgZmlsbD0iIzllYTNiMCIvPjxwYXRoIGQ9Ik02NDAuNyAzMzZjMCAzLjgtLjUgNi42LTEuNiA4LjQtMS4xIDEuOC0zIDMuNC01LjcgNC44LTIuNyAxLjQtNi4yIDIuMy0xMC41IDIuOC00LjMuNS05LjcuNy0xNi4xLjdIMTkzLjJjLTYuNSAwLTExLjgtLjItMTYuMS0uNy00LjMtLjUtNy44LTEuNC0xMC41LTIuOC0yLjctMS40LTQuNi0zLTUuNy00LjgtMS4xLTEuOC0xLjYtNC42LTEuNi04LjR2LTcuM2MwLTcuOC43LTE0LjcgMi4yLTIwLjggMS41LTYuMSAzLjUtMTEuMyA2LjItMTUuNiAyLjctNC4zIDYtNy44IDkuOS0xMC42IDMuOS0yLjggOC4xLTUuMiAxMi44LTcuMyA0LjctMi4xIDkuOC0zLjkgMTUuNC01LjYgNS42LTEuNiAxMS41LTMuMSAxNy43LTQuNSA2LjItMS40IDEyLjYtMi43IDE5LjMtMy45IDYuNy0xLjIgMTMuNi0yLjQgMjAuOC0zLjVsNjAuOS05LjZjMTcuNi0yLjggMzIuMS01LjEgNDMuNS02LjkgMTEuNC0xLjggMjEuNC0zLjEgMzAuMS00IDguNy0uOSAxNi42LTEuMyAyMy44LTEuM3MxNS4xLjQgMjMuOCAxLjNjOC43LjkgMTguNyAyLjIgMzAuMSA0IDExLjQgMS44IDI1LjkgNC4xIDQzLjUgNi45bDYwLjkgOS42YzcuMiAxLjEgMTQuMSAyLjMgMjAuOCAzLjUgNi43IDEuMiAxMy4xIDIuNSAxOS4zIDMuOXM5uyB1LjYgMTEuNSAzLjF2OS44aC00MHoiIGZpbGw9IiM5ZWEzYjAiLz48L3N2Zz4=";
+  // Crear una URL que dependa de la marca para tener diferentes placeholders por marca
+  let brandColor = "#4f46e5"; // Color predeterminado (Indigo)
+  
+  // Asignar colores según la marca
+  if (make.toLowerCase() === 'ford') brandColor = "#0052cc";
+  if (make.toLowerCase() === 'chevrolet') brandColor = "#d62828";
+  if (make.toLowerCase() === 'toyota') brandColor = "#ce181e";
+  if (make.toLowerCase() === 'honda') brandColor = "#047857";
+  if (make.toLowerCase() === 'bmw') brandColor = "#0369a1";
+  if (make.toLowerCase() === 'mercedes-benz') brandColor = "#27272a";
+  
+  // Usar una imagen base64 pre-codificada según la marca
+  if (make.toLowerCase() === 'ford') {
+    return "data:image/svg+xml,%3Csvg width='800' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='800' height='600' fill='%23f8fafc'/%3E%3Crect x='100' y='100' width='600' height='400' rx='20' fill='%230052cc' opacity='0.1'/%3E%3Cpath d='M400 175 L500 300 L450 300 L450 400 L350 400 L350 300 L300 300 Z' fill='%230052cc'/%3E%3Ctext x='400' y='500' font-family='Arial' font-size='24' text-anchor='middle' fill='%230052cc'%3EFORD%3C/text%3E%3Ctext x='400' y='530' font-family='Arial' font-size='16' text-anchor='middle' fill='%2364748b'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
+  }
+  
+  if (make.toLowerCase() === 'chevrolet') {
+    return "data:image/svg+xml,%3Csvg width='800' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='800' height='600' fill='%23f8fafc'/%3E%3Crect x='100' y='100' width='600' height='400' rx='20' fill='%23d62828' opacity='0.1'/%3E%3Cpath d='M400 175 L500 300 L450 300 L450 400 L350 400 L350 300 L300 300 Z' fill='%23d62828'/%3E%3Ctext x='400' y='500' font-family='Arial' font-size='24' text-anchor='middle' fill='%23d62828'%3ECHEVROLET%3C/text%3E%3Ctext x='400' y='530' font-family='Arial' font-size='16' text-anchor='middle' fill='%2364748b'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
+  }
+  
+  // Imagen predeterminada para cualquier otra marca
+  return "data:image/svg+xml,%3Csvg width='800' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='800' height='600' fill='%23f8fafc'/%3E%3Crect x='100' y='100' width='600' height='400' rx='20' fill='%234f46e5' opacity='0.1'/%3E%3Cpath d='M400 175 L500 300 L450 300 L450 400 L350 400 L350 300 L300 300 Z' fill='%234f46e5'/%3E%3Ctext x='400' y='500' font-family='Arial' font-size='24' text-anchor='middle' fill='%234f46e5'%3E" + make.toUpperCase() + "%3C/text%3E%3Ctext x='400' y='530' font-family='Arial' font-size='16' text-anchor='middle' fill='%2364748b'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
 }
 
 export function getSourceLabel(source: string): string {
