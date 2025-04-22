@@ -68,22 +68,51 @@ export const searchParamsSchema = z.object({
   make: z.string().optional(),
   model: z.string().optional(),
   year: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
-  ebay: z.boolean().optional().default(true),
-  edmunds: z.boolean().optional().default(true),
-  page: z.number().optional().default(1),
-  limit: z.number().optional().default(9),
+  ebay: z.union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform(val => val !== 'false' && val !== false)
+    .default(true),
+  edmunds: z.union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform(val => val !== 'false' && val !== false)
+    .default(true),
+  page: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => typeof val === 'string' ? parseInt(val, 10) : val)
+    .default(1),
+  limit: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => typeof val === 'string' ? parseInt(val, 10) : val)
+    .default(9),
   sort: z.string().optional().default("relevance"),
 });
 
 // Filter schema
 export const filterSchema = z.object({
-  minPrice: z.number().optional(),
-  maxPrice: z.number().optional(),
-  minMileage: z.number().optional(),
-  maxMileage: z.number().optional(),
-  bodyType: z.string().array().optional(),
-  transmission: z.string().array().optional(),
-  color: z.string().array().optional(),
+  minPrice: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => typeof val === 'string' && val ? parseInt(val, 10) : val),
+  maxPrice: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => typeof val === 'string' && val ? parseInt(val, 10) : val),
+  minMileage: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => typeof val === 'string' && val ? parseInt(val, 10) : val),
+  maxMileage: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => typeof val === 'string' && val ? parseInt(val, 10) : val),
+  bodyType: z.union([
+    z.string().array(),
+    z.string().transform(val => val ? val.split(',') : [])
+  ]).optional(),
+  transmission: z.union([
+    z.string().array(),
+    z.string().transform(val => val ? val.split(',') : [])
+  ]).optional(),
+  color: z.union([
+    z.string().array(),
+    z.string().transform(val => val ? val.split(',') : [])
+  ]).optional(),
 });
 
 // Type definitions
