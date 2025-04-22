@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { scrapeEbay } from "./scraper/ebay";
 import { scrapeEdmunds } from "./scraper/edmunds";
-import { searchParamsSchema, filterSchema, insertSearchHistorySchema } from "@shared/schema";
+import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
 import NodeCache from "node-cache";
 

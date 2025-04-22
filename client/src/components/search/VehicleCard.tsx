@@ -33,18 +33,20 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         </div>
       )}
       
-      <img 
-        src={vehicle.imageUrl || getDefaultImageUrl(vehicle.make)}
-        alt={vehicle.title} 
-        className="w-full h-48 object-cover cursor-pointer"
-        onClick={openSourcePage}
-        loading="lazy"
-        onError={(e) => {
-          console.log("Error loading image:", vehicle.imageUrl);
-          const target = e.target as HTMLImageElement;
-          target.src = getDefaultImageUrl(vehicle.make);
-        }}
-      />
+      <div className="relative w-full h-48 overflow-hidden">
+        <img 
+          src={vehicle.imageUrl || getDefaultImageUrl(vehicle.make)}
+          alt={vehicle.title} 
+          className="w-full h-full object-contain cursor-pointer bg-neutral-100"
+          onClick={openSourcePage}
+          loading="lazy"
+          onError={(e) => {
+            console.log("Error loading image:", vehicle.imageUrl);
+            const target = e.target as HTMLImageElement;
+            target.src = getDefaultImageUrl(vehicle.make);
+          }}
+        />
+      </div>
       
       <div className="p-4">
         <div className="flex justify-between items-start">

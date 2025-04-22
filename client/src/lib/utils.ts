@@ -125,16 +125,6 @@ export const fordModels = [
 ];
 
 export const years = [
-  // Años recientes (2024-2002)
-  ...Array.from({ length: 23 }, (_, i) => {
-    const year = 2024 - i;
-    return { value: year.toString(), label: year.toString() };
-  }),
-  // Años 2001-1996
-  ...Array.from({ length: 6 }, (_, i) => {
-    const year = 2001 - i;
-    return { value: year.toString(), label: year.toString() };
-  }),
   // Años 1995-1900
   ...Array.from({ length: 96 }, (_, i) => {
     const year = 1995 - i;
