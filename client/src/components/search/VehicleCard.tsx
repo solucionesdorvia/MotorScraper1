@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaTachometerAlt, FaGasPump, FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar } from 'react-icons/fa';
 import { Vehicle } from '@shared/schema';
 import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -62,22 +62,17 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         <p className="text-price mt-1">{formatPrice(vehicle.price === null ? undefined : vehicle.price)}</p>
         
         <div className="mt-2 flex flex-wrap gap-2">
-          <span className="badge-info">
-            <FaTachometerAlt className="badge-icon" />
-            <span>{formatMileage(vehicle.mileage === null ? undefined : vehicle.mileage)}</span>
-          </span>
-          
-          {vehicle.fuelType && (
-            <span className="badge-info">
-              <FaGasPump className="badge-icon" />
-              <span>{vehicle.fuelType}</span>
-            </span>
-          )}
-          
           {vehicle.transmission && (
             <span className="badge-info">
               <FaCog className="badge-icon" />
               <span>{vehicle.transmission}</span>
+            </span>
+          )}
+          
+          {vehicle.bodyType && (
+            <span className="badge-info">
+              <FaCar className="badge-icon" />
+              <span>{vehicle.bodyType}</span>
             </span>
           )}
         </div>
