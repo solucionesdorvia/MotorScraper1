@@ -41,8 +41,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Log search to history
       const timestamp = new Date().toISOString();
+      
+      // Use query parameter if available, otherwise construct from make, model, and year
+      const searchQuery = searchParams.query || 
+                         `${searchParams.make || ''} ${searchParams.model || ''} ${searchParams.year || ''}`.trim();
+      
       await storage.logSearch({
-        query: `${searchParams.make || ''} ${searchParams.model || ''} ${searchParams.year || ''}`.trim(),
+        query: searchQuery,
         make: searchParams.make,
         model: searchParams.model,
         year: searchParams.year,
@@ -65,21 +70,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.clearVehicles();
         
         // Fetch vehicles from sources based on search parameters
-        let ebayResults = [];
-        let edmundsResults = [];
+        let ebayResults: InsertVehicle[] = [];
+        let edmundsResults: InsertVehicle[] = [];
         
-        if (searchParams.ebay) {
+        // Extract make and model from query or use direct parameters
+        let make = searchParams.make || '';
+        let model = searchParams.model || '';
+        
+        // If query parameter is provided, try to extract make and model
+        if (searchParams.query) {
+          const queryParts = searchParams.query.split(' ').filter(part => part.trim() !== '');
+          if (queryParts.length > 0 && !make) {
+            make = queryParts[0];
+            
+            if (queryParts.length > 1 && !model) {
+              model = queryParts.slice(1).join(' ');
+            }
+          }
+        }
+        
+        if (searchParams.ebay && make) {
           ebayResults = await scrapeEbay(
-            searchParams.make || '', 
-            searchParams.model || '',
+            make, 
+            model,
             searchParams.year?.toString()
           );
         }
         
-        if (searchParams.edmunds) {
+        if (searchParams.edmunds && make) {
           edmundsResults = await scrapeEdmunds(
-            searchParams.make || '', 
-            searchParams.model || '',
+            make, 
+            model,
             searchParams.year?.toString()
           );
         }

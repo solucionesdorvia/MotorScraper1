@@ -93,7 +93,7 @@ const PopularSearchCard = ({ make, model, year, label }: PopularSearchCardProps)
   const [, setLocation] = useLocation();
   
   const handleClick = () => {
-    setLocation(`/search?make=${make}&model=${model}&year=${year}`);
+    setLocation(`/search?query=${make} ${model}&year=${year}`);
   };
   
   return (

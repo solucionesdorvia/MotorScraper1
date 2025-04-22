@@ -40,7 +40,11 @@ const SearchResults = () => {
   });
   
   // Fetch search results
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<{
+    vehicles: Vehicle[];
+    totalResults: number;
+    totalPages: number;
+  }>({
     queryKey: [`/api/search?${searchParams.toString()}`],
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
