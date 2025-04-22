@@ -65,6 +65,7 @@ export const insertFilterSchema = createInsertSchema(filters).omit({
 
 // Search parameters schema
 export const searchParamsSchema = z.object({
+  query: z.string().optional(),
   make: z.string().optional(),
   model: z.string().optional(),
   year: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),

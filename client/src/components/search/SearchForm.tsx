@@ -1,26 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { FaSearch } from 'react-icons/fa';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { carMakes, fordModels, years, buildSearchUrl } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { years } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
-  make: z.string().min(1, 'Make is required'),
-  model: z.string().min(1, 'Model is required'),
+  query: z.string().min(1, 'Por favor ingresa lo que quieres buscar'),
   year: z.string().optional(),
   ebay: z.boolean().default(true),
   edmunds: z.boolean().default(true),
 });
 
 type SearchFormProps = {
-  defaultMake?: string;
-  defaultModel?: string;
+  defaultQuery?: string;
   defaultYear?: string;
   defaultEbay?: boolean;
   defaultEdmunds?: boolean;
@@ -28,45 +27,55 @@ type SearchFormProps = {
 };
 
 const SearchForm = ({
-  defaultMake = '',
-  defaultModel = '',
+  defaultQuery = '',
   defaultYear = '',
   defaultEbay = true,
   defaultEdmunds = true,
   compact = false
 }: SearchFormProps) => {
   const [, setLocation] = useLocation();
-  const [models, setModels] = useState(fordModels);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      make: defaultMake,
-      model: defaultModel,
+      query: defaultQuery,
       year: defaultYear,
       ebay: defaultEbay,
       edmunds: defaultEdmunds,
     },
   });
   
-  // Update models when make changes
-  useEffect(() => {
-    const selectedMake = form.getValues().make;
-    if (selectedMake === 'ford') {
-      setModels(fordModels);
-    }
-    // In a real app we would fetch models based on selected make from an API
-  }, [form.watch('make')]);
-  
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const searchUrl = buildSearchUrl(
-      values.make,
-      values.model,
-      values.year,
-      values.ebay,
-      values.edmunds
-    );
-    setLocation(searchUrl);
+    // Parse the query to extract make and model if possible
+    const queryParts = values.query.split(' ').filter(part => part.trim() !== '');
+    const searchParams = new URLSearchParams();
+    
+    // Add query parameter
+    searchParams.set('query', values.query);
+    
+    // Try to guess make/model from the query
+    if (queryParts.length > 0) {
+      searchParams.set('make', queryParts[0]);
+      
+      if (queryParts.length > 1) {
+        searchParams.set('model', queryParts.slice(1).join(' '));
+      }
+    }
+    
+    // Add other parameters
+    if (values.year) {
+      searchParams.set('year', values.year);
+    }
+    
+    if (!values.ebay) {
+      searchParams.set('ebay', 'false');
+    }
+    
+    if (!values.edmunds) {
+      searchParams.set('edmunds', 'false');
+    }
+    
+    setLocation(`/search?${searchParams.toString()}`);
   };
   
   return (
@@ -75,51 +84,15 @@ const SearchForm = ({
         <div className={`${compact ? 'flex flex-col gap-3' : 'flex flex-col md:flex-row gap-3'}`}>
           <FormField
             control={form.control}
-            name="make"
+            name="query"
             render={({ field }) => (
               <FormItem className="flex-1">
                 <FormControl>
-                  <Select 
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="w-full px-4 py-3 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
-                      <SelectValue placeholder="Select Make" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {carMakes.map((make) => (
-                        <SelectItem key={make.value} value={make.value}>
-                          {make.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="model"
-            render={({ field }) => (
-              <FormItem className="flex-1">
-                <FormControl>
-                  <Select 
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="w-full px-4 py-3 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
-                      <SelectValue placeholder="Select Model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {models.map((model) => (
-                        <SelectItem key={model.value} value={model.value}>
-                          {model.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input 
+                    {...field}
+                    placeholder="Buscar vehículos (ej: Ford Mustang)" 
+                    className="w-full px-4 py-3 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -129,17 +102,17 @@ const SearchForm = ({
             control={form.control}
             name="year"
             render={({ field }) => (
-              <FormItem className="flex-1">
+              <FormItem className="flex-1 md:max-w-[150px]">
                 <FormControl>
                   <Select 
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <SelectTrigger className="w-full px-4 py-3 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
-                      <SelectValue placeholder="Select Year" />
+                      <SelectValue placeholder="Año" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="any">Any Year</SelectItem>
+                      <SelectItem value="any">Cualquier Año</SelectItem>
                       {years.map((year) => (
                         <SelectItem key={year.value} value={year.value}>
                           {year.label}
@@ -157,7 +130,7 @@ const SearchForm = ({
             className="bg-secondary hover:bg-secondary/90 text-white font-semibold py-3 px-6 rounded-md transition-colors flex items-center justify-center gap-2"
           >
             <FaSearch />
-            <span>Search</span>
+            <span>Buscar</span>
           </Button>
         </div>
         
@@ -200,7 +173,7 @@ const SearchForm = ({
           
           {!compact && (
             <button type="button" className="text-sm text-primary hover:text-primary/80 font-medium">
-              Advanced Options
+              Opciones Avanzadas
             </button>
           )}
         </div>

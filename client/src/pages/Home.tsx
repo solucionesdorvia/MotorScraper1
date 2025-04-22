@@ -18,7 +18,7 @@ const Home = () => {
             Search across eBay Motors and Edmunds to compare prices, find the best deals, and make informed decisions.
           </p>
           
-          <SearchForm defaultMake="ford" defaultModel="mustang" defaultYear="2022" />
+          <SearchForm defaultQuery="ford mustang" defaultYear="2022" />
         </div>
       </section>
       

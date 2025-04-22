@@ -19,6 +19,7 @@ const SearchResults = () => {
   const searchParams = new URLSearchParams(search);
   
   // Parse search parameters
+  const query = searchParams.get('query') || '';
   const make = searchParams.get('make') || '';
   const model = searchParams.get('model') || '';
   const year = searchParams.get('year') || '';
@@ -115,8 +116,7 @@ const SearchResults = () => {
       <section className="bg-gradient-primary py-6">
         <div className="container mx-auto px-4">
           <SearchForm 
-            defaultMake={make} 
-            defaultModel={model} 
+            defaultQuery={query || `${make} ${model}`.trim()}
             defaultYear={year}
             defaultEbay={ebay}
             defaultEdmunds={edmunds}
