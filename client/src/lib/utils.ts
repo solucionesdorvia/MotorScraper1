@@ -23,9 +23,8 @@ export function formatMileage(mileage: number | undefined): string {
 }
 
 export function getDefaultImageUrl(make: string): string {
-  // Ideally we'd use a proper placeholder service like https://placeholder.com/
-  // but for now just use a placeholder string
-  return `/placeholder-car.png`;
+  // Base64 encoded SVG placeholder of a car silhouette
+  return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2YzZjRmNiIvPjxwYXRoIGQ9Ik0yMDkuNiAzNjIuN2MtNS42IDAtMTAuMS00LjUtMTAuMS0xMC4xIDAtNS42IDQuNS0xMC4xIDEwLjEtMTAuMSA1LjYgMCAxMC4xIDQuNSAxMC4xIDEwLjEgMCA1LjYtNC41IDEwLjEtMTAuMSAxMC4xek01OTAuNCAzNjIuN2MtNS42IDAtMTAuMS00LjUtMTAuMS0xMC4xIDAtNS42IDQuNS0xMC4xIDEwLjEtMTAuMSA1LjYgMCAxMC4xIDQuNSAxMC4xIDEwLjEgMCA1LjYtNC41IDEwLjEtMTAuMSAxMC4xeiIgZmlsbD0iIzllYTNiMCIvPjxwYXRoIGQ9Ik02NDAuNyAzMzZjMCAzLjgtLjUgNi42LTEuNiA4LjQtMS4xIDEuOC0zIDMuNC01LjcgNC44LTIuNyAxLjQtNi4yIDIuMy0xMC41IDIuOC00LjMuNS05LjcuNy0xNi4xLjdIMTkzLjJjLTYuNSAwLTExLjgtLjItMTYuMS0uNy00LjMtLjUtNy44LTEuNC0xMC41LTIuOC0yLjctMS40LTQuNi0zLTUuNy00LjgtMS4xLTEuOC0xLjYtNC42LTEuNi04LjR2LTcuM2MwLTcuOC43LTE0LjcgMi4yLTIwLjggMS41LTYuMSAzLjUtMTEuMyA2LjItMTUuNiAyLjctNC4zIDYtNy44IDkuOS0xMC42IDMuOS0yLjggOC4xLTUuMiAxMi44LTcuMyA0LjctMi4xIDkuOC0zLjkgMTUuNC01LjYgNS42LTEuNiAxMS41LTMuMSAxNy43LTQuNSA2LjItMS40IDEyLjYtMi43IDE5LjMtMy45IDYuNy0xLjIgMTMuNi0yLjQgMjAuOC0zLjVsNjAuOS05LjZjMTcuNi0yLjggMzIuMS01LjEgNDMuNS02LjkgMTEuNC0xLjggMjEuNC0zLjEgMzAuMS00IDguNy0uOSAxNi42LTEuMyAyMy44LTEuM3MxNS4xLjQgMjMuOCAxLjNjOC43LjkgMTguNyAyLjIgMzAuMSA0IDExLjQgMS44IDI1LjkgNC4xIDQzLjUgNi45bDYwLjkgOS42YzcuMiAxLjEgMTQuMSAyLjMgMjAuOCAzLjUgNi43IDEuMiAxMy4xIDIuNSAxOS4zIDMuOXM5uyB1LjYgMTEuNSAzLjF2OS44aC00MHoiIGZpbGw9IiM5ZWEzYjAiLz48L3N2Zz4=";
 }
 
 export function getSourceLabel(source: string): string {
@@ -105,10 +104,23 @@ export const fordModels = [
   { value: "focus", label: "Focus" },
 ];
 
-export const years = Array.from({ length: 23 }, (_, i) => {
-  const year = 2024 - i;
-  return { value: year.toString(), label: year.toString() };
-});
+export const years = [
+  // Años recientes (2024-2002)
+  ...Array.from({ length: 23 }, (_, i) => {
+    const year = 2024 - i;
+    return { value: year.toString(), label: year.toString() };
+  }),
+  // Años 2001-1996
+  ...Array.from({ length: 6 }, (_, i) => {
+    const year = 2001 - i;
+    return { value: year.toString(), label: year.toString() };
+  }),
+  // Años 1995-1900
+  ...Array.from({ length: 96 }, (_, i) => {
+    const year = 1995 - i;
+    return { value: year.toString(), label: year.toString() };
+  })
+];
 
 export const bodyTypes = [
   { value: "coupe", label: "Coupe" },
