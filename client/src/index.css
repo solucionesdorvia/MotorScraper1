@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 224 76% 58%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 73% 57%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 60 4.8% 95.9%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+
+  /* Custom colors for app */
+  --neutral-100: #fff;
+  --neutral-200: #f7f7f7;
+  --neutral-300: #e5e5e5;
+  --neutral-400: #c7c7c7;
+  --neutral-500: #8f8f8f;
+  --neutral-600: #707070;
+  --neutral-700: #363636;
+  --neutral-800: #191919;
+  --neutral-900: #000;
+  
+  --primary-color: #3665f3;
+  --secondary-color: #f02d2d;
+  --success-color: #92c821;
+  --error-color: #f02d2d;
+  --warning-color: #ffa800;
+  --info-color: #0aa7ff;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 224 76% 58%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 73% 57%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-neutral-200 text-neutral-800;
+  }
+}
+
+/* Custom classes */
+.bg-gradient-primary {
+  @apply bg-gradient-to-r from-primary to-blue-700;
+}
+
+.bg-label-ebay {
+  @apply bg-primary/90 text-white;
+}
+
+.bg-label-edmunds {
+  @apply bg-blue-700/90 text-white;
+}
+
+.card-hover {
+  @apply hover:shadow-md transition-shadow;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-md transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-secondary hover:bg-secondary/90 text-white font-semibold py-2 px-4 rounded-md transition-colors;
+}
+
+.text-price {
+  @apply text-green-700 font-bold text-xl;
+}
+
+.filter-item {
+  @apply border-b pb-4;
+}
+
+.filter-heading {
+  @apply font-medium cursor-pointer;
+}
+
+.checkbox-label {
+  @apply flex items-center;
+}
+
+.badge-info {
+  @apply inline-flex items-center text-xs bg-neutral-100 px-2 py-1 rounded;
+}
+
+.badge-icon {
+  @apply text-neutral-500 mr-1;
+}
+
+.footer-heading {
+  @apply text-white font-semibold text-lg mb-4;
+}
+
+.footer-link {
+  @apply hover:text-white;
+}
