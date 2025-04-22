@@ -82,7 +82,13 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         </div>
         
         <div className="mt-3 pt-3 border-t border-neutral-200 flex justify-between items-center">
-          <span className="text-xs text-neutral-500">{vehicle.location || 'Unknown Location'}</span>
+          <div className="flex flex-col">
+            <span className="text-xs text-neutral-500">{vehicle.location || 'Unknown Location'}</span>
+            <span className="text-xs font-medium mt-1">
+              <span className={`inline-block w-2 h-2 rounded-full mr-1 ${vehicle.source === 'ebay' ? 'bg-label-ebay' : 'bg-label-edmunds'}`}></span>
+              Fuente: {getSourceLabel(vehicle.source)}
+            </span>
+          </div>
           <Button 
             variant="link" 
             className="text-primary text-sm p-0 h-auto font-medium hover:underline flex items-center gap-1"

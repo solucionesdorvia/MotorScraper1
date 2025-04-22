@@ -131,3 +131,11 @@
 .footer-link {
   @apply hover:text-white;
 }
+
+.bg-label-ebay {
+  background-color: #00489f;
+}
+
+.bg-label-edmunds {
+  background-color: #b22222;
+}
