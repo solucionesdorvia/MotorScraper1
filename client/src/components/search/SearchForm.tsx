@@ -15,10 +15,12 @@ const formSchema = z.object({
   query: z.string().min(1, 'Por favor ingresa lo que quieres buscar'),
   year: z.string().optional(),
   ebay: z.boolean().default(true),
-  edmunds: z.boolean().default(true),
-  hemmings: z.boolean().default(true),
-  bringatrailer: z.boolean().default(true),
-  classiccars: z.boolean().default(true),
+  // Desactivamos los otros sitios según solicitud del usuario,
+  // pero mantenemos los campos para compatibilidad
+  edmunds: z.boolean().default(false),
+  hemmings: z.boolean().default(false),
+  bringatrailer: z.boolean().default(false),
+  classiccars: z.boolean().default(false),
 });
 
 type SearchFormProps = {
@@ -36,10 +38,10 @@ const SearchForm = ({
   defaultQuery = '',
   defaultYear = '',
   defaultEbay = true,
-  defaultEdmunds = true,
-  defaultHemmings = true,
-  defaultBringatrailer = true,
-  defaultClassiccars = true,
+  defaultEdmunds = false, // Siempre falso por solicitud del usuario
+  defaultHemmings = false, // Siempre falso por solicitud del usuario
+  defaultBringatrailer = false, // Siempre falso por solicitud del usuario
+  defaultClassiccars = false, // Siempre falso por solicitud del usuario
   compact = false
 }: SearchFormProps) => {
   const [, setLocation] = useLocation();

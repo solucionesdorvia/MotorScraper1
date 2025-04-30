@@ -14,6 +14,7 @@ type SourceFilterProps = {
 };
 
 const SourceFilter = ({ sources, onChange }: SourceFilterProps) => {
+  // Solo permitimos eBay Motors a pedido del usuario
   const handleSourceChange = (source: string, checked: boolean) => {
     onChange({
       ...sources,
@@ -34,70 +35,22 @@ const SourceFilter = ({ sources, onChange }: SourceFilterProps) => {
           eBay Motors
         </Label>
       </div>
-
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="filter-edmunds"
-          checked={sources.edmunds}
-          onCheckedChange={(checked) => handleSourceChange('edmunds', !!checked)}
-          className="h-4 w-4 rounded border-neutral-300"
-        />
-        <Label htmlFor="filter-edmunds" className="text-sm cursor-pointer">
-          Edmunds
-        </Label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="filter-hemmings"
-          checked={sources.hemmings}
-          onCheckedChange={(checked) => handleSourceChange('hemmings', !!checked)}
-          className="h-4 w-4 rounded border-neutral-300"
-        />
-        <Label htmlFor="filter-hemmings" className="text-sm cursor-pointer">
-          Hemmings
-        </Label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="filter-bringatrailer"
-          checked={sources.bringatrailer}
-          onCheckedChange={(checked) => handleSourceChange('bringatrailer', !!checked)}
-          className="h-4 w-4 rounded border-neutral-300"
-        />
-        <Label htmlFor="filter-bringatrailer" className="text-sm cursor-pointer">
-          Bring A Trailer
-        </Label>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="filter-classiccars"
-          checked={sources.classiccars}
-          onCheckedChange={(checked) => handleSourceChange('classiccars', !!checked)}
-          className="h-4 w-4 rounded border-neutral-300"
-        />
-        <Label htmlFor="filter-classiccars" className="text-sm cursor-pointer">
-          Classic Cars
-        </Label>
-      </div>
-
+      
       <div className="pt-2">
         <button
           type="button"
           onClick={() =>
             onChange({
               ebay: true,
-              edmunds: true,
-              hemmings: true,
-              bringatrailer: true,
-              classiccars: true,
+              edmunds: false, // Mantenemos estas propiedades para compatibilidad,
+              hemmings: false, // pero no permitimos activarlas en la UI
+              bringatrailer: false,
+              classiccars: false,
             })
           }
           className="text-xs text-primary font-medium hover:underline"
         >
-          Seleccionar todos
+          Activar eBay Motors
         </button>
         <span className="text-neutral-300 mx-2">|</span>
         <button
@@ -113,7 +66,7 @@ const SourceFilter = ({ sources, onChange }: SourceFilterProps) => {
           }
           className="text-xs text-primary font-medium hover:underline"
         >
-          Deseleccionar todos
+          Desactivar eBay Motors
         </button>
       </div>
     </div>

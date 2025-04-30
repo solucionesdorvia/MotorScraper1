@@ -106,50 +106,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           );
         }
         
-        if (searchParams.edmunds && make) {
-          // Use Cars.com instead of Edmunds since Edmunds is having issues
-          carsResults = await scrapeCars(
-            make, 
-            model,
-            searchParams.year?.toString()
-          );
-        }
-
-        if (searchParams.hemmings && make) {
-          hemmingsResults = await scrapeHemmings(
-            make, 
-            model,
-            searchParams.year?.toString()
-          );
-        }
-
-        if (searchParams.bringatrailer && make) {
-          bringATrailerResults = await scrapeBringATrailer(
-            make, 
-            model,
-            searchParams.year?.toString()
-          );
-        }
-
-        if (searchParams.classiccars && make) {
-          classicCarsResults = await scrapeClassicCars(
-            make, 
-            model,
-            searchParams.year?.toString()
-          );
-        }
+        // Eliminamos las otras fuentes según solicitud del usuario
+        // Solo mantenemos eBay Motors
         
-        console.log(`Obtained results: ${ebayResults.length} from eBay, ${carsResults.length} from Cars.com, ${hemmingsResults.length} from Hemmings, ${bringATrailerResults.length} from BaT, ${classicCarsResults.length} from ClassicCars`);
+        console.log(`Obtained results: ${ebayResults.length} from eBay Motors`);
         
-        // Combine results and save to storage
+        // Solo mantener resultados de eBay Motor per solicitud del usuario
         const allResults = [
-          ...ebayResults, 
-          ...carsResults, 
-          ...hemmingsResults, 
-          ...bringATrailerResults, 
-          ...classicCarsResults
+          ...ebayResults
         ];
-        console.log(`Combined ${allResults.length} total results to save`);
+        console.log(`Combined ${allResults.length} total results from eBay Motors`);
         
         if (allResults.length > 0) {
           await storage.saveVehicles(allResults);
