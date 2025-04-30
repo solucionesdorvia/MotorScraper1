@@ -145,6 +145,22 @@ function generateHemmingsVehicles(make: string, model: string, year?: string): I
     ];
     const dealerName = dealerNames[Math.floor(Math.random() * dealerNames.length)];
     
+    // Determine if this is an auction with 25% probability
+    const isAuction = Math.random() < 0.25;
+    
+    // For auctions, setup auction-specific data
+    let currentBid = null;
+    let endsIn = null;
+    
+    if (isAuction) {
+      // For auctions, use the calculated price as the current bid
+      currentBid = price;
+      
+      // Generate random days remaining for the auction
+      const daysLeft = Math.floor(Math.random() * 7) + 1;
+      endsIn = `${daysLeft} días`;
+    }
+    
     // Create vehicle object
     const vehicle: InsertVehicle = {
       title,
@@ -161,7 +177,10 @@ function generateHemmingsVehicles(make: string, model: string, year?: string): I
       imageUrl,
       sourceUrl: `https://www.hemmings.com/classifieds/cars-for-sale`,
       source: 'hemmings.com',
-      dealerName
+      dealerName,
+      isAuction,
+      currentBid,
+      endsIn
     };
     
     vehicles.push(vehicle);
@@ -257,7 +276,7 @@ function extractVehicleListings(
         title = `${year || ''} ${formattedMake} ${formattedModel} ${title}`.trim();
       }
       
-      // Determine if this is an auction listing
+      // Determine if this is an auction listing and extract price/bid info
       const isAuction = sourceUrl.includes('/auction/');
       
       // Extract price or current bid
@@ -266,25 +285,19 @@ function extractVehicleListings(
       const priceText = priceElement.text().trim();
       const price = extractPrice(priceText);
       
-      // Initialize auction data
-      let auctionData = undefined;
+      // Set default auction values
+      let currentBid = null;
+      let endsIn = null;
       
       // If this is an auction, get auction-specific information
       if (isAuction) {
         // Get bid information
-        const currentBid = price || 0;
+        currentBid = price || 0;
         
         // Get time remaining
         const timeElement = $(element).find('[data-v-383bdb26]').last();
         const timeText = timeElement.text().trim();
-        const endsIn = timeText || '7 days'; // Default if not found
-        
-        // Create auction data object
-        auctionData = {
-          isAuction: true,
-          currentBid,
-          endsIn
-        };
+        endsIn = timeText || '7 days'; // Default if not found
       }
       
       // Extract other details - not always available in search results
@@ -313,7 +326,9 @@ function extractVehicleListings(
         sourceUrl,
         source: 'hemmings.com',
         dealerName,
-        auctionData
+        isAuction,
+        currentBid,
+        endsIn
       };
       
       vehicles.push(vehicle);

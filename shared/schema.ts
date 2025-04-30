@@ -14,7 +14,7 @@ export const vehicles = pgTable("vehicles", {
   location: text("location"),
   imageUrl: text("image_url"),
   sourceUrl: text("source_url"),
-  source: text("source").notNull(), // 'ebay' or 'edmunds'
+  source: text("source").notNull(), // 'ebay', 'edmunds', 'hemmings.com', etc.
   transmission: text("transmission"),
   fuelType: text("fuel_type"),
   bodyType: text("body_type"),
@@ -22,6 +22,9 @@ export const vehicles = pgTable("vehicles", {
   vin: text("vin"),
   hasDeals: boolean("has_deals").default(false),
   dealerName: text("dealer_name"),
+  isAuction: boolean("is_auction").default(false),
+  currentBid: integer("current_bid"),
+  endsIn: text("ends_in"),
 });
 
 // Define the search history schema
