@@ -30,6 +30,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const searchParams = searchParamsResult.data;
       
+      // Agregamos logs para depurar
+      console.log('Query params recibidos:', req.query);
+      console.log('SearchParams procesados:', JSON.stringify(searchParams));
+      
       // Parse and validate filter parameters
       const filterParamsResult = filterSchema.safeParse(req.query);
       const filterParams = filterParamsResult.success ? filterParamsResult.data : {};

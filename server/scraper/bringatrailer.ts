@@ -66,6 +66,12 @@ function generateMockBaTResults(make: string, model: string, year?: string): Ins
       title = `${yearValue} ${make} ${model} ${spec}`;
       price = 50000 + Math.floor(Math.random() * 70000);
       imageUrl = 'https://bringatrailer.com/wp-content/uploads/2020/05/1970_dodge_challenger_15906193037d991dff954Capture.jpg';
+    } else if (make.toLowerCase() === 'chevrolet' && model.toLowerCase().includes('corvette')) {
+      const specs = ['Stingray', 'L88', '427', 'ZR1', 'Grand Sport', 'C2'];
+      const spec = specs[Math.floor(Math.random() * specs.length)];
+      title = `${yearValue} ${make} ${model} ${spec}`;
+      price = 45000 + Math.floor(Math.random() * 80000);
+      imageUrl = 'https://bringatrailer.com/wp-content/uploads/2018/03/152252868966e7dff9f98430301-1-940x626.jpg';
     } else {
       title = `${yearValue} ${make} ${model}`;
       price = 30000 + Math.floor(Math.random() * 50000);
@@ -77,7 +83,7 @@ function generateMockBaTResults(make: string, model: string, year?: string): Ins
     const currentBid = Math.floor(price * (0.7 + Math.random() * 0.3));
     
     // Genera un tiempo restante aleatorio
-    const endsInOptions = ['2 hours', '5 hours', '1 day', '3 days', '6 days'];
+    const endsInOptions = ['2 horas', '5 horas', '1 día', '3 días', '6 días'];
     const endsIn = endsInOptions[Math.floor(Math.random() * endsInOptions.length)];
     
     // Crea el vehículo simulado
@@ -93,6 +99,9 @@ function generateMockBaTResults(make: string, model: string, year?: string): Ins
       isAuction: true,
       currentBid: currentBid,
       endsIn: endsIn,
+      bodyType: ['Coupe', 'Convertible', 'Fastback', 'Sedan'][Math.floor(Math.random() * 4)],
+      transmission: ['Manual', 'Automática'][Math.floor(Math.random() * 2)],
+      location: ['Los Angeles, CA', 'Miami, FL', 'Nueva York, NY', 'Chicago, IL'][Math.floor(Math.random() * l)]
     };
     
     vehicles.push(vehicle);
