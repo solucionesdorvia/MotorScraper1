@@ -76,10 +76,15 @@ export class MemStorage implements IStorage {
     }
     
     // Filter by source
-    if (searchParams.ebay && !searchParams.edmunds) {
-      filteredVehicles = filteredVehicles.filter(v => v.source === 'ebay');
-    } else if (!searchParams.ebay && searchParams.edmunds) {
-      filteredVehicles = filteredVehicles.filter(v => v.source === 'edmunds');
+    const enabledSources = [];
+    if (searchParams.ebay) enabledSources.push('ebay');
+    if (searchParams.edmunds) enabledSources.push('cars.com'); // edmunds maps to cars.com
+    if (searchParams.hemmings) enabledSources.push('hemmings.com');
+    if (searchParams.bringatrailer) enabledSources.push('bringatrailer.com');
+    if (searchParams.classiccars) enabledSources.push('classiccars.com');
+    
+    if (enabledSources.length > 0) {
+      filteredVehicles = filteredVehicles.filter(v => enabledSources.includes(v.source));
     }
     
     // Apply additional filters
