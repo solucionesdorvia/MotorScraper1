@@ -135,7 +135,7 @@ function generateHemmingsVehicles(make: string, model: string, year?: string): I
       vin,
       location,
       imageUrl,
-      sourceUrl: `https://www.hemmings.com/classifieds/cars-for-sale?makeFacet=${formattedMake}&modelFacet=${formattedModel}&year_min=${vehicleYear}&year_max=${vehicleYear}`,
+      sourceUrl: `https://www.hemmings.com/classifieds/cars-for-sale/dodge/challenger`,
       source: 'hemmings.com',
       dealerName
     };
