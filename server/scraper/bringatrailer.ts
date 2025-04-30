@@ -21,14 +21,21 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     
     console.log(`BaT scraper - Respuesta recibida con status: ${response.status}, longitud: ${response.data.length}`);
     
-    // Si la web da problemas de CORS o bloquea scraping, generamos datos de ejemplo para desarrollo
-    // Esto simula resultados de Bring a Trailer para pruebas
+    // Intenta extraer vehículos del HTML 
+    const extractedVehicles = extractVehicleListings(response.data, make, model, year);
+    
+    // Si encontramos vehículos, los devolvemos
+    if (extractedVehicles.length > 0) {
+      console.log(`BaT scraper - Encontrados ${extractedVehicles.length} vehículos en el HTML`);
+      return extractedVehicles;
+    }
+    
+    // Si no hay resultados (probablemente debido a una estructura HTML diferente), 
+    // generamos datos de prueba como fallback
+    console.log('BaT scraper - No se encontraron vehículos en el HTML, usando datos de prueba');
     const mockVehicles = generateMockBaTResults(make, model, year);
     console.log(`BaT scraper - Generados ${mockVehicles.length} vehículos de ejemplo para pruebas`);
     return mockVehicles;
-    
-    // En producción, usaríamos esto:
-    // return extractVehicleListings(response.data, make, model, year);
   } catch (error) {
     console.error(`Error al obtener datos de Bring a Trailer:`, error);
     // Fallback a la generación de datos de ejemplo (solo para desarrollo)
@@ -122,27 +129,74 @@ function extractVehicleListings(
   const vehicles: InsertVehicle[] = [];
   const $ = cheerio.load(html);
   
+  console.log('Analizando HTML de Bring a Trailer, buscando tarjetas de vehículos...');
+  
   // Selecciona los elementos que contienen listados de vehículos
-  // Usamos la clase 'listing-card' que identificamos en el HTML
+  // Basado en el HTML proporcionado por el usuario
   $('.listing-card').each((index, element) => {
     try {
       // Extrae datos clave
       const title = $(element).find('h3').text().trim();
+      console.log(`Encontrado título: ${title}`);
       
       // Solo procesa si el título es relevante para la búsqueda
       if (isRelevantListing(title, make, model, year)) {
+        console.log(`Título relevante: ${title}`);
         const sourceUrl = $(element).attr('href') || '';
         const imageUrl = $(element).find('.thumbnail img').attr('src') || '';
         
-        // Extrae información de la subasta (precio actual y tiempo restante)
+        // Extrae información de la subasta basado en el HTML actual
         const currentBidText = $(element).find('.bid-formatted').text().trim();
-        const currentBid = extractPrice(currentBidText);
+        console.log(`Texto de oferta: ${currentBidText}`);
+        let currentBid = null;
         
+        // Extrae el precio del texto de oferta
+        if (currentBidText) {
+          // Elimina 'USD $' o cualquier otro prefijo y luego convierte a número
+          const priceMatch = currentBidText.match(/(\d[\d,]+)/); 
+          if (priceMatch && priceMatch[1]) {
+            currentBid = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+            console.log(`Oferta actual extraida: ${currentBid}`);
+          }
+        }
+        
+        // Extrae tiempo restante
         const endsInText = $(element).find('.countdown-text').text().trim();
         const endsIn = endsInText || null;
+        console.log(`Tiempo restante: ${endsIn}`);
         
         // Extrae el año del título si está disponible
         const extractedYear = extractYear(title);
+        console.log(`Año extraído: ${extractedYear}`);
+        
+        // Extrae una descripción si está disponible
+        const description = $(element).find('.item-excerpt').text().trim() || null;
+        
+        // Extraer estado o ubicación si está disponible
+        // Para BaT, a menudo está dentro del elemento con clase item-distance
+        const locationText = $(element).find('.item-distance').text().trim() || 'Estados Unidos';
+        
+        // Intenta determinar el tipo de carrocería desde el título
+        let bodyType = null;
+        if (title.toLowerCase().includes('fastback')) {
+          bodyType = 'Fastback';
+        } else if (title.toLowerCase().includes('coupe')) {
+          bodyType = 'Coupe';
+        } else if (title.toLowerCase().includes('convertible') || title.toLowerCase().includes('cabrio')) {
+          bodyType = 'Convertible';
+        } else if (title.toLowerCase().includes('sedan')) {
+          bodyType = 'Sedan';
+        }
+        
+        // Intenta determinar la transmisión desde el título o descripción
+        let transmission = null;
+        const fullText = `${title} ${description || ''}`;
+        if (fullText.toLowerCase().includes('manual') || fullText.toLowerCase().includes('speed') || 
+            fullText.toLowerCase().includes('5-speed') || fullText.toLowerCase().includes('6-speed')) {
+          transmission = 'Manual';
+        } else if (fullText.toLowerCase().includes('automatic') || fullText.toLowerCase().includes('auto')) {
+          transmission = 'Automática';
+        }
         
         // Crea el objeto del vehículo
         const vehicle: InsertVehicle = {
@@ -156,16 +210,23 @@ function extractVehicleListings(
           price: currentBid || null, // Usamos el precio actual como precio si está disponible
           isAuction: true,
           currentBid,
-          endsIn
+          endsIn,
+          transmission,
+          bodyType,
+          location: locationText
         };
         
         vehicles.push(vehicle);
+        console.log(`Vehículo añadido: ${title} - ${currentBid}`);
+      } else {
+        console.log(`Ignorando título no relevante: ${title}`);
       }
     } catch (error) {
       console.error('Error al procesar un listado de Bring a Trailer:', error);
     }
   });
   
+  console.log(`Total de vehículos encontrados en BaT: ${vehicles.length}`);
   return vehicles;
 }
 
@@ -191,24 +252,71 @@ function buildBringATrailerUrl(make: string, model: string, year?: string): stri
  * Comprueba si un listado es relevante para los criterios de búsqueda
  */
 function isRelevantListing(title: string, make: string, model: string, year?: string): boolean {
+  console.log(`Evaluando relevancia para: "${title}" - Búsqueda: ${make} ${model} ${year || ''}`);
+  
   const titleLower = title.toLowerCase();
   const makeLower = make.toLowerCase();
   const modelLower = model.toLowerCase();
   
-  // Debe contener la marca
-  const hasMake = titleLower.includes(makeLower);
-  if (!hasMake) return false;
+  // Para Bring a Trailer, algunos listados pueden usar nombres diferentes
+  // pero estar directamente relacionados, especialmente con vehículos clásicos
   
-  // Debe contener el modelo (o ser suficientemente similar)
-  const hasModel = titleLower.includes(modelLower);
-  if (!hasModel) return false;
-  
-  // Si se especificó un año, debe contenerlo
-  if (year && !titleLower.includes(year)) {
-    return false;
+  // Para Ford Mustang
+  if (makeLower === 'ford' && modelLower === 'mustang') {
+    const isMustang = titleLower.includes('mustang') || titleLower.includes('shelby');
+    
+    // Si se especificó un año, comprueba si coincide
+    if (year && !titleLower.includes(year)) {
+      console.log(`No coincide año específico para Mustang: ${title}`);
+      return false;
+    }
+    
+    console.log(`${isMustang ? 'SÍ' : 'NO'} es un Mustang: ${title}`);
+    return isMustang;
   }
   
-  return true;
+  // Para Dodge Challenger
+  if (makeLower === 'dodge' && modelLower === 'challenger') {
+    const isChallenger = titleLower.includes('challenger');
+    
+    // Si se especificó un año, comprueba si coincide
+    if (year && !titleLower.includes(year)) {
+      console.log(`No coincide año específico para Challenger: ${title}`);
+      return false;
+    }
+    
+    console.log(`${isChallenger ? 'SÍ' : 'NO'} es un Challenger: ${title}`);
+    return isChallenger;
+  }
+  
+  // Para Chevrolet Corvette
+  if (makeLower === 'chevrolet' && modelLower === 'corvette') {
+    const isCorvette = titleLower.includes('corvette');
+    
+    // Si se especificó un año, comprueba si coincide
+    if (year && !titleLower.includes(year)) {
+      console.log(`No coincide año específico para Corvette: ${title}`);
+      return false;
+    }
+    
+    console.log(`${isCorvette ? 'SÍ' : 'NO'} es un Corvette: ${title}`);
+    return isCorvette;
+  }
+  
+  // Método general para otros modelos
+  // Debe contener la marca o una variación conocida
+  const hasMake = titleLower.includes(makeLower);
+  
+  // Debe contener el modelo o una variación conocida
+  const hasModel = titleLower.includes(modelLower);
+  
+  // Si se especificó un año, comprueba si coincide
+  const hasYear = !year || titleLower.includes(year);
+  
+  const isRelevant = hasMake && hasModel && hasYear;
+  console.log(`Relevancia general: ${isRelevant ? 'SÍ' : 'NO'} relevante - ${title}`);
+  
+  return isRelevant;
 }
 
 /**
