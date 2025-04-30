@@ -48,9 +48,17 @@ type FilterPanelProps = {
   onApplyFilters: (filters: FilterParams) => void;
   onResetFilters: () => void;
   initialFilters?: FilterParams;
+  sources: {
+    ebay: boolean;
+    edmunds: boolean;
+    hemmings: boolean;
+    bringatrailer: boolean;
+    classiccars: boolean;
+  };
+  onSourceChange: (sources: any) => void;
 };
 
-const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters }: FilterPanelProps) => {
+const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, onSourceChange }: FilterPanelProps) => {
   const form = useForm<z.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
     defaultValues: {
@@ -86,6 +94,12 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters }: FilterP
         >
           Reset All
         </button>
+      </div>
+      
+      {/* Source Filter */}
+      <div className="mb-6">
+        <h3 className="text-lg font-medium mb-3">Fuentes</h3>
+        <SourceFilter sources={sources} onChange={onSourceChange} />
       </div>
       
       <Form {...form}>

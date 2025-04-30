@@ -16,6 +16,9 @@ const formSchema = z.object({
   year: z.string().optional(),
   ebay: z.boolean().default(true),
   edmunds: z.boolean().default(true),
+  hemmings: z.boolean().default(true),
+  bringatrailer: z.boolean().default(true),
+  classiccars: z.boolean().default(true),
 });
 
 type SearchFormProps = {
@@ -23,6 +26,9 @@ type SearchFormProps = {
   defaultYear?: string;
   defaultEbay?: boolean;
   defaultEdmunds?: boolean;
+  defaultHemmings?: boolean;
+  defaultBringatrailer?: boolean;
+  defaultClassiccars?: boolean;
   compact?: boolean;
 };
 
@@ -31,6 +37,9 @@ const SearchForm = ({
   defaultYear = '',
   defaultEbay = true,
   defaultEdmunds = true,
+  defaultHemmings = true,
+  defaultBringatrailer = true,
+  defaultClassiccars = true,
   compact = false
 }: SearchFormProps) => {
   const [, setLocation] = useLocation();
@@ -42,6 +51,9 @@ const SearchForm = ({
       year: defaultYear,
       ebay: defaultEbay,
       edmunds: defaultEdmunds,
+      hemmings: defaultHemmings,
+      bringatrailer: defaultBringatrailer,
+      classiccars: defaultClassiccars,
     },
   });
   
@@ -73,6 +85,18 @@ const SearchForm = ({
     
     if (!values.edmunds) {
       searchParams.set('edmunds', 'false');
+    }
+    
+    if (!values.hemmings) {
+      searchParams.set('hemmings', 'false');
+    }
+    
+    if (!values.bringatrailer) {
+      searchParams.set('bringatrailer', 'false');
+    }
+    
+    if (!values.classiccars) {
+      searchParams.set('classiccars', 'false');
     }
     
     setLocation(`/search?${searchParams.toString()}`);
@@ -135,7 +159,7 @@ const SearchForm = ({
         </div>
         
         <div className="mt-3 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <FormField
               control={form.control}
               name="ebay"
@@ -166,6 +190,57 @@ const SearchForm = ({
                     />
                   </FormControl>
                   <FormLabel className="ml-2 text-sm text-neutral-700">Edmunds</FormLabel>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="hemmings"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="form-checkbox h-4 w-4 text-primary rounded border-neutral-300 focus:ring-2 focus:ring-primary/50"
+                    />
+                  </FormControl>
+                  <FormLabel className="ml-2 text-sm text-neutral-700">Hemmings</FormLabel>
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="bringatrailer"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="form-checkbox h-4 w-4 text-primary rounded border-neutral-300 focus:ring-2 focus:ring-primary/50"
+                    />
+                  </FormControl>
+                  <FormLabel className="ml-2 text-sm text-neutral-700">Bring a Trailer</FormLabel>
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="classiccars"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="form-checkbox h-4 w-4 text-primary rounded border-neutral-300 focus:ring-2 focus:ring-primary/50"
+                    />
+                  </FormControl>
+                  <FormLabel className="ml-2 text-sm text-neutral-700">Classic Cars</FormLabel>
                 </FormItem>
               )}
             />

@@ -51,6 +51,9 @@ export function getSourceLabel(source: string): string {
   if (source === 'ebay') return 'eBay Motors';
   if (source === 'edmunds') return 'Edmunds';
   if (source === 'cars.com') return 'Cars.com';
+  if (source === 'hemmings.com') return 'Hemmings';
+  if (source === 'bringatrailer.com') return 'Bring a Trailer';
+  if (source === 'classiccars.com') return 'Classic Cars';
   return source;
 }
 
@@ -58,6 +61,9 @@ export function getSourceClassName(source: string): string {
   if (source === 'ebay') return 'bg-label-ebay';
   if (source === 'edmunds') return 'bg-label-edmunds';
   if (source === 'cars.com') return 'bg-label-cars';
+  if (source === 'hemmings.com') return 'bg-label-hemmings';
+  if (source === 'bringatrailer.com') return 'bg-label-bat';
+  if (source === 'classiccars.com') return 'bg-label-classiccars';
   return 'bg-gray-500';
 }
 
@@ -72,7 +78,10 @@ export function buildSearchUrl(
   model: string | undefined, 
   year: string | undefined,
   ebay: boolean = true,
-  edmunds: boolean = true
+  edmunds: boolean = true,
+  hemmings: boolean = true,
+  bringatrailer: boolean = true,
+  classiccars: boolean = true
 ): string {
   const params = new URLSearchParams();
   
@@ -81,6 +90,9 @@ export function buildSearchUrl(
   if (year) params.append('year', year);
   if (!ebay) params.append('ebay', 'false');
   if (!edmunds) params.append('edmunds', 'false');
+  if (!hemmings) params.append('hemmings', 'false');
+  if (!bringatrailer) params.append('bringatrailer', 'false');
+  if (!classiccars) params.append('classiccars', 'false');
   
   return `/search?${params.toString()}`;
 }
@@ -98,6 +110,21 @@ export function buildEdmundsUrl(make: string, model: string, year?: string): str
 export function buildCarsUrl(make: string, model: string, year?: string): string {
   const yearParam = year ? `&year_min=${year}&year_max=${year}` : '';
   return `https://www.cars.com/shopping/results/?dealer_id=&keyword=${encodeURIComponent(make)}+${encodeURIComponent(model)}&list_price_max=&list_price_min=&makes[]=${encodeURIComponent(make)}&maximum_distance=all&mileage_max=&models[]=${encodeURIComponent(model)}${yearParam}&page_size=20&sort=best_match_desc&stock_type=all&year_max=&year_min=&zip=`;
+}
+
+export function buildHemmingsUrl(make: string, model: string, year?: string): string {
+  const yearParam = year ? `/${year}` : '';
+  return `https://www.hemmings.com/classifieds/cars-for-sale/${make.toLowerCase()}/${model.toLowerCase()}${yearParam}`;
+}
+
+export function buildBringATrailerUrl(make: string, model: string, year?: string): string {
+  const yearParam = year ? `&q=${year}` : '';
+  return `https://bringatrailer.com/search/?s=${encodeURIComponent(make)}+${encodeURIComponent(model)}${yearParam}`;
+}
+
+export function buildClassicCarsUrl(make: string, model: string, year?: string): string {
+  const yearParam = year ? `&year=${year}-${year}` : '';
+  return `https://classiccars.com/listings?term=${encodeURIComponent(make)}+${encodeURIComponent(model)}${yearParam}`;
 }
 
 export const carMakes = [

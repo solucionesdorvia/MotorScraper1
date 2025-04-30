@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar } from 'react-icons/fa';
 import { Vehicle } from '@shared/schema';
-import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl, buildEbayUrl, buildEdmundsUrl, buildCarsUrl } from '@/lib/utils';
+import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl, buildEbayUrl, buildEdmundsUrl, buildCarsUrl, buildHemmingsUrl, buildBringATrailerUrl, buildClassicCarsUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 type VehicleCardProps = {
@@ -27,6 +27,12 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         url = buildEdmundsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
       } else if (vehicle.source === 'cars.com') {
         url = buildCarsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
+      } else if (vehicle.source === 'hemmings.com') {
+        url = buildHemmingsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
+      } else if (vehicle.source === 'bringatrailer.com') {
+        url = buildBringATrailerUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
+      } else if (vehicle.source === 'classiccars.com') {
+        url = buildClassicCarsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
       }
       
       if (url) {

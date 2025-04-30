@@ -25,10 +25,23 @@ const SearchResults = () => {
   const year = searchParams.get('year') || '';
   const ebay = searchParams.get('ebay') !== 'false';
   const edmunds = searchParams.get('edmunds') !== 'false';
+  const hemmings = searchParams.get('hemmings') !== 'false';
+  const bringatrailer = searchParams.get('bringatrailer') !== 'false';
+  const classiccars = searchParams.get('classiccars') !== 'false';
   const page = parseInt(searchParams.get('page') || '1', 10);
   const sort = searchParams.get('sort') || 'relevance';
   
   // Parse filter parameters
+  // State for source filters
+  const [sources, setSources] = useState({
+    ebay,
+    edmunds,
+    hemmings,
+    bringatrailer,
+    classiccars
+  });
+  
+  // State for other filters
   const [filters, setFilters] = useState<FilterParams>({
     minPrice: searchParams.get('minPrice') ? parseInt(searchParams.get('minPrice') || '0', 10) : undefined,
     maxPrice: searchParams.get('maxPrice') ? parseInt(searchParams.get('maxPrice') || '0', 10) : undefined,
@@ -124,6 +137,9 @@ const SearchResults = () => {
             defaultYear={year}
             defaultEbay={ebay}
             defaultEdmunds={edmunds}
+            defaultHemmings={hemmings}
+            defaultBringatrailer={bringatrailer}
+            defaultClassiccars={classiccars}
             compact={true}
           />
         </div>
@@ -136,6 +152,8 @@ const SearchResults = () => {
               onApplyFilters={handleApplyFilters}
               onResetFilters={handleResetFilters}
               initialFilters={filters}
+              sources={sources}
+              onSourceChange={setSources}
             />
             
             <div className="lg:w-3/4">

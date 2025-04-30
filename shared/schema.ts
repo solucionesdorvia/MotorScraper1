@@ -77,6 +77,18 @@ export const searchParamsSchema = z.object({
     .optional()
     .transform(val => val !== 'false' && val !== false)
     .default(true),
+  hemmings: z.union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform(val => val !== 'false' && val !== false)
+    .default(true),
+  bringatrailer: z.union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform(val => val !== 'false' && val !== false)
+    .default(true),
+  classiccars: z.union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform(val => val !== 'false' && val !== false)
+    .default(true),
   page: z.union([z.number(), z.string()])
     .optional()
     .transform(val => typeof val === 'string' ? parseInt(val, 10) : val)
