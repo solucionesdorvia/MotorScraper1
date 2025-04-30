@@ -106,16 +106,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           );
         }
         
-        // Eliminamos las otras fuentes según solicitud del usuario
-        // Solo mantenemos eBay Motors
+        // Según la solicitud del usuario, ahora incluimos eBay Motors y Bring a Trailer
+        if (searchParams.bringatrailer && make) {
+          bringATrailerResults = await scrapeBringATrailer(
+            make, 
+            model,
+            searchParams.year?.toString()
+          );
+        }
         
-        console.log(`Obtained results: ${ebayResults.length} from eBay Motors`);
+        console.log(`Obtained results: ${ebayResults.length} from eBay Motors, ${bringATrailerResults.length} from Bring a Trailer`);
         
-        // Solo mantener resultados de eBay Motor per solicitud del usuario
+        // Combinar resultados de eBay Motors y Bring a Trailer
         const allResults = [
-          ...ebayResults
+          ...ebayResults,
+          ...bringATrailerResults
         ];
-        console.log(`Combined ${allResults.length} total results from eBay Motors`);
+        console.log(`Combined ${allResults.length} total results from eBay Motors and Bring a Trailer`);
         
         if (allResults.length > 0) {
           await storage.saveVehicles(allResults);

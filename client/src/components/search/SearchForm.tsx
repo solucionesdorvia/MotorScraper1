@@ -38,10 +38,10 @@ const SearchForm = ({
   defaultQuery = '',
   defaultYear = '',
   defaultEbay = true,
-  defaultEdmunds = false, // Siempre falso por solicitud del usuario
-  defaultHemmings = false, // Siempre falso por solicitud del usuario
-  defaultBringatrailer = false, // Siempre falso por solicitud del usuario
-  defaultClassiccars = false, // Siempre falso por solicitud del usuario
+  defaultEdmunds = false, // Desactivado por solicitud del usuario
+  defaultHemmings = false, // Desactivado por solicitud del usuario
+  defaultBringatrailer = true, // Activado por solicitud del usuario
+  defaultClassiccars = false, // Desactivado por solicitud del usuario
   compact = false
 }: SearchFormProps) => {
   const [, setLocation] = useLocation();
@@ -162,7 +162,7 @@ const SearchForm = ({
         
         <div className="mt-3 flex justify-between items-center">
           <div className="flex flex-wrap items-center gap-3">
-            {/* Solo mostramos eBay Motors según lo solicitado por el usuario */}
+            {/* Mostramos eBay Motors y Bring a Trailer según lo solicitado por el usuario */}
             <FormField
               control={form.control}
               name="ebay"
@@ -176,6 +176,23 @@ const SearchForm = ({
                     />
                   </FormControl>
                   <FormLabel className="ml-2 text-sm text-neutral-700">eBay Motors</FormLabel>
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="bringatrailer"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="form-checkbox h-4 w-4 text-primary rounded border-neutral-300 focus:ring-2 focus:ring-primary/50"
+                    />
+                  </FormControl>
+                  <FormLabel className="ml-2 text-sm text-neutral-700">Bring a Trailer</FormLabel>
                 </FormItem>
               )}
             />
