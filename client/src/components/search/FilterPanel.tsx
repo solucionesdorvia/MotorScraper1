@@ -10,6 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { FilterParams } from '@shared/schema';
 import { bodyTypes, transmissions, colors } from '@/lib/utils';
+import SourceFilter from './SourceFilter';
 
 type FilterAccordionProps = {
   title: string;
@@ -62,10 +63,10 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
   const form = useForm<z.infer<typeof filterSchema>>({
     resolver: zodResolver(filterSchema),
     defaultValues: {
-      minPrice: initialFilters?.minPrice?.toString() || '',
-      maxPrice: initialFilters?.maxPrice?.toString() || '',
-      minMileage: initialFilters?.minMileage?.toString() || '',
-      maxMileage: initialFilters?.maxMileage?.toString() || '',
+      minPrice: initialFilters?.minPrice ? initialFilters.minPrice.toString() : '',
+      maxPrice: initialFilters?.maxPrice ? initialFilters.maxPrice.toString() : '',
+      minMileage: initialFilters?.minMileage ? initialFilters.minMileage.toString() : '',
+      maxMileage: initialFilters?.maxMileage ? initialFilters.maxMileage.toString() : '',
       bodyType: initialFilters?.bodyType || [],
       transmission: initialFilters?.transmission || [],
       color: initialFilters?.color || [],

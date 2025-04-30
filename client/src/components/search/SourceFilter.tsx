@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 
@@ -14,7 +14,7 @@ type SourceFilterProps = {
 };
 
 const SourceFilter = ({ sources, onChange }: SourceFilterProps) => {
-  const handleToggleSource = (source: string, checked: boolean) => {
+  const handleSourceChange = (source: string, checked: boolean) => {
     onChange({
       ...sources,
       [source]: checked,
@@ -22,68 +22,99 @@ const SourceFilter = ({ sources, onChange }: SourceFilterProps) => {
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Fuentes</h3>
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="ebay" 
-            checked={sources.ebay}
-            onCheckedChange={(checked) => handleToggleSource('ebay', checked as boolean)}
-          />
-          <Label htmlFor="ebay" className="cursor-pointer flex items-center">
-            <span className="inline-block w-2 h-2 rounded-full mr-1 bg-label-ebay"></span>
-            eBay Motors
-          </Label>
-        </div>
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="filter-ebay"
+          checked={sources.ebay}
+          onCheckedChange={(checked) => handleSourceChange('ebay', !!checked)}
+          className="h-4 w-4 rounded border-neutral-300"
+        />
+        <Label htmlFor="filter-ebay" className="text-sm cursor-pointer">
+          eBay Motors
+        </Label>
+      </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="edmunds" 
-            checked={sources.edmunds}
-            onCheckedChange={(checked) => handleToggleSource('edmunds', checked as boolean)}
-          />
-          <Label htmlFor="edmunds" className="cursor-pointer flex items-center">
-            <span className="inline-block w-2 h-2 rounded-full mr-1 bg-label-cars"></span>
-            Cars.com
-          </Label>
-        </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="filter-edmunds"
+          checked={sources.edmunds}
+          onCheckedChange={(checked) => handleSourceChange('edmunds', !!checked)}
+          className="h-4 w-4 rounded border-neutral-300"
+        />
+        <Label htmlFor="filter-edmunds" className="text-sm cursor-pointer">
+          Edmunds
+        </Label>
+      </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="hemmings" 
-            checked={sources.hemmings}
-            onCheckedChange={(checked) => handleToggleSource('hemmings', checked as boolean)}
-          />
-          <Label htmlFor="hemmings" className="cursor-pointer flex items-center">
-            <span className="inline-block w-2 h-2 rounded-full mr-1 bg-label-hemmings"></span>
-            Hemmings
-          </Label>
-        </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="filter-hemmings"
+          checked={sources.hemmings}
+          onCheckedChange={(checked) => handleSourceChange('hemmings', !!checked)}
+          className="h-4 w-4 rounded border-neutral-300"
+        />
+        <Label htmlFor="filter-hemmings" className="text-sm cursor-pointer">
+          Hemmings
+        </Label>
+      </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="bringatrailer" 
-            checked={sources.bringatrailer}
-            onCheckedChange={(checked) => handleToggleSource('bringatrailer', checked as boolean)}
-          />
-          <Label htmlFor="bringatrailer" className="cursor-pointer flex items-center">
-            <span className="inline-block w-2 h-2 rounded-full mr-1 bg-label-bat"></span>
-            Bring a Trailer
-          </Label>
-        </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="filter-bringatrailer"
+          checked={sources.bringatrailer}
+          onCheckedChange={(checked) => handleSourceChange('bringatrailer', !!checked)}
+          className="h-4 w-4 rounded border-neutral-300"
+        />
+        <Label htmlFor="filter-bringatrailer" className="text-sm cursor-pointer">
+          Bring A Trailer
+        </Label>
+      </div>
 
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="classiccars" 
-            checked={sources.classiccars}
-            onCheckedChange={(checked) => handleToggleSource('classiccars', checked as boolean)}
-          />
-          <Label htmlFor="classiccars" className="cursor-pointer flex items-center">
-            <span className="inline-block w-2 h-2 rounded-full mr-1 bg-label-classiccars"></span>
-            Classic Cars
-          </Label>
-        </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="filter-classiccars"
+          checked={sources.classiccars}
+          onCheckedChange={(checked) => handleSourceChange('classiccars', !!checked)}
+          className="h-4 w-4 rounded border-neutral-300"
+        />
+        <Label htmlFor="filter-classiccars" className="text-sm cursor-pointer">
+          Classic Cars
+        </Label>
+      </div>
+
+      <div className="pt-2">
+        <button
+          type="button"
+          onClick={() =>
+            onChange({
+              ebay: true,
+              edmunds: true,
+              hemmings: true,
+              bringatrailer: true,
+              classiccars: true,
+            })
+          }
+          className="text-xs text-primary font-medium hover:underline"
+        >
+          Seleccionar todos
+        </button>
+        <span className="text-neutral-300 mx-2">|</span>
+        <button
+          type="button"
+          onClick={() =>
+            onChange({
+              ebay: false,
+              edmunds: false,
+              hemmings: false,
+              bringatrailer: false,
+              classiccars: false,
+            })
+          }
+          className="text-xs text-primary font-medium hover:underline"
+        >
+          Deseleccionar todos
+        </button>
       </div>
     </div>
   );
