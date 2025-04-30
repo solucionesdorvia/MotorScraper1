@@ -33,11 +33,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Build cache key from query parameters
       const cacheKey = JSON.stringify({ ...req.query });
       
+      // Temporarily disable cache to ensure we get fresh results
+      /*
       // Check if we have cached results
       const cachedResults = searchCache.get(cacheKey);
       if (cachedResults) {
         return res.json(cachedResults);
       }
+      */
       
       // Log search to history
       const timestamp = new Date().toISOString();
@@ -54,16 +57,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp
       });
       
-      // Check if we need to fetch new results
-      let needFetch = false;
+      // Always fetch new results temporarily to fix the issue with edmunds
+      let needFetch = true;
       
       // Get current vehicles from storage
       const storedResults = await storage.getVehicles(searchParams, filterParams);
       
-      // If no results or very few, we should fetch new data
-      if (storedResults.totalResults < 10) {
-        needFetch = true;
-      }
+      // No longer checking result count since we always fetch
+      console.log(`Found ${storedResults.totalResults} stored results before fetching`)
       
       if (needFetch) {
         // Clear existing vehicles to avoid duplicates
@@ -105,10 +106,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           );
         }
         
+        console.log(`Obtained ${ebayResults.length} results from eBay and ${edmundsResults.length} results from Edmunds`);
+        
         // Combine results and save to storage
         const allResults = [...ebayResults, ...edmundsResults];
+        console.log(`Combined ${allResults.length} total results to save`);
+        
         if (allResults.length > 0) {
           await storage.saveVehicles(allResults);
+        } else {
+          console.log('No results to save');
         }
       }
       
