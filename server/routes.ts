@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { scrapeEbay } from "./scraper/ebay";
 import { scrapeEdmunds } from "./scraper/edmunds";
+import { scrapeCars } from "./scraper/cars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
 import NodeCache from "node-cache";
@@ -73,6 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Fetch vehicles from sources based on search parameters
         let ebayResults: InsertVehicle[] = [];
         let edmundsResults: InsertVehicle[] = [];
+        let carsResults: InsertVehicle[] = [];
         
         // Extract make and model from query or use direct parameters
         let make = searchParams.make || '';
@@ -99,17 +101,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         if (searchParams.edmunds && make) {
-          edmundsResults = await scrapeEdmunds(
+          // Use Cars.com instead of Edmunds since Edmunds is having issues
+          carsResults = await scrapeCars(
             make, 
             model,
             searchParams.year?.toString()
           );
         }
         
-        console.log(`Obtained ${ebayResults.length} results from eBay and ${edmundsResults.length} results from Edmunds`);
+        console.log(`Obtained ${ebayResults.length} results from eBay and ${carsResults.length} results from Cars.com`);
         
         // Combine results and save to storage
-        const allResults = [...ebayResults, ...edmundsResults];
+        const allResults = [...ebayResults, ...carsResults];
         console.log(`Combined ${allResults.length} total results to save`);
         
         if (allResults.length > 0) {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar } from 'react-icons/fa';
 import { Vehicle } from '@shared/schema';
-import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl } from '@/lib/utils';
+import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl, buildEbayUrl, buildEdmundsUrl, buildCarsUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 type VehicleCardProps = {
@@ -18,6 +18,20 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
   const openSourcePage = () => {
     if (vehicle.sourceUrl) {
       window.open(vehicle.sourceUrl, '_blank');
+    } else {
+      // Fallback to building a search URL based on the source
+      let url = '';
+      if (vehicle.source === 'ebay') {
+        url = buildEbayUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
+      } else if (vehicle.source === 'edmunds') {
+        url = buildEdmundsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
+      } else if (vehicle.source === 'cars.com') {
+        url = buildCarsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
+      }
+      
+      if (url) {
+        window.open(url, '_blank');
+      }
     }
   };
   
@@ -85,7 +99,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
           <div className="flex flex-col">
             <span className="text-xs text-neutral-500">{vehicle.location || 'Unknown Location'}</span>
             <span className="text-xs font-medium mt-1">
-              <span className={`inline-block w-2 h-2 rounded-full mr-1 ${vehicle.source === 'ebay' ? 'bg-label-ebay' : 'bg-label-edmunds'}`}></span>
+              <span className={`inline-block w-2 h-2 rounded-full mr-1 ${getSourceClassName(vehicle.source)}`}></span>
               Fuente: {getSourceLabel(vehicle.source)}
             </span>
           </div>

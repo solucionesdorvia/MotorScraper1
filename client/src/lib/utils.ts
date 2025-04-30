@@ -50,12 +50,14 @@ export function getDefaultImageUrl(make: string): string {
 export function getSourceLabel(source: string): string {
   if (source === 'ebay') return 'eBay Motors';
   if (source === 'edmunds') return 'Edmunds';
+  if (source === 'cars.com') return 'Cars.com';
   return source;
 }
 
 export function getSourceClassName(source: string): string {
   if (source === 'ebay') return 'bg-label-ebay';
   if (source === 'edmunds') return 'bg-label-edmunds';
+  if (source === 'cars.com') return 'bg-label-cars';
   return 'bg-gray-500';
 }
 
@@ -91,6 +93,11 @@ export function buildEbayUrl(make: string, model: string, year?: string): string
 export function buildEdmundsUrl(make: string, model: string, year?: string): string {
   const yearParam = year ? `${year}-${year}` : '';
   return `https://www.edmunds.com/inventory/srp.html?inventorytype=cpo%2Cused&year=${yearParam}&make=${encodeURIComponent(make)}&model=${encodeURIComponent(make)}%7C${encodeURIComponent(model)}&radius=100`;
+}
+
+export function buildCarsUrl(make: string, model: string, year?: string): string {
+  const yearParam = year ? `&year_min=${year}&year_max=${year}` : '';
+  return `https://www.cars.com/shopping/results/?dealer_id=&keyword=${encodeURIComponent(make)}+${encodeURIComponent(model)}&list_price_max=&list_price_min=&makes[]=${encodeURIComponent(make)}&maximum_distance=all&mileage_max=&models[]=${encodeURIComponent(model)}${yearParam}&page_size=20&sort=best_match_desc&stock_type=all&year_max=&year_min=&zip=`;
 }
 
 export const carMakes = [
