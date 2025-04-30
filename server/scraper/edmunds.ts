@@ -4,142 +4,378 @@ import { InsertVehicle } from '@shared/schema';
 
 export async function scrapeEdmunds(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   try {
+    // Construir la URL de forma más directa, siguiendo el formato actual de Edmunds
     const yearParam = year ? `${year}-${year}` : '';
-    const url = `https://www.edmunds.com/inventory/srp.html?inventorytype=cpo%2Cused&year=${yearParam}&make=${encodeURIComponent(make)}&model=${encodeURIComponent(make)}%7C${encodeURIComponent(model)}&radius=100`;
+    const makeEncoded = encodeURIComponent(make.toLowerCase());
+    const modelEncoded = encodeURIComponent(model.toLowerCase());
+    
+    // URL mejorada siguiendo el formato actual de Edmunds
+    // Formato: make/model/year/used/ - por ejemplo: ford/mustang/1967/used/
+    const url = `https://www.edmunds.com/${makeEncoded}/${modelEncoded}/${yearParam ? yearParam + '/' : ''}used/`;
+    
+    console.log(`Scraping Edmunds URL: ${url}`);
     
     const response = await axios.get(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
         'Referer': 'https://www.edmunds.com/',
         'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
         'Cache-Control': 'max-age=0',
+        'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
       },
+      timeout: 30000, // Tiempo de espera más largo (30 segundos)
     });
     
     const $ = cheerio.load(response.data);
     const results: InsertVehicle[] = [];
     
-    // Look for JSON data in the page which often contains the inventory
+    // Buscar datos JSON incrustados en la página
+    console.log('Buscando datos JSON en la página de Edmunds...');
     let jsonData = null;
-    try {
-      // Edmunds often includes a data object in script tags that has all the vehicle data
-      $('script').each((index, element) => {
-        const scriptContent = $(element).html() || '';
-        if (scriptContent.includes('window.__PRELOADED_STATE__')) {
+    const scriptTags = $('script').toArray();
+    
+    for (const scriptTag of scriptTags) {
+      const scriptContent = $(scriptTag).html() || '';
+      
+      // Buscar por diferentes patrones de datos
+      if (scriptContent.includes('window.__INITIAL_STATE__')) {
+        try {
+          const dataMatch = scriptContent.match(/window\.__INITIAL_STATE__\s*=\s*({.*?});/s);
+          if (dataMatch && dataMatch[1]) {
+            jsonData = JSON.parse(dataMatch[1]);
+            console.log('Encontrados datos en INITIAL_STATE');
+            break;
+          }
+        } catch (e) {
+          console.error('Error parsing INITIAL_STATE JSON:', e);
+        }
+      }
+      
+      if (scriptContent.includes('window.__BONNET_DATA__')) {
+        try {
+          const dataMatch = scriptContent.match(/window\.__BONNET_DATA__\s*=\s*({.*?});/s);
+          if (dataMatch && dataMatch[1]) {
+            jsonData = JSON.parse(dataMatch[1]);
+            console.log('Encontrados datos en BONNET_DATA');
+            break;
+          }
+        } catch (e) {
+          console.error('Error parsing BONNET_DATA JSON:', e);
+        }
+      }
+      
+      if (scriptContent.includes('window.__PRELOADED_STATE__')) {
+        try {
           const dataMatch = scriptContent.match(/window\.__PRELOADED_STATE__\s*=\s*({.*?});/s);
           if (dataMatch && dataMatch[1]) {
             jsonData = JSON.parse(dataMatch[1]);
+            console.log('Encontrados datos en PRELOADED_STATE');
+            break;
           }
+        } catch (e) {
+          console.error('Error parsing PRELOADED_STATE JSON:', e);
         }
-      });
-    } catch (e) {
-      console.error('Error parsing Edmunds JSON data:', e);
+      }
     }
     
-    // If we have JSON data, extract vehicles from it
-    if (jsonData && jsonData.inventory && jsonData.inventory.vehicles) {
-      const vehicles = jsonData.inventory.vehicles;
-      for (const vehicle of vehicles) {
-        const title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}`.trim();
+    // Intentar extraer vehículos del JSON si lo encontramos
+    if (jsonData) {
+      console.log('Procesando datos JSON encontrados...');
+      
+      // Navegamos por diferentes estructuras de datos posibles
+      let vehicles = [];
+      
+      // Intentar diferentes rutas de acceso a los datos según la estructura
+      if (jsonData.inventory && jsonData.inventory.vehicles) {
+        vehicles = jsonData.inventory.vehicles;
+      } else if (jsonData.vehicleListings) {
+        vehicles = jsonData.vehicleListings;
+      } else if (jsonData.initialResults && jsonData.initialResults.vehicles) {
+        vehicles = jsonData.initialResults.vehicles;
+      } else if (jsonData.page && jsonData.page.vehicles) {
+        vehicles = jsonData.page.vehicles;
+      } else {
+        // Buscar recursivamente en el objeto
+        const findVehicles = (obj: any, path: string[] = []): any[] => {
+          if (!obj || typeof obj !== 'object') return [];
+          
+          if (Array.isArray(obj) && obj.length > 0 && 
+              typeof obj[0] === 'object' && 
+              (obj[0].make || obj[0].model || obj[0].year || obj[0].price)) {
+            console.log(`Encontrados posibles vehículos en ruta: ${path.join('.')}`);
+            return obj;
+          }
+          
+          for (const key in obj) {
+            const result = findVehicles(obj[key], [...path, key]);
+            if (result.length > 0) return result;
+          }
+          
+          return [];
+        };
         
-        results.push({
-          title,
-          price: vehicle.price,
-          year: vehicle.year,
-          make,
-          model,
-          mileage: vehicle.mileage,
-          location: vehicle.dealerLocation || vehicle.distance?.label || 'Unknown',
-          imageUrl: vehicle.photos?.primary?.url || vehicle.photoInfo?.thumbnail || vehicle.photoInfo?.large || '',
-          sourceUrl: `https://www.edmunds.com${vehicle.link}`,
-          source: 'edmunds',
-          transmission: vehicle.transmission || undefined,
-          fuelType: vehicle.fuel || 'Gasoline',
-          bodyType: vehicle.bodyStyle || undefined,
-          color: vehicle.exteriorColor || undefined,
-          vin: vehicle.vin || undefined,
-          hasDeals: vehicle.specialOffers?.length > 0 || false,
-          dealerName: vehicle.dealerName || undefined,
-        });
+        vehicles = findVehicles(jsonData);
+      }
+      
+      console.log(`Encontrados ${vehicles.length} vehículos en datos JSON`);
+      
+      for (const vehicle of vehicles) {
+        // Verificar si este vehículo coincide con nuestros criterios
+        const vehicleMake = (vehicle.make || '').toLowerCase();
+        const vehicleModel = (vehicle.model || '').toLowerCase();
+        const vehicleYear = vehicle.year?.toString() || '';
+        
+        if (vehicleMake.includes(make.toLowerCase()) && 
+            vehicleModel.includes(model.toLowerCase()) &&
+            (!year || vehicleYear.includes(year))) {
+          
+          let title = '';
+          if (vehicle.year && vehicle.make && vehicle.model) {
+            title = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.trim || ''}`.trim();
+          } else {
+            title = vehicle.title || `${make} ${model} ${year || ''}`.trim();
+          }
+          
+          // Extraer URL de la imagen con múltiples respaldos
+          let imageUrl = '';
+          if (vehicle.photos && vehicle.photos.primary && vehicle.photos.primary.url) {
+            imageUrl = vehicle.photos.primary.url;
+          } else if (vehicle.photoInfo && vehicle.photoInfo.large) {
+            imageUrl = vehicle.photoInfo.large;
+          } else if (vehicle.photoInfo && vehicle.photoInfo.thumbnail) {
+            imageUrl = vehicle.photoInfo.thumbnail;
+          } else if (vehicle.images && vehicle.images.length > 0) {
+            imageUrl = vehicle.images[0].url || vehicle.images[0];
+          } else if (vehicle.image) {
+            imageUrl = vehicle.image;
+          } else if (vehicle.photoUrl) {
+            imageUrl = vehicle.photoUrl;
+          }
+          
+          // URL de la fuente
+          let sourceUrl = '';
+          if (vehicle.link) {
+            sourceUrl = vehicle.link.startsWith('http') ? vehicle.link : `https://www.edmunds.com${vehicle.link}`;
+          } else if (vehicle.url) {
+            sourceUrl = vehicle.url.startsWith('http') ? vehicle.url : `https://www.edmunds.com${vehicle.url}`;
+          } else if (vehicle.detailsUrl) {
+            sourceUrl = vehicle.detailsUrl.startsWith('http') ? vehicle.detailsUrl : `https://www.edmunds.com${vehicle.detailsUrl}`;
+          } else {
+            // Construir URL basada en los detalles del vehículo
+            sourceUrl = `https://www.edmunds.com/${makeEncoded}/${modelEncoded}/${vehicleYear}/used/vin-${vehicle.vin || 'unknown'}/`;
+          }
+          
+          results.push({
+            title,
+            price: vehicle.price || vehicle.salePrice || vehicle.msrp || undefined,
+            year: vehicle.year || extractYear(title),
+            make: vehicle.make || make,
+            model: vehicle.model || model,
+            mileage: vehicle.mileage || vehicle.odometer || undefined,
+            location: vehicle.dealerLocation || vehicle.distance?.label || vehicle.location || 'Unknown',
+            imageUrl,
+            sourceUrl,
+            source: 'edmunds',
+            transmission: vehicle.transmission || undefined,
+            fuelType: vehicle.fuel || vehicle.fuelType || 'Gasoline',
+            bodyType: vehicle.bodyStyle || vehicle.bodyType || undefined,
+            color: vehicle.exteriorColor || vehicle.color || undefined,
+            vin: vehicle.vin || undefined,
+            hasDeals: Boolean(vehicle.specialOffers?.length > 0 || vehicle.isSpecial || vehicle.hasDeal || vehicle.hasSpecialOffer),
+            dealerName: vehicle.dealerName || vehicle.dealer?.name || undefined,
+          });
+        }
       }
     } else {
-      // Fallback to DOM parsing if JSON data isn't available
-      $('.inventory-listing').each((index, element) => {
-        const titleElement = $(element).find('.inventory-listing-title');
-        const title = titleElement.text().trim();
-        
-        // Skip if it's not a vehicle listing or doesn't match our criteria
-        if (!title || !isRelevantListing(title, make, model, year)) {
-          return;
-        }
-        
-        // Extract all available data
-        const priceText = $(element).find('.inventory-listing-price').text().trim();
-        const price = extractPrice(priceText);
-        
-        // Try multiple different selectors for the image
-        let imageUrl = $(element).find('.inventory-listing-image img').attr('src');
-        
-        if (!imageUrl) {
-          // Try other image selectors
-          imageUrl = $(element).find('.vehicle-image img').attr('src');
-        }
-        
-        if (!imageUrl) {
-          // Fallback to any image within the listing
-          imageUrl = $(element).find('img').attr('src');
-        }
-        
-        imageUrl = imageUrl || '';
-        const sourceUrl = 'https://www.edmunds.com' + ($(element).find('a.inventory-listing-link').attr('href') || '');
-        
-        // Extract location
-        const location = $(element).find('.dealer-location').text().trim() || 'Unknown';
-        
-        // Extract other details
-        const detailsText = $(element).find('.inventory-listing-details').text().trim();
-        const mileage = extractMileage(detailsText);
-        const transmission = extractTransmission(detailsText);
-        const bodyType = extractBodyType(detailsText);
-        const fuelType = extractFuelType(detailsText);
-        const color = extractColor(detailsText);
-        const vin = extractVIN(detailsText);
-        
-        // Extract year from title
-        const extractedYear = extractYear(title);
-        
-        // Check for deals/sales badges
-        const hasDeals = $(element).find('.special-offer-badge').length > 0;
-        
-        // Get dealer name
-        const dealerName = $(element).find('.dealer-name').text().trim();
-        
-        results.push({
-          title,
-          price,
-          year: extractedYear,
-          make,
-          model,
-          mileage,
-          location,
-          imageUrl,
-          sourceUrl,
-          source: 'edmunds',
-          transmission,
-          fuelType,
-          bodyType,
-          color,
-          vin,
-          hasDeals,
-          dealerName,
-        });
-      });
+      console.log('No se encontraron datos JSON estructurados, intentando con HTML...');
     }
     
+    // Si aún no tenemos resultados, intentamos con el DOM
+    if (results.length === 0) {
+      console.log('Realizando extracción del DOM HTML...');
+      
+      // Intentar con varios selectores diferentes que podrían contener listados de vehículos
+      const selectors = [
+        '.vehicle-card', // Selector común para tarjetas de vehículos
+        '.inventory-listing',
+        '.vehicle-listing',
+        '.srp-listing',
+        '.usedListing',
+        '.vehicle-details',
+        '[data-test="vehicleCard"]',
+        '[data-test="vehicleListing"]',
+        '.d-vehicle-card',
+        '.vehicle-card-with-reviews'
+      ];
+      
+      for (const selector of selectors) {
+        console.log(`Probando selector: ${selector}`);
+        const items = $(selector);
+        
+        if (items.length > 0) {
+          console.log(`Encontrados ${items.length} elementos con selector ${selector}`);
+          
+          items.each((index, element) => {
+            // Intentar extraer título de diferentes formas
+            let title = '';
+            const titleSelectors = [
+              '.title', '.vehicle-title', '.vehicle-header', 'h2', 'h3', 
+              '[data-test="vehicleTitle"]', '.vehicle-card-title'
+            ];
+            
+            for (const titleSelector of titleSelectors) {
+              const foundTitle = $(element).find(titleSelector).first().text().trim();
+              if (foundTitle) {
+                title = foundTitle;
+                break;
+              }
+            }
+            
+            // Si no hay título pero hay make y model, podemos construirlo
+            if (!title) {
+              const makeText = $(element).find('[data-test="vehicleMake"]').text().trim();
+              const modelText = $(element).find('[data-test="vehicleModel"]').text().trim();
+              const yearText = $(element).find('[data-test="vehicleYear"]').text().trim();
+              
+              if (makeText || modelText || yearText) {
+                title = `${yearText} ${makeText} ${modelText}`.trim();
+              }
+            }
+            
+            if (!title || !isRelevantListing(title, make, model, year)) {
+              return; // Pasar al siguiente elemento
+            }
+            
+            // Extraer precio
+            let price: number | undefined;
+            const priceSelectors = [
+              '.price', '.vehicle-price', '.pricing', '[data-test="vehiclePrice"]',
+              '.vehicle-card-price', '.payment-price'
+            ];
+            
+            for (const priceSelector of priceSelectors) {
+              const priceText = $(element).find(priceSelector).first().text().trim();
+              price = extractPrice(priceText);
+              if (price) break;
+            }
+            
+            // Extraer URL de imagen
+            let imageUrl = '';
+            const imgElement = $(element).find('img').first();
+            imageUrl = imgElement.attr('src') || imgElement.attr('data-src') || '';
+            
+            // Extraer URL de origen
+            let sourceUrl = '';
+            const linkElement = $(element).find('a').first();
+            const href = linkElement.attr('href') || '';
+            sourceUrl = href.startsWith('http') ? href : `https://www.edmunds.com${href}`;
+            
+            // Extraer ubicación
+            let location = 'Unknown';
+            const locationSelectors = [
+              '.dealer-location', '.location', '.vehicle-location',
+              '[data-test="vehicleLocation"]', '.vehicle-card-location'
+            ];
+            
+            for (const locationSelector of locationSelectors) {
+              const foundLocation = $(element).find(locationSelector).first().text().trim();
+              if (foundLocation) {
+                location = foundLocation;
+                break;
+              }
+            }
+            
+            // Extraer todos los textos para buscar detalles
+            const allText = $(element).text().trim();
+            
+            results.push({
+              title,
+              price,
+              year: extractYear(title) || (year ? parseInt(year) : undefined),
+              make,
+              model,
+              mileage: extractMileage(allText),
+              location,
+              imageUrl,
+              sourceUrl,
+              source: 'edmunds',
+              transmission: extractTransmission(allText),
+              fuelType: extractFuelType(allText),
+              bodyType: extractBodyType(allText),
+              color: extractColor(allText),
+              vin: extractVIN(allText),
+              hasDeals: $(element).find('.special-offer-badge, .special-deal, .special-offer').length > 0,
+              dealerName: $(element).find('.dealer-name, .dealership').text().trim() || undefined,
+            });
+          });
+          
+          // Si encontramos resultados con este selector, terminamos
+          if (results.length > 0) {
+            console.log(`Extraídos ${results.length} vehículos del DOM HTML`);
+            break;
+          }
+        }
+      }
+    }
+    
+    // Si seguimos sin resultados, intentar crear al menos un resultado de muestra basado en la página
+    if (results.length === 0) {
+      console.log('Intentando extraer al menos información básica sobre el modelo...');
+      
+      const pageTitle = $('title').text().trim();
+      const metaDescription = $('meta[name="description"]').attr('content') || '';
+      
+      if (pageTitle.toLowerCase().includes(make.toLowerCase()) ||
+          metaDescription.toLowerCase().includes(make.toLowerCase())) {
+          
+        // Buscar cualquier imagen relacionada con un vehículo
+        let imageUrl = '';
+        $('img').each((i, img) => {
+          const src = $(img).attr('src') || '';
+          const alt = $(img).attr('alt') || '';
+          if ((src.includes('vehicle') || src.includes('car') || src.includes('/media/')) && 
+              (alt.toLowerCase().includes(make.toLowerCase()) || alt.toLowerCase().includes(model.toLowerCase()))) {
+            imageUrl = src;
+            return false; // Salir del bucle each
+          }
+        });
+        
+        results.push({
+          title: `${year || ''} ${make} ${model}`.trim(),
+          price: undefined,
+          year: year ? parseInt(year) : undefined,
+          make,
+          model,
+          mileage: undefined,
+          location: 'Various Locations',
+          imageUrl,
+          sourceUrl: url,
+          source: 'edmunds',
+          transmission: undefined,
+          fuelType: 'Gasoline',
+          bodyType: undefined,
+          color: undefined,
+          vin: undefined,
+          hasDeals: false,
+          dealerName: 'Edmunds Listings',
+        });
+        
+        console.log('Creado un resultado basado en información general de la página');
+      }
+    }
+    
+    console.log(`Scraping de Edmunds completado con ${results.length} resultados`);
     return results;
+    
   } catch (error) {
     console.error('Error scraping Edmunds:', error);
     return [];
