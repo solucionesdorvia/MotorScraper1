@@ -83,7 +83,15 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
           </div>
         </div>
         
-        <p className="text-price mt-1">{formatPrice(vehicle.price === null ? undefined : vehicle.price)}</p>
+        {/* Regular price or auction information */}
+        {vehicle.auctionData?.isAuction ? (
+          <div className="mt-1">
+            <p className="text-price">{formatPrice(vehicle.auctionData.currentBid)}</p>
+            <p className="text-xs text-green-600 font-medium">Subasta termina en: {vehicle.auctionData.endsIn}</p>
+          </div>
+        ) : (
+          <p className="text-price mt-1">{formatPrice(vehicle.price === null ? undefined : vehicle.price)}</p>
+        )}
         
         <div className="mt-2 flex flex-wrap gap-2">
           {vehicle.transmission && (

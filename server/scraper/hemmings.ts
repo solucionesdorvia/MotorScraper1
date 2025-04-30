@@ -257,14 +257,44 @@ function extractVehicleListings(
         title = `${year || ''} ${formattedMake} ${formattedModel} ${title}`.trim();
       }
       
-      // Extract price (look for price text and then get the value)
+      // Determine if this is an auction listing
+      const isAuction = sourceUrl.includes('/auction/');
+      
+      // Extract price or current bid
+      const priceLabel = $(element).find('.heading-label').first().text().trim();
       const priceElement = $(element).find('.text-sm.uppercase.font-medium').first();
       const priceText = priceElement.text().trim();
       const price = extractPrice(priceText);
       
+      // Initialize auction data
+      let auctionData = undefined;
+      
+      // If this is an auction, get auction-specific information
+      if (isAuction) {
+        // Get bid information
+        const currentBid = price || 0;
+        
+        // Get time remaining
+        const timeElement = $(element).find('[data-v-383bdb26]').last();
+        const timeText = timeElement.text().trim();
+        const endsIn = timeText || '7 days'; // Default if not found
+        
+        // Create auction data object
+        auctionData = {
+          isAuction: true,
+          currentBid,
+          endsIn
+        };
+      }
+      
       // Extract other details - not always available in search results
-      // For these we'll need to guess or use placeholders
       const vehicleYear = extractYear(title) || (year ? parseInt(year) : null);
+      
+      // Extract location if available (not typically shown in search results)
+      let location = null;
+      
+      // Try to extract dealer name if shown
+      let dealerName = null;
       
       // Create vehicle object with available data
       const vehicle: InsertVehicle = {
@@ -278,11 +308,12 @@ function extractVehicleListings(
         bodyType: null, // Not available in search results
         color: null, // Not available in search results
         vin: null, // Not available in search results
-        location: null, // Not available in search results
+        location,
         imageUrl,
         sourceUrl,
         source: 'hemmings.com',
-        dealerName: null // Not available in search results
+        dealerName,
+        auctionData
       };
       
       vehicles.push(vehicle);

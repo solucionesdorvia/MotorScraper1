@@ -53,6 +53,12 @@ export const filters = pgTable("filters", {
 // Zod schemas for validation
 export const insertVehicleSchema = createInsertSchema(vehicles).omit({
   id: true,
+}).extend({
+  auctionData: z.object({
+    isAuction: z.boolean().default(false),
+    currentBid: z.number().nullable().default(null),
+    endsIn: z.string().nullable().default(null)
+  }).optional(),
 });
 
 export const insertSearchHistorySchema = createInsertSchema(searchHistory).omit({
