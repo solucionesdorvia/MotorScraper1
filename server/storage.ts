@@ -44,7 +44,24 @@ export class MemStorage implements IStorage {
     
     for (const insertVehicle of insertVehicles) {
       const id = this.currentVehicleId++;
-      const vehicle: Vehicle = { ...insertVehicle, id };
+      
+      // Si estamos usando el campo auctionData, extraer sus valores a los campos principales
+      if (insertVehicle.auctionData) {
+        insertVehicle.isAuction = insertVehicle.auctionData.isAuction;
+        insertVehicle.currentBid = insertVehicle.auctionData.currentBid;
+        insertVehicle.endsIn = insertVehicle.auctionData.endsIn;
+        // @ts-ignore - Eliminamos auctionData después de extraer sus valores
+        delete insertVehicle.auctionData;
+      }
+      
+      const vehicle: Vehicle = { 
+        ...insertVehicle, 
+        id,
+        // Garantizar que los nuevos campos no sean undefined
+        isAuction: insertVehicle.isAuction || false,
+        currentBid: insertVehicle.currentBid || null,
+        endsIn: insertVehicle.endsIn || null
+      };
       this.vehicles.set(id, vehicle);
       savedVehicles.push(vehicle);
     }
