@@ -1,0 +1,1872 @@
+<body class="search search-results tribe-js loggedout">
+	
+	<header id="site-header" role="banner">
+		<div id="site-header-bar-main">
+			<div class="site-header-left-block">
+				<div class="site-header-mobile-menu-toggle-wrap">
+					<a id="site-header-menu-mobile-toggle" href="#" aria-label="Toggle navigation menu"><div class="toggle-icon"><span></span></div></a>				</div>
+
+				<div class="site-header-logo-wrap">
+					<a class="site-header-logo close-modal" href="https://bringatrailer.com/" aria-label="Bring a Trailer logo"></a>				</div>
+
+				<nav class="site-header-links">
+					<a href="https://bringatrailer.com/auctions/">Auctions</a>				</nav>
+			</div>
+
+			<div class="site-header-right-block">
+				<div class="site-header-search-wrap">
+					
+<form action="https://bringatrailer.com/search/" class="header-search-form" method="get">
+    <div class="search-bar-container">
+        <bat-search-bar params="placeholder: &quot;Search for make, model, category, or anything else...&quot;">
+    <div class="search-bar" role="search">
+        <input type="text" class="search-bar-input" name="s" autocomplete="off" data-bind="textInput: searchValue, hasFocus: isInputFocused, attr: { placeholder: placeholder }, event: { keydown: handleKeydown }" aria-label="Search input" placeholder="Search for make, model, category, or anything else...">
+        <ul class="search-bar-results" data-bind="visible: isResultsVisible(), isHovering: isHoveringSearchResults" style="display: none;">
+            <!-- ko foreach: { data: visibleResults, as: 'result' } --><!-- /ko -->
+        </ul>
+    </div>
+</bat-search-bar>
+
+        <button type="submit" class="search-submit" id="search-submit" aria-label="Search">
+            <span class="search-submit-text">Search</span>
+            <i class="fa fa-search"></i>
+        </button>
+    </div>
+</form>
+
+<div style="display: none">
+    
+<template id="tmpl-search-bar">
+    <div class="search-bar" role="search">
+        <input type="text" class="search-bar-input" name="s" autocomplete="off" data-bind="textInput: searchValue, hasFocus: isInputFocused, attr: { placeholder: placeholder }, event: { keydown: handleKeydown }" aria-label="Search input">
+        <ul class="search-bar-results" data-bind="visible: isResultsVisible(), isHovering: isHoveringSearchResults">
+            <!-- ko foreach: { data: visibleResults, as: 'result' } -->
+            <li class="search-bar-result">
+                <a class="search-bar-link" data-bind="attr: { href: result.url }, click: $component.openResult.bind($data, $index()), event: { mouseover: $component.handleResultMouseOver.bind($data, $index()) }, css: { 'active-result': ($component.activeResultIndex() === $index()), 'view-all': result.isViewAll }">
+                    <div class="search-bar-result-inner">
+                        <span class="bell-icon bell-icon--model" data-bind="visible: result.isSubscribed"></span>
+                        <span data-bind="text: result.title"></span>
+                    </div>
+                </a>
+            </li>
+            <!-- /ko -->
+        </ul>
+    </div>
+</template>
+</div>
+				</div>
+
+				<nav class="site-header-menu-main-wrap" aria-label="Header menu" role="navigation">
+					<ul id="site-header-menu-main" class="menu header-menu-main" aria-label="Header menu main"><li id="menu-item-38790348" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790348"><a href="/auctions/">Auctions</a><ul class="sub-menu" aria-label="Auctions submenu">	<li id="menu-item-38790352" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790352"><a href="/auctions/">Live Now</a></li>
+	<li id="menu-item-38790355" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790355"><a href="/premium/">Premium</a></li>
+	<li id="menu-item-38790363" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790363"><a href="/no-reserve/">No Reserve</a></li>
+	<li id="menu-item-38790368" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790368"><a href="/auctions/results/">Results</a></li>
+</ul>
+</li>
+<li id="menu-item-38790377" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790377"><a href="/submit-a-vehicle/">Submit a Vehicle</a></li>
+<li id="menu-item-38790385" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790385"><a href="/how-bat-works/">How BaT Works</a><ul class="sub-menu" aria-label="How bat works submenu">	<li id="menu-item-38790397" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790397"><a href="/how-bat-works/">How BaT Works</a></li>
+	<li id="menu-item-38790406" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790406"><a href="/faq/">Frequently Asked Questions</a></li>
+</ul>
+</li>
+<li id="menu-item-38790416" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790416"><a href="/watchlist/"><i class="fa fa-star" aria-label="Go to My Watchlist" role="img"></i></a><ul class="sub-menu" aria-label="Watchlist submenu">	<li id="menu-item-38790422" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790422"><a href="/watchlist/">Go to My Watchlist</a></li>
+</ul>
+</li>
+<li class="menu-item menu-item-has-children"><a href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fsearch%2F%3Fs%3Dmustang+1967" class="poppable-link" target="poppable-target">Log In</a><ul class="sub-menu" aria-label="Log In options"><li class="menu-item"><a href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fsearch%2F%3Fs%3Dmustang+1967" class="poppable-link" target="poppable-target">Log In</a></li>
+<li class="menu-item"><a href="https://bringatrailer.com/account/register/?redirect=https%3A%2F%2Fbringatrailer.com%2Fsearch%2F%3Fs%3Dmustang+1967">Create an Account</a></li></ul></li></ul>				</nav>
+			</div>
+		</div>
+
+		
+		<nav id="site-header-bar-secondary" aria-label="Header secondary menu" role="navigation">
+			<ul id="site-header-menu-secondary" class="menu header-menu-secondary" aria-label="Header menu secondary"><li id="menu-item-38790486" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790486"><a href="/shipping/">Shipping</a><ul class="sub-menu" aria-label="Shipping submenu">	<li id="menu-item-38790491" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790491"><a href="/shipping/">Get a Quote</a></li>
+	<li id="menu-item-86101357" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-86101357"><a href="https://bringatrailer.com/international-shipping-resources/">International Shipping Resources</a></li>
+	<li id="menu-item-38790496" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790496"><a href="/account/myshipments/">My Shipments</a></li>
+</ul>
+</li>
+<li id="menu-item-38790504" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790504"><a href="/models/">Makes and Models</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children"><a href="/categories/">Categories</a><ul class="sub-menu sub-menu-multi-column" aria-label="categories submenu"><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/aircraft/">Aircraft</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/all-terrain-vehicles/">All-Terrain Vehicles</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/boats/">Boats</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/charity-auctions/">Charity Auctions</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/convertible/">Convertibles</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/electric-vehicles/">Electric Vehicles</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/go-kart/">Go-Karts</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/hot-rods/">Hot Rods</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/military-vehicles/">Military Vehicles</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/minibikesandscooters/">Minibikes &amp; Scooters</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/motorcycles/">Motorcycles</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/parts/">Parts</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/prewar/">Prewar</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/project/">Projects</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/race-car/">Race Cars</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/rvs-campers/">RVs &amp; Campers</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/service-vehicles/">Service Vehicles</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/station-wagon/">Station Wagons</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/tractors/">Tractors</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/trains/">Trains</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/truck-4x4/">Truck &amp; 4x4</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/vans/">Vans</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/wheels/">Wheels</a></li></ul></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children"><a href="#">Locations</a><ul class="sub-menu sub-menu-multi-column" aria-label="locations submenu"><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/australia-new-zealand/">Australia/New Zealand</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/europe/">Europe</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/australia/">Australia</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/austria/">Austria</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/belgium/">Belgium</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/canada/">Canada</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/colombia/">Colombia</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/costa-rica/">Costa Rica</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/czech-republic/">Czech Republic</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/denmark/">Denmark</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/finland/">Finland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/france/">France</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/germany/">Germany</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/greece/">Greece</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/hong-kong/">Hong Kong</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/hungary/">Hungary</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/ireland/">Ireland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/italy/">Italy</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/japan/">Japan</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/lithuania/">Lithuania</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/luxembourg/">Luxembourg</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/malta/">Malta</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/mexico/">Mexico</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/monaco/">Monaco</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/netherlands/">Netherlands</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/new-zealand/">New Zealand</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/norway/">Norway</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/poland/">Poland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/portugal/">Portugal</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/south-africa/">South Africa</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/spain/">Spain</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/sweden/">Sweden</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/switzerland/">Switzerland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/ukraine/">Ukraine</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/united-kingdom/">United Kingdom</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/united-states/">United States</a></li></ul></li>
+<li id="menu-item-38790560" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790560"><a href="/email/">Get Alerts</a></li>
+<li id="menu-item-72851895" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-72851895"><a href="https://bringatrailer.com/verified-checkout/">Verified Checkout</a></li>
+<li id="menu-item-38790544" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790544"><a href="/features/">BaT Stories</a><ul class="sub-menu" aria-label="Bat stories submenu">	<li id="menu-item-92805012" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-92805012"><a href="https://bringatrailer.com/editorial/success-stories/">Success Stories</a></li>
+	<li id="menu-item-92805172" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-92805172"><a href="https://bringatrailer.com/editorial/10-questions/">10 Questions</a></li>
+	<li id="menu-item-92805131" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-92805131"><a href="https://bringatrailer.com/editorial/question-of-the-week/">Question of the Week</a></li>
+	<li id="menu-item-92805132" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-92805132"><a href="https://bringatrailer.com/editorial/weekly-weird-and-wonderful/">The Weekly Weird and Wonderful</a></li>
+	<li id="menu-item-92805191" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-92805191"><a href="https://bringatrailer.com/editorial/promotional/">Promotional</a></li>
+	<li id="menu-item-92805255" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-92805255"><a href="/features/">View All Stories</a></li>
+</ul>
+</li>
+<li id="menu-item-38790551" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790551"><a href="/calendar/">Event Calendar</a></li>
+<li id="menu-item-38790555" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790555"><a href="/podcast/">Podcast</a></li>
+<li id="menu-item-38790564" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790564"><a href="/about">About BaT</a><ul class="sub-menu" aria-label="About bat submenu">	<li id="menu-item-77403778" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-77403778"><a href="/local-partners/">Local Partners</a></li>
+	<li id="menu-item-38790589" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790589"><a href="/partners/">Partnerships</a></li>
+	<li id="menu-item-91579252" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-91579252"><a href="https://bringatrailer.com/whiteglove/">White Glove Service</a></li>
+	<li id="menu-item-38790580" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790580"><a href="/resources/">Resources</a></li>
+	<li id="menu-item-38790570" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790570"><a href="/jobs/">Jobs @ BaT</a></li>
+</ul>
+</li>
+<li id="menu-item-38790610" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790610"><a href="https://store.bringatrailer.com">Gear Store</a></li>
+<li class="overflow-items-toggle menu-item menu-item-has-children"><span>More</span><ul class="sub-menu"></ul></li></ul>		</nav>
+
+		<nav id="site-header-menu-mobile-wrap" aria-label="Header mobile menu" role="navigation">
+			<ul id="site-header-menu-mobile" class="menu header-menu-mobile"><li id="menu-item-38790686" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790686"><a href="/auctions/">Auctions</a>
+<ul class="sub-menu"><li class="sub-menu-back-btn"><span>Back</span></li>
+	<li id="menu-item-38790690" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790690"><a href="/auctions/">Live</a></li>
+	<li id="menu-item-38790694" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790694"><a href="/premium/">Premium</a></li>
+	<li id="menu-item-38790696" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790696"><a href="/no-reserve/">No Reserve</a></li>
+	<li id="menu-item-38790704" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790704"><a href="/auctions/results/">Results</a></li>
+</ul>
+</li>
+<li id="menu-item-38790714" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-38790714"><a href="/shipping/">Shipping</a>
+<ul class="sub-menu"><li class="sub-menu-back-btn"><span>Back</span></li>
+	<li id="menu-item-38790721" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790721"><a href="/shipping/">Get a Quote</a></li>
+	<li id="menu-item-86103681" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-86103681"><a href="https://bringatrailer.com/international-shipping-resources/">International Shipping Resources</a></li>
+	<li id="menu-item-38790729" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790729"><a href="/account/myshipments/">My Shipments</a></li>
+</ul>
+</li>
+<li id="menu-item-38790742" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790742"><a href="/auctions/results/">Results</a></li>
+<li id="menu-item-38790749" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790749"><a href="/watchlist/"><i class="fa fa-star"></i> My Watchlist</a></li>
+<li id="menu-item-38790755" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790755"><a href="/submit-a-vehicle/">Submit a Vehicle</a></li>
+<li id="menu-item-38790762" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790762"><a href="/email/">Get the Email</a></li>
+<li id="menu-item-38790764" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790764"><a href="/how-bat-works/">How BaT Works</a></li>
+<li class="menu-item"><a href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fsearch%2F%3Fs%3Dmustang+1967">Log In</a></li><li class="menu-item"><a href="https://bringatrailer.com/account/register/?redirect=https%3A%2F%2Fbringatrailer.com%2Fsearch%2F%3Fs%3Dmustang+1967">Create an Account</a></li><li class="menu-item menu_items_separator"><hr></li>
+<li id="menu-item-38790781" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790781"><a href="/models/">Makes and Models</a></li>
+<li id="menu-item-38790789" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790789"><a href="/categories/">Categories</a></li>
+<li id="menu-item-72852061" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-72852061"><a href="https://bringatrailer.com/verified-checkout/">Verified Checkout</a></li>
+<li id="menu-item-38790794" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790794"><a href="/charity-auctions/">Charity Auctions</a></li>
+<li id="menu-item-38790799" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790799"><a href="/features/">Stories</a></li>
+<li id="menu-item-38790805" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790805"><a href="/calendar/">Event Calendar</a></li>
+<li id="menu-item-38790811" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790811"><a href="/podcast/">BaT Podcast</a></li>
+<li id="menu-item-38790814" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790814"><a href="/about/">About BaT</a></li>
+<li id="menu-item-38790820" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790820"><a href="/jobs/">Jobs @ BaT</a></li>
+<li id="menu-item-38790823" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790823"><a href="/resources/">Resources</a></li>
+<li id="menu-item-38790838" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790838"><a href="/partners/">Partnerships</a></li>
+<li id="menu-item-38790842" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-38790842"><a href="https://store.bringatrailer.com">Gear Store</a></li>
+<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children"><a href="#">Locations</a><ul class="sub-menu sub-menu-multi-column" aria-label="locations submenu"><li class="sub-menu-back-btn"><span>Back</span></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/australia-new-zealand/">Australia/New Zealand</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/europe/">Europe</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/australia/">Australia</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/austria/">Austria</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/belgium/">Belgium</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/canada/">Canada</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/colombia/">Colombia</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/costa-rica/">Costa Rica</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/czech-republic/">Czech Republic</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/denmark/">Denmark</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/finland/">Finland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/france/">France</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/germany/">Germany</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/greece/">Greece</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/hong-kong/">Hong Kong</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/hungary/">Hungary</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/ireland/">Ireland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/italy/">Italy</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/japan/">Japan</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/lithuania/">Lithuania</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/luxembourg/">Luxembourg</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/malta/">Malta</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/mexico/">Mexico</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/monaco/">Monaco</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/netherlands/">Netherlands</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/new-zealand/">New Zealand</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/norway/">Norway</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/poland/">Poland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/portugal/">Portugal</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/south-africa/">South Africa</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/spain/">Spain</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/sweden/">Sweden</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/switzerland/">Switzerland</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/ukraine/">Ukraine</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/united-kingdom/">United Kingdom</a></li><li class="menu-item menu-item-object-custom menu-item-type-custom"><a href="https://bringatrailer.com/location/united-states/">United States</a></li></ul></li>
+</ul>		</nav>
+
+	</header>
+
+	<div class="header-announcement"><div class="hide-mobile"><div class="column-limited-width"><div class="header-announcement-desktop">New to BaT? <a href="/how-bat-works/">Learn how it works. </a> </div></div></div><div class="header-announcement-mobile show-mobile">New to BaT? <a href="/how-bat-works/">Learn how it works. </a> </div></div>
+	<main>
+
+		
+<div class="container">
+    <div class="loop">
+        <div class="column search-results">
+            
+    <form action="/search/" class="search-form" method="get">
+        <div class="search-form-inner">
+            <div class="search-form-terms-container">
+                <bat-search-bar params="searchValue: &quot;mustang 1967&quot;, placeholder: &quot;Search&quot;">
+    <div class="search-bar" role="search">
+        <input type="text" class="search-bar-input" name="s" autocomplete="off" data-bind="textInput: searchValue, hasFocus: isInputFocused, attr: { placeholder: placeholder }, event: { keydown: handleKeydown }" aria-label="Search input" placeholder="Search">
+        <ul class="search-bar-results" data-bind="visible: isResultsVisible(), isHovering: isHoveringSearchResults" style="display: none;">
+            <!-- ko foreach: { data: visibleResults, as: 'result' } -->
+            <li class="search-bar-result">
+                <a class="search-bar-link" data-bind="attr: { href: result.url }, click: $component.openResult.bind($data, $index()), event: { mouseover: $component.handleResultMouseOver.bind($data, $index()) }, css: { 'active-result': ($component.activeResultIndex() === $index()), 'view-all': result.isViewAll }" href="https://bringatrailer.com/ford/mustang-1967-1968/">
+                    <div class="search-bar-result-inner">
+                        <span class="bell-icon bell-icon--model" data-bind="visible: result.isSubscribed" style="display: none;"></span>
+                        <span data-bind="text: result.title">Ford Mustang 1967-1968</span>
+                    </div>
+                </a>
+            </li>
+            
+            <li class="search-bar-result">
+                <a class="search-bar-link view-all" data-bind="attr: { href: result.url }, click: $component.openResult.bind($data, $index()), event: { mouseover: $component.handleResultMouseOver.bind($data, $index()) }, css: { 'active-result': ($component.activeResultIndex() === $index()), 'view-all': result.isViewAll }" href="https://bringatrailer.com/search/?view=all&amp;s=mustang 1967">
+                    <div class="search-bar-result-inner">
+                        <span class="bell-icon bell-icon--model" data-bind="visible: result.isSubscribed" style="display: none;"></span>
+                        <span data-bind="text: result.title">View all results</span>
+                    </div>
+                </a>
+            </li>
+            <!-- /ko -->
+        </ul>
+    </div>
+</bat-search-bar>
+            </div>
+
+            <div class="search-form-submit-container">
+                <input type="submit" class="button" value="Search">
+            </div>
+        </div>
+    </form>
+
+    <div class="search-query-text">
+        <h2 class="current-listings-intro-title"><span>338 Search Results for</span> mustang 1967</h2>
+    </div>
+
+    <div style="display: none">
+            </div>
+
+
+    <div class="search-results-section" id="search-results-section">
+
+        <div class="search-results"><h2>Live Listings (3)</h2></div>
+        <div class="listings-toolbar">
+            <div class="toolbar-dropdown sort-dropdown">
+                <div class="dropdown-title">
+                    <span class="value-prefix">Sort by:</span>
+                    <span class="value-text" data-bind="html: sortByDisplay" "="">Ending Soonest</span>
+                </div>
+                <div class="dropdown-options" data-bind="foreach: { data: sortingOptions, as: 'option' }">
+                    <div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Ending Soonest</div>
+                
+                    <div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Ending Latest</div>
+                
+                    <div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Bid: Lowest First</div>
+                
+                    <div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Bid: Highest First</div>
+                
+                    <div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Closest to postal code...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+         <div class="search-result-live-listings" id="search-result-live-listings">
+        <div class="search-result-listings" id="search-result-listings" data-bind="fastForEach: itemsFiltered">
+                        
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1967-ford-mustang-355/" data-pusher="post;list;92777185">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_20250415_231810789_ios-96655.jpg?resize=470%2C318" alt="408-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92777185"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="76348"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">408-Powered 1967 Ford Mustang Fastback 5-Speed</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium" style="display: none;">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1967 Ford Mustang fastback was modified prior to the current owner's 2010 acquisition by installing Eleanor-style bodywork, a 408ci V8, and a five-speed manual transmission. The engine was assembled with Edelbrock fuel injection, a SCAT crankshaft, a Crane Cams camshaft, aluminum cylinder heads, and forged flat-top pistons.</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $67,000</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text final-countdown" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">21:12:28</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="76348"></progress>
+    </div>
+</a>
+        
+                        
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1967-ford-mustang-356/" data-pusher="post;list;92786739">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_img_20250423_180919314-21620.jpg?resize=470%2C318" alt="522-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92786739"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="431368"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">522-Powered 1967 Ford Mustang Fastback 5-Speed</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium" style="display: none;">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1967 Ford Mustang fastback is powered by a 522ci V8 linked with a Tremec five-speed manual transmission and it rides on an adjustable coilover suspension with Ridetech dampers and tubular components. Finished in red over black upholstery, the car is further equipped with a scooped hood, LED lighting, Baer disc brakes, Rusthforth Rated-X…</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $27,500</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">5 days</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="431368"></progress>
+    </div>
+</a>
+        
+                        
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-27/" data-pusher="post;list;91725777">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/03/1967_shelby_mustang-gt500_1967-ford-shelby-gt500-002-39035.jpg?resize=470%2C318" alt="29-Years-Owned 1967 Shelby Mustang GT500 Fastback">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91725777"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="591448"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">29-Years-Owned 1967 Shelby Mustang GT500 Fastback</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1967 Shelby Mustang GT500 fastback is one of 2,048 examples produced for the model year and was completed on June 13, 1967. It has been registered in California since new and was acquired by the seller in 1996. Mechanical work carried out in 2023 included installing a replacement 428ci engine block, a SCAT rotating assembly, and a hydraulic…</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $75,500</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">7 days</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="591448"></progress>
+    </div>
+</a>
+        </div>
+
+        <div data-bind="if: moreItemsAvailable"></div>
+    </div>
+
+
+    <div class="separator"></div>
+
+    <script type="text/javascript" id="bat-theme-auctions-current-initial-data">
+        /* <![CDATA[ */
+        var searchResultItems = [{"active":true,"categories":["3"],"comments":null,"current_bid":67000,"current_bid_formatted":"USD $67,000","current_bid_label":"Bid:","country":"United States","country_code":"US","country_code_alpha3":"USA","country_flag":"<img class=\"countries-flags\" src=\"https:\/\/bringatrailer.com\/wp-content\/themes\/bringatrailer\/assets\/img\/countries\/us.svg\" alt=\"United States\" \/>","currency":"USD","era":"1960","excerpt":"This 1967 Ford Mustang fastback was modified prior to the current owner&#039;s 2010 acquisition by installing Eleanor-style bodywork, a 408ci V8, and a five-speed manual transmission. The engine was assembled with Edelbrock fuel injection, a SCAT crankshaft, a Crane Cams camshaft, aluminum cylinder heads, and forged flat-top pistons.","in_subscription":false,"keyword_pages":[2834489,1833000,89009061],"lat":"33.6278","lon":"-112.051","noreserve":false,"premium":false,"processing_type":null,"pusher":"post;list;92777185","repeat":false,"searchable":"American Mustang 1967-1968 Ford Located in United States 7F02S137297 1967 Ford Mustang United States","sold_text":"","thumbnail_url":"https:\/\/bringatrailer.com\/wp-content\/uploads\/2025\/04\/1967_ford_mustang_20250415_231810789_ios-96655.jpg?resize=470%2C318","timestamp_end":1746123540,"title":"408-Powered 1967 Ford Mustang Fastback 5-Speed","url":"https:\/\/bringatrailer.com\/listing\/1967-ford-mustang-355\/","views":null,"watch_url":"https:\/\/bringatrailer.com\/wp-admin\/admin-ajax.php?action=bat_listing_watch&listing=92777185","watched":false,"watchers":null,"year":"1967","id":92777185},{"active":true,"categories":["3"],"comments":null,"current_bid":27500,"current_bid_formatted":"USD $27,500","current_bid_label":"Bid:","country":"United States","country_code":"US","country_code_alpha3":"USA","country_flag":"<img class=\"countries-flags\" src=\"https:\/\/bringatrailer.com\/wp-content\/themes\/bringatrailer\/assets\/img\/countries\/us.svg\" alt=\"United States\" \/>","currency":"USD","era":"1960","excerpt":"This 1967 Ford Mustang fastback is powered by a 522ci V8 linked with a Tremec five-speed manual transmission and it rides on an adjustable coilover suspension with Ridetech dampers and tubular components. Finished in red over black upholstery, the car is further equipped with a scooped hood, LED lighting, Baer disc brakes, Rusthforth Rated-X\u2026","in_subscription":false,"keyword_pages":[2834489,1833000,89009061],"lat":"43.7708","lon":"-116.696","noreserve":false,"premium":false,"processing_type":null,"pusher":"post;list;92786739","repeat":false,"searchable":"American Mustang 1967-1968 Ford Located in United States 7R02C230030 1967 Ford Mustang United States","sold_text":"","thumbnail_url":"https:\/\/bringatrailer.com\/wp-content\/uploads\/2025\/04\/1967_ford_mustang_img_20250423_180919314-21620.jpg?resize=470%2C318","timestamp_end":1746478560,"title":"522-Powered 1967 Ford Mustang Fastback 5-Speed","url":"https:\/\/bringatrailer.com\/listing\/1967-ford-mustang-356\/","views":null,"watch_url":"https:\/\/bringatrailer.com\/wp-admin\/admin-ajax.php?action=bat_listing_watch&listing=92786739","watched":false,"watchers":null,"year":"1967","id":92786739},{"active":true,"categories":["3"],"comments":null,"current_bid":75500,"current_bid_formatted":"USD $75,500","current_bid_label":"Bid:","country":"United States","country_code":"US","country_code_alpha3":"USA","country_flag":"<img class=\"countries-flags\" src=\"https:\/\/bringatrailer.com\/wp-content\/themes\/bringatrailer\/assets\/img\/countries\/us.svg\" alt=\"United States\" \/>","currency":"USD","era":"1960","excerpt":"This 1967 Shelby Mustang GT500 fastback is one of 2,048 examples produced for the model year and was completed on June 13, 1967. It has been registered in California since new and was acquired by the seller in 1996. Mechanical work carried out in 2023 included installing a replacement 428ci engine block, a SCAT rotating assembly, and a hydraulic\u2026","in_subscription":false,"keyword_pages":[8657345,8655155,89009061],"lat":"33.3988","lon":"-117.265","noreserve":false,"premium":true,"processing_type":null,"pusher":"post;list;91725777","repeat":false,"searchable":"American Mustang GT350 & GT500 Shelby Located in United States Z67412F7A02444 1967 Shelby Mustang GT500 United States","sold_text":"","thumbnail_url":"https:\/\/bringatrailer.com\/wp-content\/uploads\/2025\/03\/1967_shelby_mustang-gt500_1967-ford-shelby-gt500-002-39035.jpg?resize=470%2C318","timestamp_end":1746638640,"title":"29-Years-Owned 1967 Shelby Mustang GT500 Fastback","url":"https:\/\/bringatrailer.com\/listing\/1967-shelby-mustang-gt500-27\/","views":null,"watch_url":"https:\/\/bringatrailer.com\/wp-admin\/admin-ajax.php?action=bat_listing_watch&listing=91725777","watched":false,"watchers":null,"year":"1967","id":91725777}];
+        /* ]]> */
+    </script>
+
+<div class="modal-cover modal-cover-vertically-centered modal-cover-always-show-background" id="modal-set-user-location">
+	<div class="modal-popup modal-popup-dialog">
+		<div class="modal-header">
+			<header class="site-modal-header">
+    <div class="site-modal-header-logo">
+        <a class="header-logo modal-close" href="https://bringatrailer.com/"></a>
+    </div>
+</header>
+		</div>
+
+		<div class="modal-content">
+
+			<p>Please enter a US or Canadian postal code to order the live auctions list by distance to that postal code.</p>
+
+			<form method="POST" action="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_auctions_location_for_zip_code" id="bat-auctions-set-zip-code">
+				<label for="bat-auctions-zip-code">Postal code</label>
+
+				<div class="control-group-input">
+					<input type="text" id="bat-auctions-zip-code" name="zip_code" value="" autofocus="">
+				</div>
+
+				<div class="bat-errors"></div>
+
+				<div class="control-group control-group-submit">
+					<div class="control-group-input">
+						<input type="submit" value="Submit">
+						<a class="button button-white close-modal" href="#">Cancel</a>
+					</div>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+<script>
+// Modal validation and AJAX
+
+jQuery(document).ready(function($) {
+
+	$(document).on('submit', '#bat-auctions-set-zip-code', function(event) {
+		event.preventDefault();
+
+		var $form = $(this),
+			$errors = $form.find('.bat-errors'),
+			$submitButton = $form.find('input[type="submit"]');
+
+		$submitButton.prop('disabled', true);
+
+		$form.ajaxSubmit({
+			success: function(data, status, xhr) {
+				if(data.success === false) {
+					var error = data.data,
+						$errorElement = $('<label type="text">').addClass('control-group-error').text(error);
+
+					$submitButton.prop('disabled', false);
+
+					$errors.empty();
+					$errors.append($errorElement);
+					return;
+				}
+
+				$submitButton.prop('disabled', false);
+
+				//remove the spaces in the zip code
+				if (data['zipCode'] !== undefined) {
+					data['zipCode'] = data['zipCode'].replace(/\s/g, '');
+				}
+
+				BaT_Theme.setUserLocation(data);
+				BAT.modal.hide('success');
+			}
+		});
+	});
+});
+</script>
+
+
+<div class="search-results search-results-loop models-section search-results-keyword-pages">
+    <h3>Models (6)</h3>
+
+    <div class="search-results-keyword-pages previous-listings previous-listings-search group" data-pagination-query="query_keyword_pages">
+        
+<div class="previous-listing previous-listing-notext">
+	<div class="previous-listing-image-container">
+        <a class="button-model-notification--toggle button__model-subscribe poppable-link" href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fwp-admin%2Fadmin-ajax.php%3Faction%3Dbat_keyword_page_watch%26model%3D1833049%26redirect%3Dhttps%253A%252F%252Fbringatrailer.com%252Fford%252Fmustang-1965%252F%26type%3Dkeyword" data-watched="no" title="Notify me when one is listed" aria-label="Subscribe to alerts"><span class="bell-icon bell-icon--model"></span></a>		<a class="previous-listing-image-link" href="https://bringatrailer.com/ford/mustang-1965/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2017/09/DSC_0021-1.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Ford Mustang 1964.5-1966" srcset=" " decoding="async" fetchpriority="high">            <div class="previous-listing-image-overlay">
+                <div class="previous-listing-image-overlay-inner">
+                    <div class="previous-listing-image-overlay-inner-row">
+                        <div class="previous-listing-image-overlay-inner-cell">
+                            Ford Mustang 1964.5-1966                        </div>
+                    </div>
+                </div>
+            </div>
+		</a>
+	</div>
+</div>
+
+<div class="previous-listing previous-listing-notext">
+	<div class="previous-listing-image-container">
+        <a class="button-model-notification--toggle button__model-subscribe poppable-link" href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fwp-admin%2Fadmin-ajax.php%3Faction%3Dbat_keyword_page_watch%26model%3D2834489%26redirect%3Dhttps%253A%252F%252Fbringatrailer.com%252Fford%252Fmustang-1967-1968%252F%26type%3Dkeyword" data-watched="no" title="Notify me when one is listed" aria-label="Subscribe to alerts"><span class="bell-icon bell-icon--model"></span></a>		<a class="previous-listing-image-link" href="https://bringatrailer.com/ford/mustang-1967-1968/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2018/02/151755692289cc14862cBring-a-Trailer-Model-Page-1967-Ford-Mustang-Rear.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Ford Mustang 1967-1968" srcset=" " decoding="async">            <div class="previous-listing-image-overlay">
+                <div class="previous-listing-image-overlay-inner">
+                    <div class="previous-listing-image-overlay-inner-row">
+                        <div class="previous-listing-image-overlay-inner-cell">
+                            Ford Mustang 1967-1968                        </div>
+                    </div>
+                </div>
+            </div>
+		</a>
+	</div>
+</div>
+
+<div class="previous-listing previous-listing-notext">
+	<div class="previous-listing-image-container">
+        <a class="button-model-notification--toggle button__model-subscribe poppable-link" href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fwp-admin%2Fadmin-ajax.php%3Faction%3Dbat_keyword_page_watch%26model%3D52487078%26redirect%3Dhttps%253A%252F%252Fbringatrailer.com%252Fparts-and-automobilia%252Fbodywork%252F%26type%3Dkeyword" data-watched="no" title="Notify me when one is listed" aria-label="Subscribe to alerts"><span class="bell-icon bell-icon--model"></span></a>		<a class="previous-listing-image-link" href="https://bringatrailer.com/parts-and-automobilia/bodywork/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2022/12/FERRARI_250_GTO_FENDER-56738-scaled.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Parts and Automobilia – Bodywork" srcset=" " decoding="async">            <div class="previous-listing-image-overlay">
+                <div class="previous-listing-image-overlay-inner">
+                    <div class="previous-listing-image-overlay-inner-row">
+                        <div class="previous-listing-image-overlay-inner-cell">
+                            Parts and Automobilia – Bodywork                        </div>
+                    </div>
+                </div>
+            </div>
+		</a>
+	</div>
+</div>
+
+<div class="previous-listing previous-listing-notext">
+	<div class="previous-listing-image-container">
+        <a class="button-model-notification--toggle button__model-subscribe poppable-link" href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fwp-admin%2Fadmin-ajax.php%3Faction%3Dbat_keyword_page_watch%26model%3D51780340%26redirect%3Dhttps%253A%252F%252Fbringatrailer.com%252Fparts-and-automobilia%252Fmini-cars%252F%26type%3Dkeyword" data-watched="no" title="Notify me when one is listed" aria-label="Subscribe to alerts"><span class="bell-icon bell-icon--model"></span></a>		<a class="previous-listing-image-link" href="https://bringatrailer.com/parts-and-automobilia/mini-cars/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2022/11/MINI_SL500-59337-scaled.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Parts and Automobilia – Mini Cars" srcset=" " decoding="async">            <div class="previous-listing-image-overlay">
+                <div class="previous-listing-image-overlay-inner">
+                    <div class="previous-listing-image-overlay-inner-row">
+                        <div class="previous-listing-image-overlay-inner-cell">
+                            Parts and Automobilia – Mini Cars                        </div>
+                    </div>
+                </div>
+            </div>
+		</a>
+	</div>
+</div>
+
+<div class="previous-listing previous-listing-notext">
+	<div class="previous-listing-image-container">
+        <a class="button-model-notification--toggle button__model-subscribe poppable-link" href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fwp-admin%2Fadmin-ajax.php%3Faction%3Dbat_keyword_page_watch%26model%3D52243529%26redirect%3Dhttps%253A%252F%252Fbringatrailer.com%252Fparts-and-automobilia%252Fwheels-other%252F%26type%3Dkeyword" data-watched="no" title="Notify me when one is listed" aria-label="Subscribe to alerts"><span class="bell-icon bell-icon--model"></span></a>		<a class="previous-listing-image-link" href="https://bringatrailer.com/parts-and-automobilia/wheels-other/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2022/12/BMW_THROWING_STAR_WHEELS_STYLE_21-69925-scaled.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Parts and Automobilia – Wheels: Other" srcset=" " decoding="async">            <div class="previous-listing-image-overlay">
+                <div class="previous-listing-image-overlay-inner">
+                    <div class="previous-listing-image-overlay-inner-row">
+                        <div class="previous-listing-image-overlay-inner-cell">
+                            Parts and Automobilia – Wheels: Other                        </div>
+                    </div>
+                </div>
+            </div>
+		</a>
+	</div>
+</div>
+
+<div class="previous-listing previous-listing-notext">
+	<div class="previous-listing-image-container">
+        <a class="button-model-notification--toggle button__model-subscribe poppable-link" href="https://bringatrailer.com/account/login/?redirect=https%3A%2F%2Fbringatrailer.com%2Fwp-admin%2Fadmin-ajax.php%3Faction%3Dbat_keyword_page_watch%26model%3D8657345%26redirect%3Dhttps%253A%252F%252Fbringatrailer.com%252Fshelby%252Fmustanggt350gt500%252F%26type%3Dkeyword" data-watched="no" title="Notify me when one is listed" aria-label="Subscribe to alerts"><span class="bell-icon bell-icon--model"></span></a>		<a class="previous-listing-image-link" href="https://bringatrailer.com/shelby/mustanggt350gt500/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2022/01/Shelby_Mustang_GT350_GT500.png?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Shelby Mustang GT350 &amp; GT500" srcset=" " decoding="async">            <div class="previous-listing-image-overlay">
+                <div class="previous-listing-image-overlay-inner">
+                    <div class="previous-listing-image-overlay-inner-row">
+                        <div class="previous-listing-image-overlay-inner-cell">
+                            Shelby Mustang GT350 &amp; GT500                        </div>
+                    </div>
+                </div>
+            </div>
+		</a>
+	</div>
+</div>
+    </div>
+
+    
+
+</div>
+
+<div class="search-results search-results-loop search-results-auctions">
+	
+	<h3>Previous auctions (311)</h3>
+
+	<div class="previous-listings previous-listings-search group" data-pagination-query="query_previous_auctions">
+		
+<div class="listing-card listing-card-separate " data-listing_id="92075505" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92075505" data-timestamp_end="1745874780" data-pusher="post;list;92075505" data-pusher_stats="post;stats;92075505">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_1967_ford_mustang_89cb7f48-0645-4655-8009-58525188e9c6-hClrNa-99123-99124-scaled.jpg?resize=470%2C318" alt="1967 Ford Mustang Fastback 390 4-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-352/" title="1967 Ford Mustang Fastback 390 4-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-352/">1967 Ford Mustang Fastback 390 4-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang fastback was acquired as a project by the seller in 2020, and it was subsequently restored. The seller states the special-order color of Sapphire Blue was re-applied to the exterior after repairs were performed, and the underside was painted with red oxide primer when the body was on a rotisserie.</div>
+
+            
+            <div class="item-results">Bid to USD $67,000 <span> on 4/28/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="91353961" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91353961" data-timestamp_end="1744391614" data-pusher="post;list;91353961" data-pusher_stats="post;stats;91353961">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/03/DSC09875-Enhanced-NR-00521-scaled.jpg?resize=470%2C318" alt="Supercharged Coyote-Powered Shelby Mustang GT500 Fastback by Revology">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/shelby-mustang-fastback-gt500-by-revology/" title="Supercharged Coyote-Powered Shelby Mustang GT500 Fastback by Revology"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/shelby-mustang-fastback-gt500-by-revology/">Supercharged Coyote-Powered Shelby Mustang GT500 Fastback by Revology</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                                <div class="item-tag item-tag-premium ">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This Shelby Mustang GT500 fastback re-creation was built by Revology Cars of Orlando, Florida and completed in 2021. The car is finished in Jet Black Metallic with Silver Frost Metallic stripes and powered by a supercharged Roush Performance 5.0-liter Coyote V8 linked to ten-speed automatic transmission, a carbon-fiber driveshaft, and an 8.8”…</div>
+
+            
+            <div class="item-results">Sold for USD $273,500 <span> on 4/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="88446414" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=88446414" data-timestamp_end="1743715513" data-pusher="post;list;88446414" data-pusher_stats="post;stats;88446414">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/1967_ford_mustang_img_1925-15526.jpeg?resize=470%2C318" alt="1967 Ford Mustang Sports Sprint Coupe">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-345/" title="1967 Ford Mustang Sports Sprint Coupe"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-345/">1967 Ford Mustang Sports Sprint Coupe</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang coupe was fitted with a 302ci V8 under prior ownership and is finished in Acapulco Blue with a black vinyl roof. It was optioned with the Sports Sprint package and also has a three-speed automatic transmission, American Racing wheels, dual exhaust system, an AM radio, and front bucket seats trimmed in black and blue vinyl.</div>
+
+            
+            <div class="item-results">Sold for USD $20,600 <span> on 4/3/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="90340963" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=90340963" data-timestamp_end="1743614678" data-pusher="post;list;90340963" data-pusher_stats="post;stats;90340963">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/03/1967_ford_shelby-mustang-gt500_1967_ford_shelby-mustang-gt500_b16b7ae6-cf52-46ba-9baa-844c055b6f68-mfVnWc-03511-03512-scaled.jpg?resize=470%2C318" alt="GT500-Style, Hendricks 434-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-shelby-mustang-gt500-15/" title="GT500-Style, Hendricks 434-Powered 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-shelby-mustang-gt500-15/">GT500-Style, Hendricks 434-Powered 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang was built as a S-code coupe , and it was modified in the style of the "Eleanor" GT500 fastback from 2000 version of Gone in 60 Seconds. Highlighting the build is a Hendricks Motorsport-built 434ci FE V8 with roller rockers, JBA headers, and MSD ignition, and it is linked through a Tremec five-speed manual to the Ford 9”…</div>
+
+            
+            <div class="item-results">Sold for USD $126,000 <span> on 4/2/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="89252723" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=89252723" data-timestamp_end="1743446646" data-pusher="post;list;89252723" data-pusher_stats="post;stats;89252723">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/02/1967_ford_mustang_gt500_heroshot2_03022025-16-04181.jpg?resize=470%2C318" alt="GT500-Style 1967 Ford Mustang Fastback 6-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-350/" title="GT500-Style 1967 Ford Mustang Fastback 6-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-350/">GT500-Style 1967 Ford Mustang Fastback 6-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang underwent a multi-year modification process that was completed in 2019 by Hellbent Race Cars and Customs of Islandia, New York. Work involved assembling the Dart 427ci SHP V8 block with components sourced from Mahle, COMP Cams, and Edelbrock, installing a Tremec six-speed manual transmission, refinishing the GT500-style…</div>
+
+            
+            <div class="item-results">Sold for USD $99,999 <span> on 3/31/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="90761527" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=90761527" data-timestamp_end="1743019310" data-pusher="post;list;90761527" data-pusher_stats="post;stats;90761527">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/03/Mustang-1-13211.jpg?resize=470%2C318" alt="Coyote-Powered 1967 Ford Mustang Convertible 6-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-348/" title="Coyote-Powered 1967 Ford Mustang Convertible 6-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-348/">Coyote-Powered 1967 Ford Mustang Convertible 6-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible was purchased by the current owner in 2018, and the subsequent four-year build included the installation of a 5.0-liter Coyote V8, a Tremec six-speed manual transmission, and a 9" rear axle with a Quick Performance third member. The body was refinished in metallic green, a black convertible top was installed, and…</div>
+
+            
+            <div class="item-results">Bid to USD $91,000 <span> on 3/26/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="90012537" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=90012537" data-timestamp_end="1741726003" data-pusher="post;list;90012537" data-pusher_stats="post;stats;90012537">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/02/Web-50431-67-Ford-Mustang-5-27869.jpg?resize=470%2C318" alt="1967 Ford Mustang GT Fastback K-Code 4-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-26/" title="1967 Ford Mustang GT Fastback K-Code 4-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-26/">1967 Ford Mustang GT Fastback K-Code 4-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GT is a K-code fastback that is the only Mustang produced in this specification for the model year according to Kevin Marti. The car underwent a multi-year refurbishment which was completed in 2011. Power comes from a rebuilt 289ci HiPo V8 paired with a replacement four-speed Toploader manual transmission, and the exterior…</div>
+
+            
+            <div class="item-results">Sold for USD $160,000 <span> on 3/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="87825060" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=87825060" data-timestamp_end="1740598134" data-pusher="post;list;87825060" data-pusher_stats="post;stats;87825060">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/1967_ford_mustang_mustang-bat-auction-00544-87684.jpg?resize=470%2C318" alt="1967 Ford Mustang GTA Fastback S-Code">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-344/" title="1967 Ford Mustang GTA Fastback S-Code"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-344/">1967 Ford Mustang GTA Fastback S-Code</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GTA fastback was initially delivered to Healy Motors in Canada, remaining registered there until the seller's purchase in 2013. Powered by a replacement 390ci S-code V8 paired with a three-speed automatic transmission, the car wears a repaint in metallic blue over black vinyl upholstery.</div>
+
+            
+            <div class="item-results">Sold for USD $50,000 <span> on 2/26/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="89373036" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=89373036" data-timestamp_end="1740078733" data-pusher="post;list;89373036" data-pusher_stats="post;stats;89373036">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/02/img_0006-17379.jpg?resize=470%2C318" alt="1965 PowerCar Co. Mustang Jr. Electric Go-Kart">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/powercar-co-mustang-jr-electric-go-kart/" title="1965 PowerCar Co. Mustang Jr. Electric Go-Kart"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/powercar-co-mustang-jr-electric-go-kart/">1965 PowerCar Co. Mustang Jr. Electric Go-Kart</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                                <div class="item-tag item-tag-noreserve">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                
+                            </div>
+            
+            <div class="item-excerpt">This children's go-kart was constructed in 1965 in the style of a first-year Ford Mustang by the PowerCar Company of Mystic, Connecticut, under license from Ford. The kart features fiberglass bodywork finished in white mounted over a tubular steel frame, and a battery-powered, Ford-sourced electric starter motor sends power to the rear axle via a…</div>
+
+            
+            <div class="item-results">Sold for USD $12,200 <span> on 2/20/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="88340748" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=88340748" data-timestamp_end="1739470270" data-pusher="post;list;88340748" data-pusher_stats="post;stats;88340748">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/DSC03746-25236-scaled.jpg?resize=470%2C318" alt="1967 Shelby Mustang GT500 Fastback 4-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-25/" title="1967 Shelby Mustang GT500 Fastback 4-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-25/">1967 Shelby Mustang GT500 Fastback 4-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                                <div class="item-tag item-tag-premium ">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Shelby Mustang GT500 fastback is one of 2,048 produced for the model year and was completed on January 18th. It was first delivered to Carey Paul Ford in Decatur, Georgia, and the original owner had the car repainted black. It is believed to have remained registered in the state from new, and it was acquired by its current owner in 2015.</div>
+
+            
+            <div class="item-results">Bid to USD $185,000 <span> on 2/13/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="89094097" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=89094097" data-timestamp_end="1739313513" data-pusher="post;list;89094097" data-pusher_stats="post;stats;89094097">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/02/1967_ford_shelby-mustang-gt500_t7__8250-72366-scaled-xe397o_d32568-93728.jpg?resize=470%2C318" alt="460-Powered 1967 Ford Mustang Convertible">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72-2/" title="460-Powered 1967 Ford Mustang Convertible"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72-2/">460-Powered 1967 Ford Mustang Convertible</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible was refurbished and modified with Eleanor-style bodywork circa 2011. Power comes from a 460ci Ford Racing V8 linked to a three-speed automatic transmission, and the chassis has been outfitted with front coilovers, rear track bars, power steering, and four-wheel disc brakes.</div>
+
+            
+            <div class="item-results">Bid to USD $94,000 <span> on 2/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85257025" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85257025" data-timestamp_end="1739306817" data-pusher="post;list;85257025" data-pusher_stats="post;stats;85257025">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang-gt_1000020835-82230.jpg?resize=470%2C318" alt="1967 Ford Mustang GTA Fastback S-Code">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-22/" title="1967 Ford Mustang GTA Fastback S-Code"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-22/">1967 Ford Mustang GTA Fastback S-Code</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GTA fastback was first delivered in Long Beach, California, and was refurbished in 2012. The car is finished in Lime Gold over black vinyl and is powered by a 390ci S-code V8 paired with a three-speed automatic transmission. Equipment includes a limited-slip differential, 14" styled steel wheels, front disc brakes, GT side…</div>
+
+            
+            <div class="item-results">Sold for USD $96,390 <span> on 2/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="88023171" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=88023171" data-timestamp_end="1738434199" data-pusher="post;list;88023171" data-pusher_stats="post;stats;88023171">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/BaT_Revology-Mustang_004-61861.jpg?resize=470%2C318" alt="Shelby Mustang GT500 Fastback by Revology">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/shelby-mustang-gt500-fastback-by-revology-2/" title="Shelby Mustang GT500 Fastback by Revology"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/shelby-mustang-gt500-fastback-by-revology-2/">Shelby Mustang GT500 Fastback by Revology</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                                <div class="item-tag item-tag-premium ">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This Shelby Mustang GT500 fastback recreation was built by Revology Cars of Orlando, Florida, and purchased new by the current owner. Completed in 2022, the car is finished in Midnight Blue Metallic with Wimbledon White stripes and powered by a supercharged Roush Performance 5.0-liter Coyote V8 linked to a Tremec six-speed manual transmission, a…</div>
+
+            
+            <div class="item-results">Sold for USD $299,000 <span> on 2/1/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="87731547" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=87731547" data-timestamp_end="1737148032" data-pusher="post;list;87731547" data-pusher_stats="post;stats;87731547">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/1967_ford_mustang_img_2443-86032.jpg?resize=470%2C318" alt="1967 Ford Mustang Coupe 289">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-343/" title="1967 Ford Mustang Coupe 289"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-343/">1967 Ford Mustang Coupe 289</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang coupe is powered by a 289ci Challenger V8 paired with a three-speed automatic transmission and is finished in Lime Gold over Ivy Gold upholstery. Features include a black vinyl roof covering, hood vents, 14" steel wheels, turbine-style wheel covers, power steering, front bucket seats, an AM radio, air conditioning, and an…</div>
+
+            
+            <div class="item-results">Sold for USD $26,000 <span> on 1/17/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86248791" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86248791" data-timestamp_end="1736975518" data-pusher="post;list;86248791" data-pusher_stats="post;stats;86248791">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang_exterior_31-26022.jpg?resize=470%2C318" alt="Supercharged 347-Powered 1967 Ford Mustang GT Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-340/" title="Supercharged 347-Powered 1967 Ford Mustang GT Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-340/">Supercharged 347-Powered 1967 Ford Mustang GT Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang was initially delivered to Walker Ford in Augusta, Georgia, optioned with the GT Equipment Group. A 2015-2018 refurbishment involved installing a supercharged 347ci stroker V8 that is backed by a Tremec five-speed manual transmission as well as fitting "Eleanor"-style bodywork and finishing it in dark green with white…</div>
+
+            
+            <div class="item-results">Sold for USD $151,000 <span> on 1/15/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85530271" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85530271" data-timestamp_end="1736019073" data-pusher="post;list;85530271" data-pusher_stats="post;stats;85530271">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang_1967_ford_mustang_3b553829-4dc5-4912-9b79-8c534afb1493-5jgiis-50409-77866.jpg?resize=470%2C318" alt="1967 Ford Mustang Convertible">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-335/" title="1967 Ford Mustang Convertible"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-335/">1967 Ford Mustang Convertible</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible is powered by a 289ci V8 paired with a three-speed automatic transmission and is finished in Candy Apple Red over red vinyl. Equipment includes a white convertible top, chrome Cragar S/S wheels, front disc brakes, power steering, front disc brakes, front bucket seats, an AM radio, and a cabin heater.</div>
+
+            
+            <div class="item-results">Sold for USD $32,250 <span> on 1/4/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="83910730" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=83910730" data-timestamp_end="1735503624" data-pusher="post;list;83910730" data-pusher_stats="post;stats;83910730">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/10/1967_ford_shelby-mustang-gt500_1967_ford_shelby-mustang-gt500_448f7f15-0e75-40f2-99fb-ba79cba7f418-emweeq-48222-68153.jpg?resize=470%2C318" alt="Modified 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-fastback-158/" title="Modified 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-fastback-158/">Modified 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang fastback underwent refurbishment and modification approximately two years ago and was acquired by the selling dealer in 2024. It has been fitted with a fiberglass body kit, a rear spoiler, and a Shelby-style tail panel as well as rack-and-pinon steering, adjustable coilovers, front and rear sway bars, and Total Control…</div>
+
+            
+            <div class="item-results">Sold for USD $110,000 <span> on 12/29/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86314677" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86314677" data-timestamp_end="1735499640" data-pusher="post;list;86314677" data-pusher_stats="post;stats;86314677">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang-gt_img_1904-34915.jpeg?resize=470%2C318" alt="1967 Ford Mustang GT Convertible S-Code 4-Speed Project">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-23/" title="1967 Ford Mustang GT Convertible S-Code 4-Speed Project"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-23/">1967 Ford Mustang GT Convertible S-Code 4-Speed Project</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                                <div class="item-tag item-tag-noreserve">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                
+                                <div class="item-tag item-tag-repeat">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GT convertible left the Dearborn factory equipped with an S-code 390ci V8 along with a four-speed manual transmission and a limited-slip differential. Originally delivered to Lee Jarmon Ford of Carrollton, Texas, the car remained registered in Texas through 1982, after which it was reportedly stored until October 2022.</div>
+
+            
+            <div class="item-results">Sold for USD $20,000 <span> on 12/29/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86866723" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86866723" data-timestamp_end="1735248734" data-pusher="post;list;86866723" data-pusher_stats="post;stats;86866723">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/12/T7__8260-72414-scaled.jpg?resize=470%2C318" alt="460-Powered 1967 Ford Mustang Convertible">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72/" title="460-Powered 1967 Ford Mustang Convertible"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72/">460-Powered 1967 Ford Mustang Convertible</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible was refurbished and modified with Eleanor-style bodywork circa 2011. Power comes from a 460ci Ford Racing V8 linked to a three-speed automatic transmission, and the chassis has been outfitted with front coilovers, rear track bars, power steering, and four-wheel disc brakes.</div>
+
+            
+            <div class="item-results">Sold for USD $135,000 <span> on 12/26/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86739779" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86739779" data-timestamp_end="1734990425" data-pusher="post;list;86739779" data-pusher_stats="post;stats;86739779">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/12/1967_ford_mustang_img_3966-49153.jpeg?resize=470%2C318" alt="393-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-341/" title="393-Powered 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-341/">393-Powered 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang was ordered as a C-code 289 fastback, and a previous owner installed a Ford 9" axle and a 351ci Windsor V8 that was stroked to displace 393ci according to the seller. Following their acquisition in 2021, the seller replaced engine gaskets and installed a Tremec TKX five-speed manual from American Powertrain, which also…</div>
+
+            
+            <div class="item-results">Bid to USD $48,500 <span> on 12/23/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86562687" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86562687" data-timestamp_end="1734205578" data-pusher="post;list;86562687" data-pusher_stats="post;stats;86562687">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/12/IMG-44410-38541-scaled.jpg?resize=470%2C318" alt="15×7″ Shelby 10-Spoke Wheels for 1967 Shelby Mustang">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/shelby-10-spoke-wheels/" title="15×7″ Shelby 10-Spoke Wheels for 1967 Shelby Mustang"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/shelby-10-spoke-wheels/">15×7″ Shelby 10-Spoke Wheels for 1967 Shelby Mustang</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                                <div class="item-tag item-tag-noreserve">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                
+                            </div>
+            
+            <div class="item-excerpt">These 15″ Shelby 10-spoke wheels measure 7″ in width and were produced for use on 1967 Shelby Mustang models. The wheels feature alloy construction, a polished finish, and tapered spokes. Casting marks inside the wheels indicate part numbers and sizing. This set of four Shelby 10-spoke alloy wheels was acquired by the seller in 2023, and it is…</div>
+
+            
+            <div class="item-results">Sold for USD $4,000 <span> on 12/14/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86116673" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86116673" data-timestamp_end="1734127500" data-pusher="post;list;86116673" data-pusher_stats="post;stats;86116673">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang_img_2053-42997.jpeg?resize=470%2C318" alt="1967 Ford Mustang Sports Sprint Coupe 289">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-339/" title="1967 Ford Mustang Sports Sprint Coupe 289"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-339/">1967 Ford Mustang Sports Sprint Coupe 289</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This Ford Mustang coupe was first sold in August 1967 through Dale Russell Motors in Canon City, Colorado. It was ordered in Burnt Amber with saddle upholstery, the Sports Sprint appearance package, and a 289ci V8. The car remained in Colorado for some time and is believed to have accrued just 27k miles before it was acquired by the selling dealer…</div>
+
+            
+            <div class="item-results">Bid to USD $24,017 <span> on 12/13/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85912224" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85912224" data-timestamp_end="1734028518" data-pusher="post;list;85912224" data-pusher_stats="post;stats;85912224">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_shelby_mustang-gt500_1967_shelby_mustang-gt500_da85d806-7e06-4dfb-aa9b-e399e7f3bbbc-MUhTnr-57620-57621-scaled.jpg?resize=470%2C318" alt="1967 Shelby Mustang GT500 Fastback">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-23/" title="1967 Shelby Mustang GT500 Fastback"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-23/">1967 Shelby Mustang GT500 Fastback</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                                <div class="item-tag item-tag-premium ">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                
+                                <div class="item-tag item-tag-noreserve">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Shelby Mustang GT500 fastback is one of 2,048 examples produced for the model year and was completed on January 12, 1967. It was first delivered to Mel Burns Ford in Long Beach, California, and the car spent time with several owners in the state and was refurbished at some point under prior ownership.</div>
+
+            
+            <div class="item-results">Sold for USD $185,000 <span> on 12/12/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85738293" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85738293" data-timestamp_end="1732748006" data-pusher="post;list;85738293" data-pusher_stats="post;stats;85738293">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang-gt_img_7351-68816.jpg?resize=470%2C318" alt="1967 Ford Mustang GTA Coupe S-Code">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-12-2/" title="1967 Ford Mustang GTA Coupe S-Code"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-12-2/">1967 Ford Mustang GTA Coupe S-Code</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GTA coupe is said to have been acquired by the seller's late father in 2006 and subsequently refurbished. It is powered by a 390ci V8 paired with a three-speed automatic transmission and is refinished in burgundy over Parchment vinyl. Equipment includes a white vinyl roof, 14" styled steel wheels, power-assisted front disc…</div>
+
+            
+            <div class="item-results">Sold for USD $37,900 <span> on 11/27/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+	</div>
+
+	
+
+<div class="pagination">
+    <div class="separator-line"></div>
+    	<a href="https://bringatrailer.com/search/page/2/?s=mustang+1967" class="page-numbers"><span data-older="">Show More</span></a>    <div class="separator-line"></div>
+</div>
+
+	</div>
+
+
+
+<div class="search-results search-results-loop search-results-stories">
+	
+	<h3>Stories (18)</h3>
+
+	<div class="previous-listings previous-listings-search stories-list group" data-pagination-query="query_stories">
+		
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2017/09/20/period-holman-moody-race-build-1967-ford-mustang/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2017/09/Screen-Shot-2017-09-20-at-9.43.50-AM-620x404-1.png?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Period Holman Moody Race Build: 1967 Ford Mustang" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2017/09/Screen-Shot-2017-09-20-at-9.43.50-AM-620x404-1.png?w=310 310w, https://bringatrailer.com/wp-content/uploads/2017/09/Screen-Shot-2017-09-20-at-9.43.50-AM-620x404-1.png?w=155 155w, https://bringatrailer.com/wp-content/uploads/2017/09/Screen-Shot-2017-09-20-at-9.43.50-AM-620x404-1.png?w=470 470w, https://bringatrailer.com/wp-content/uploads/2017/09/Screen-Shot-2017-09-20-at-9.43.50-AM-620x404-1.png?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2017/09/20/period-holman-moody-race-build-1967-ford-mustang/">Period Holman Moody Race Build: 1967 Ford Mustang</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2016/12/30/four-discs-five-speeds-11500-1967-mustang-289/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2016/12/00H0H_eI7mxHrzeqQ_600x450-1.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Four Discs &amp; Five Speeds: $11500 1967 Mustang 289" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2016/12/00H0H_eI7mxHrzeqQ_600x450-1.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2016/12/00H0H_eI7mxHrzeqQ_600x450-1.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2016/12/00H0H_eI7mxHrzeqQ_600x450-1.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2016/12/00H0H_eI7mxHrzeqQ_600x450-1.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2016/12/30/four-discs-five-speeds-11500-1967-mustang-289/">Four Discs &amp; Five Speeds: $11500 1967 Mustang 289</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2016/06/21/wimbledon-white-without-reserve-1967-ford-mustang-289automatic/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-381.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Wimbledon White Without Reserve: 1967 Ford Mustang 289/Automatic" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-381.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-381.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-381.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-381.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2016/06/21/wimbledon-white-without-reserve-1967-ford-mustang-289automatic/">Wimbledon White Without Reserve: 1967 Ford Mustang 289/Automatic</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2016/06/09/factory-s-code-3904-speed-beautiful-1967-ford-mustang-gt-fastback/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-142.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Factory S-Code 390/4-Speed: 1967 Ford Mustang GT Fastback" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-142.jpg?w=144 144w, https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-142.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-142.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-142.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2016/06/s-l720-142.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2016/06/09/factory-s-code-3904-speed-beautiful-1967-ford-mustang-gt-fastback/">Factory S-Code 390/4-Speed: 1967 Ford Mustang GT Fastback</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2015/04/14/351w5-speed-restomod-1967-ford-mustang-fastback/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2015/04/351.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="351W/5-Speed Restomod: 1967 Ford Mustang Fastback" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2015/04/351.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2015/04/351.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2015/04/351.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2015/04/351.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2015/04/14/351w5-speed-restomod-1967-ford-mustang-fastback/">351W/5-Speed Restomod: 1967 Ford Mustang Fastback</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2014/11/20/running-project-1967-ford-mustang-fastback/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2014/11/1967_Mustang_Fastback_1416469198.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Running Project: 1967 Ford Mustang Fastback" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2014/11/1967_Mustang_Fastback_1416469198.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2014/11/1967_Mustang_Fastback_1416469198.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2014/11/1967_Mustang_Fastback_1416469198.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2014/11/1967_Mustang_Fastback_1416469198.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2014/11/20/running-project-1967-ford-mustang-fastback/">Running Project: 1967 Ford Mustang Fastback</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2014/03/21/no-reserve-1967-ford-mustang-fastback-s-code-390-project/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2014/03/1967-Ford-Mustang-Fastback-Front.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="No Reserve: 1967 Ford Mustang Fastback S-code 390 Project" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2014/03/1967-Ford-Mustang-Fastback-Front.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2014/03/1967-Ford-Mustang-Fastback-Front.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2014/03/1967-Ford-Mustang-Fastback-Front.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2014/03/1967-Ford-Mustang-Fastback-Front.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2014/03/21/no-reserve-1967-ford-mustang-fastback-s-code-390-project/">No Reserve: 1967 Ford Mustang Fastback S-code 390 Project</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2013/12/04/bullitt-ish-1967-ford-mustang-fastback-driver/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2013/12/1967-Ford-Mustang-Bullitt-Fastback-For-Sale.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Bullitt-ish 1967 Ford Mustang Fastback Driver" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2013/12/1967-Ford-Mustang-Bullitt-Fastback-For-Sale.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2013/12/1967-Ford-Mustang-Bullitt-Fastback-For-Sale.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2013/12/1967-Ford-Mustang-Bullitt-Fastback-For-Sale.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2013/12/1967-Ford-Mustang-Bullitt-Fastback-For-Sale.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2013/12/04/bullitt-ish-1967-ford-mustang-fastback-driver/">Bullitt-ish 1967 Ford Mustang Fastback Driver</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2013/09/02/original-paint-1967-ford-mustang-fastback/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2013/09/Ford_Mustang_Fastback_1377498877.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="Original-Paint 1967 Ford Mustang Fastback" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2013/09/Ford_Mustang_Fastback_1377498877.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2013/09/Ford_Mustang_Fastback_1377498877.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2013/09/Ford_Mustang_Fastback_1377498877.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2013/09/Ford_Mustang_Fastback_1377498877.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2013/09/02/original-paint-1967-ford-mustang-fastback/">Original-Paint 1967 Ford Mustang Fastback</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2013/08/28/1967-ford-mustang-fastback-v8-swap-package/">
+			<img width="470" height="310" src="https://bringatrailer.com/wp-content/uploads/2013/08/1967_Ford_Mustang_Fastback_For_Sale_Front_Three_Quarter_resize.jpg?resize=470%2C310" class="previous-listing-image wp-post-image" alt="1967 Ford Mustang Fastback V8-Swap Package" decoding="async">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2013/08/28/1967-ford-mustang-fastback-v8-swap-package/">1967 Ford Mustang Fastback V8-Swap Package</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2012/01/12/vara-veteran-1967-ford-mustang-fastback/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_Fastback_VARA_Vintage_Race_Car_For_Sale_Rear_resize.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="VARA Veteran: 1967 Ford Mustang Fastback" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_Fastback_VARA_Vintage_Race_Car_For_Sale_Rear_resize.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_Fastback_VARA_Vintage_Race_Car_For_Sale_Rear_resize.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_Fastback_VARA_Vintage_Race_Car_For_Sale_Rear_resize.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_Fastback_VARA_Vintage_Race_Car_For_Sale_Rear_resize.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2012/01/12/vara-veteran-1967-ford-mustang-fastback/">VARA Veteran: 1967 Ford Mustang Fastback</a></h3>
+	</div>
+</div>
+
+<div class="previous-listing">
+	<div class="previous-listing-image-container">
+		<a class="previous-listing-image-link" href="https://bringatrailer.com/2011/11/29/rmvr-veteran-1967-ford-mustang-vintage-racer/">
+			<img width="470" height="318" src="https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_front_quarter_resize.jpg?resize=470%2C318" class="previous-listing-image wp-post-image" alt="RMVR Veteran: 1967 Ford Mustang Vintage Racer" decoding="async" srcset="https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_front_quarter_resize.jpg?w=310 310w, https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_front_quarter_resize.jpg?w=155 155w, https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_front_quarter_resize.jpg?w=470 470w, https://bringatrailer.com/wp-content/uploads/2012/08/1967_Ford_Mustang_front_quarter_resize.jpg?w=235 235w" sizes="(max-width: 470px) 100vw, 470px">		</a>
+	</div>
+
+	<div class="previous-listing-details">
+		<h3 class="previous-listing-details-title"><a class="previous-listing-details-title-link" href="https://bringatrailer.com/2011/11/29/rmvr-veteran-1967-ford-mustang-vintage-racer/">RMVR Veteran: 1967 Ford Mustang Vintage Racer</a></h3>
+	</div>
+</div>
+	</div>
+
+	
+
+<div class="pagination">
+    <div class="separator-line"></div>
+    	<a href="https://bringatrailer.com/search/page/2/?s=mustang+1967" class="page-numbers"><span data-older="">Show More</span></a>    <div class="separator-line"></div>
+</div>
+
+	</div>
+
+        </div>
+    </div>
+</div>
+
+	</main>
+
+	
+	<div class="modal-cover" id="modal-login">
+		<div class="modal-popup modal-popup-dialog">
+			<div class="modal-header"><span class="modal-close">×</span></div>
+
+			<div class="modal-content"></div>
+		</div>
+	</div>
+
+	
+	<footer class="site-footer">
+		<div class="site-footer-top">
+			<div class="container">
+				<div class="column">
+					<a class="footer-nav-toggle" href="#"><i class="fa fa-bars" aria-hidden="true" title="Expand footer menu"><span class="sr-only">Expand footer menu</span></i></a>
+
+					<nav class="footer-nav-social">
+						<ul class="group menu footer-menu footer-social-menu">
+							<li class="menu-item"><a href="https://www.instagram.com/bringatrailer/" aria-label="Bring a Trailer instagram page"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+							<li class="menu-item"><a href="https://www.facebook.com/bringatrailer" aria-label="Bring a Trailer facebook page"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+							<li class="menu-item"><a href="https://twitter.com/bringatrailer" aria-label="Bring a Trailer twitter page"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						</ul>
+					</nav>
+
+					<nav class="footer-nav">
+						<ul class="menu footer-menu" aria-label="Footer menu"><li id="menu-item-88512" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-88512"><a href="https://bringatrailer.com/about/">About BaT</a></li>
+<li id="menu-item-3798497" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3798497"><a href="https://store.bringatrailer.com/">Gear Store</a></li>
+<li id="menu-item-3795140" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-3795140"><a href="https://bringatrailer.com/charity/">Charity Auctions</a></li>
+<li id="menu-item-3639732" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-3639732"><a href="https://bringatrailer.com/calendar/">BaT Event Calendar</a></li>
+<li id="menu-item-88510" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-88510"><a href="https://bringatrailer.com/resources/">Resources</a></li>
+<li id="menu-item-2061513" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2061513"><a href="https://bringatrailer.com/jobs/">Jobs</a></li>
+<li id="menu-item-2793546" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2793546"><a href="https://bringatrailer.com/faq/">FAQ</a></li>
+</ul>					</nav>
+				</div>
+			</div>
+		</div>
+
+		<div class="site-footer-bottom">
+			<div class="container">
+				<div class="column">
+					<p>© 2025 Bring a Trailer Media, LLC. All Rights Reserved.</p>
+
+					<p class="site-footer-links">
+						<a href="/privacy-notice/">Privacy Notice</a>
+
+													<a href="/privacy-notice/#california-privacy-rights">California Notice at Collection</a>
+							<a href="/privacy-notice/#interest-based-ads">DAA Industry Opt Out</a>
+							<a href="/privacy-notice/#shine-the-light-california-rights">Your CA Privacy Rights (Shine the Light)</a>
+						
+						<a href="/terms-of-use/">Terms of Use</a>
+					</p>
+
+											<p>
+							<a class="button button-black" href="https://bringatrailer.com/ccpa-request-form/">
+								<img src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/opt-out.svg" alt="Privacy Choices Icon" width="100%" height="auto" aria-hidden="true">
+								<span>Your Privacy Choices</span>
+							</a>
+						</p>
+					
+					
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	
+<script type="text/html" id="tmpl-gallery">
+<div data-bind="if: loadingImages">
+    <em>Loading images...</em>
+</div>
+<div class="gallery" data-bind="template: { foreach: visible, name: 'tmpl-gallery-item' }"></div>
+</script>
+
+<script type="text/html" id="tmpl-gallery-item">
+<a target="_blank" data-bind="attr: { href: images.large.url, title: title }, click: $parent.photoSwipe">
+    <img data-bind="attr: { src: images.small.url, alt: title }" />
+
+    <span data-bind="click: $parent.show, clickBubble: false, css: { show: isLastItem }, text: $parent.moreText"></span>
+</a>
+</script>
+		<script>
+		( function ( body ) {
+			'use strict';
+			body.className = body.className.replace( /\btribe-no-js\b/, 'tribe-js' );
+		} )( document.body );
+		</script>
+		<script> /* <![CDATA[ */var tribe_l10n_datatables = {"aria":{"sort_ascending":": activate to sort column ascending","sort_descending":": activate to sort column descending"},"length_menu":"Show _MENU_ entries","empty_table":"No data available in table","info":"Showing _START_ to _END_ of _TOTAL_ entries","info_empty":"Showing 0 to 0 of 0 entries","info_filtered":"(filtered from _MAX_ total entries)","zero_records":"No matching records found","search":"Search:","all_selected_text":"All items on this page were selected. ","select_all_link":"Select all pages","clear_selection":"Clear Selection.","pagination":{"all":"All","next":"Next","previous":"Previous"},"select":{"rows":{"0":"","_":": Selected %d rows","1":": Selected 1 row"}},"datepicker":{"dayNames":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"dayNamesShort":["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],"dayNamesMin":["S","M","T","W","T","F","S"],"monthNames":["January","February","March","April","May","June","July","August","September","October","November","December"],"monthNamesShort":["January","February","March","April","May","June","July","August","September","October","November","December"],"monthNamesMin":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"nextText":"Next","prevText":"Prev","currentText":"Today","closeText":"Done","today":"Today","clear":"Clear"}};/* ]]> */ </script><script type="text/javascript" src="https://bringatrailer.com/_static/??-eJx1UNFuwzAI/KG5KFOnrg/VPmVihmVOYmNhnKh/X1SpVTet4oWD4+CArYYoxbgY1KWPqTT40lRGNMW0sEKUXKV4v4Fyk66RH7P2g8oEayKW0OsiSLupvcA/uq6UHQdF8wUQ5zCjZvxLzz3cJia2is4bXnfvN/C5ciFRwG6S0SzFOy1lHDlEKkCpGdzhs4OeGl0Tby1865VP7lHUopDbnfm8iVKoLv34hl913/eRT8Nh/3bcDx7TBTTxh3M="></script><script type="text/javascript" id="recaptcha-js-extra">
+/* <![CDATA[ */
+var BaT_Recaptcha = {"siteKey":"6LeGEF4aAAAAAFW-KyEBmeipj_3jn0S-Wt_ZijmJ","actionRegister":"register"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://www.google.com/recaptcha/api.js?render=6LeGEF4aAAAAAFW-KyEBmeipj_3jn0S-Wt_ZijmJ&amp;ver=6.7.2" id="recaptcha-js"></script>
+<script type="text/javascript" src="https://js.stripe.com/v2/" id="stripe-v2-js"></script>
+<script type="text/javascript" src="https://js.stripe.com/v3/" id="stripe-v3-js"></script>
+<script type="text/javascript" id="zxcvbn-js-extra">
+/* <![CDATA[ */
+var BaT_Password_Strength_Meter = {"passwordStrengthConfirmationError":"Password and confirmation must match","passwordStrengthHigh":"Strong","passwordStrengthLow":"Poor","passwordStrengthMedium":"Okay","passwordStrengthThreshold":"3"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="bat-listings-stripe-js-extra">
+/* <![CDATA[ */
+var BaT_Listings_Stripe = {"calculateStripeTaxRestURL":"https:\/\/bringatrailer.com\/wp-json\/bringatrailer\/1.0\/listing\/calculate-tax","calculatingMessage":"Calculating...","calculatingTaxMessage":"Calculating tax...","calculatingTotalWithTaxMessage":"Calculating total...","calculatingTaxErrorMessage":"There's been an error, please refresh the page to try again.","calculatingTaxBidErrorMessage":"Couldn't calculate tax.","calculatingTaxBidErrorMessage2":"There's been an error. Please refresh this page and try again.","errorMessageCard3dsFailure":"Your credit card failed authentication. Please try again or try a different card.","errorMessageCardFailure":"Sorry, we couldn't process your payment. Please check your payment information and try again.","errorMessageCardGeneric":"There was an error with your card","errorMessageCardDeclined":"Credit card was declined - please try another","errorMessageCardNumberIncorrect":"The card number entered is invalid","errorMessagePayment":"There was an error processing your payment","publishableKey":"pk_live_5102vgU2e0rMYPLvyzizTComwrj6iiFavV1hgtUfdGkdrMVxrB15kGiffkNRq1smF5brlHKscEFNgLjzDfdFBbFAo00AwLZKCrO","rest_nonce":"badf382965","taxWinningBidLineItemReference":"winning_bid_fee","taxListingFeeLineItemReference":"listing_fee","autocompleteKey":"AIzaSyCRTiSfcvbxYnDhaCPEMLnPQPZ0atTGRSc","allowedCountries":["US","AF","AX","AL","DZ","AS","AD","AO","AI","AQ","AG","AR","AM","AW","AU","AT","AZ","BS","BH","BD","BB","BE","BZ","BJ","BM","BT","BO","BA","BW","BV","BR","IO","BN","BG","BF","BI","KH","CM","CA","CV","KY","CF","TD","CL","CN","CX","CC","CO","KM","CG","CD","CK","CR","CI","HR","CY","CZ","DK","DJ","DM","DO","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","GF","PF","TF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GG","GN","GW","GY","HT","HM","VA","HN","HK","HU","IS","IN","ID","IQ","IE","IM","IL","IT","JM","JP","JE","JO","KZ","KE","KI","KR","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MK","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","ME","MS","MA","MZ","MM","NA","NR","NP","NL","AN","NC","NZ","NI","NE","NG","NU","NF","MP","NO","OM","PK","PW","PS","PA","PG","PY","PE","PH","PN","PL","PT","PR","QA","RE","RO","RW","BL","SH","KN","LC","MF","PM","VC","WS","SM","ST","SA","SN","RS","SC","SL","SG","SK","SI","SB","SO","ZA","GS","ES","LK","SD","SR","SJ","SZ","SE","CH","TW","TJ","TZ","TH","TL","TG","TK","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","GB","UM","UY","UZ","VU","VE","VN","VG","VI","WF","EH","YE","ZM","ZW"],"allowedStripeTaxCountries":{"AT":"Austria","BE":"Belgium","BG":"Bulgaria","HR":"Croatia","CY":"Cyprus","CZ":"Czech Republic","DK":"Denmark","EE":"Estonia","FI":"Finland","FR":"France","DE":"Germany","GR":"Greece","HU":"Hungary","IE":"Ireland","IT":"Italy","LV":"Latvia","LT":"Lithuania","LU":"Luxembourg","MT":"Malta","NL":"Netherlands","PL":"Poland","PT":"Portugal","RO":"Romania","SK":"Slovakia","SI":"Slovenia","ES":"Spain","SE":"Sweden","GB":"United Kingdom"}};
+/* ]]> */
+</script>
+<script type="text/javascript" id="photoswipe-ui-js-extra">
+/* <![CDATA[ */
+var BAT_PHOTOSWIPE_UI = {"voteTemplate":"","votedTemplate":""};
+/* ]]> */
+</script>
+<script type="text/javascript" id="bat-theme-viewmodels-js-extra">
+/* <![CDATA[ */
+var BAT_VMS = {"address":"026730a2afe2bb43d9699a5475262184834820edfca80236324970331c430199","ajaxUrl":"https:\/\/bringatrailer.com\/wp-admin\/admin-ajax.php","bidAudioStatus":null,"bidAudioUrl":"https:\/\/bringatrailer.com\/wp-content\/themes\/bringatrailer\/assets\/audio\/bid.mp3","checklistItemComplete":"bat_action_ajax_checklist_item_update","checklistItemCompleteNonce":"389a5d07a1","commentAudioStatus":null,"commentAudioUrl":"https:\/\/bringatrailer.com\/wp-content\/themes\/bringatrailer\/assets\/audio\/comment.mp3","commentOrder":"desc","comments":[],"commentsInitialLoad":"20","dashboardStatusCompleteChecklist":"The required items on your checklist will need to be complete before your listing can go live. Please complete your checklist.","dashboardStatusCompleteChecklistShort":"Complete checklist items","dashboardStatusMessaged":"BaT sent a question about your submission.","dashboardStatusMessagedShort":"New message from BaT","dislikeThreshold":"3","editableSeconds":"300","highlightThreshold":"5","incrementalLoadCount":"100","markMessagesViewed":"bat_action_ajax_checklist_item_correspondence_viewed","markMessagesViewedNonce":"fda8061b8d","messageLoadMoreComments":"Show More","postAuthor":"","urlListings":"https:\/\/bringatrailer.com\/auctions\/","userId":"0"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="bat.shipping-js-extra">
+/* <![CDATA[ */
+var BAT_SHIPPING = {"accountEditUrl":"https:\/\/bringatrailer.com\/account\/profile\/edit\/","accountRegisterUrl":"https:\/\/bringatrailer.com\/account\/register\/","contactEmail":"shipping@bringatrailer.com","nonceProfileEdit":"26556a2ab6","nonceRegister":"2a6d76c5fe","nonceWpRest":"badf382965","purchaseOrderUrl":"https:\/\/bringatrailer.com\/wp-json\/bringatrailer\/1.0\/shipping\/order","referralSourceOther":"other"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://bringatrailer.com/_static/??-eJydksFuAjEMRH+oIbSl5VT1W0JiWEMSR3ayS/v1NQhohTg0e1lFa8+zRjN2Kgazjy2A2L3Y76MfN3mRMC/28mR16ilXyNWW2HaYxW4Y885VdhiBLYNQY6/iLZ8Xg924aiJK1TUxUhkL/I+VKLSopKv4Efw6uyfWARLcA50I1LOtUbXEVjCVCGp4AMbqsodHTv/HKgNVkkndmYZGTXdiDpn8gVo1cDw5A57p6cbZOtEPMTg/zLd1w40uYnAVqaMNnlKhrPO/2f2+7k7cHovkSlHOzCDCdr5wIj4Ad+qXL2ZEmLSvEHtT27moP746Vb4x65pxzZ8S6T0q4FhL0SkacFYqGIDMPJuXYIaa4pueH+fXWEunTQwXwGf6eF6v3pev69Vyvf8B1ZLl3A=="></script><iframe name="__privateStripeController8651" frameborder="0" allowtransparency="true" scrolling="no" role="presentation" allow="payment *" src="https://js.stripe.com/v3/controller-with-preconnect-2e6830183e7bfdace72396aba2b81422.html#__shared_params__[version]=v3&amp;apiKey=pk_live_5102vgU2e0rMYPLvyzizTComwrj6iiFavV1hgtUfdGkdrMVxrB15kGiffkNRq1smF5brlHKscEFNgLjzDfdFBbFAo00AwLZKCrO&amp;stripeJsId=fd8f8904-fcc6-4b3d-b364-3d67856bdc43&amp;firstStripeInstanceCreatedLatency=466&amp;controllerCount=1&amp;isCheckout=false&amp;stripeJsLoadTime=1746046811364&amp;manualBrowserDeprecationRollout=false&amp;mids[guid]=NA&amp;mids[muid]=e3bd5533-d93e-4b02-9307-8251182270c2a1f6ad&amp;mids[sid]=bdd0948e-a28d-4999-b1a3-e68a104916200815b0&amp;referrer=https%3A%2F%2Fbringatrailer.com%2Fsearch%2F%3Fs%3Dmustang%2B1967&amp;controllerId=__privateStripeController8651" aria-hidden="true" tabindex="-1" style="border: none !important; margin: 0px !important; padding: 0px !important; width: 1px !important; min-width: 100% !important; overflow: hidden !important; display: block !important; visibility: hidden !important; position: fixed !important; height: 1px !important; pointer-events: none !important; user-select: none !important;"></iframe>
+
+<iframe name="stripeXDM_default324137_provider" id="stripeXDM_default324137_provider" aria-hidden="true" src="https://js.stripe.com/v2/channel.html?stripe_xdm_e=https%3A%2F%2Fbringatrailer.com&amp;stripe_xdm_c=default324137&amp;stripe_xdm_p=1#__stripe_transport__" frameborder="0" style="position: absolute; top: -2000px; left: 0px;"></iframe><div><div class="grecaptcha-badge" data-style="bottomright" style="width: 256px; height: 60px; display: block; transition: right 0.3s; position: fixed; bottom: 14px; right: -186px; box-shadow: gray 0px 0px 5px; border-radius: 2px; overflow: hidden;"><div class="grecaptcha-logo"><iframe title="reCAPTCHA" width="256" height="60" role="presentation" name="a-jbj5pg9xpye5" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox allow-storage-access-by-user-activation" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LeGEF4aAAAAAFW-KyEBmeipj_3jn0S-Wt_ZijmJ&amp;co=aHR0cHM6Ly9icmluZ2F0cmFpbGVyLmNvbTo0NDM.&amp;hl=es&amp;v=w0_qmZVSdobukXrBwYd9dTF7&amp;size=invisible&amp;cb=n150g5etnovn"></iframe></div><div class="grecaptcha-error"></div><textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 40px; border: 1px solid rgb(193, 193, 193); margin: 10px 25px; padding: 0px; resize: none; display: none;"></textarea></div><iframe style="display: none;"></iframe></div><script type="text/javascript" async="" charset="UTF-8" src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" data-domain-script="93ac35b6-32e2-4ccb-b903-a29c135a58e9" data-document-language="true"></script><iframe class="poppable mfp-hide" name="poppable-target" id="bat-poppable-target"></iframe><div id="onetrust-consent-sdk" data-nosnippet="true"><div class="onetrust-pc-dark-filter ot-hide ot-fade-in"></div></div><iframe name="__privateStripeMetricsController8650" frameborder="0" allowtransparency="true" scrolling="no" role="presentation" allow="payment *" src="https://js.stripe.com/v3/m-outer-3437aaddcdf6922d623e172c2d6f9278.html#url=https%3A%2F%2Fbringatrailer.com%2Fsearch%2F%3Fs%3Dmustang%2B1967&amp;title=mustang%201967%20For%20Sale%20-%20BaT%20Auctions&amp;referrer=https%3A%2F%2Fbringatrailer.com%2Fford%2Fmustang-1967%2F&amp;muid=e3bd5533-d93e-4b02-9307-8251182270c2a1f6ad&amp;sid=bdd0948e-a28d-4999-b1a3-e68a104916200815b0&amp;version=6&amp;preview=false&amp;__shared_params__[version]=v3" aria-hidden="true" tabindex="-1" style="border: none !important; margin: 0px !important; padding: 0px !important; width: 1px !important; min-width: 100% !important; overflow: hidden !important; display: block !important; visibility: hidden !important; position: fixed !important; height: 1px !important; pointer-events: none !important; user-select: none !important;"></iframe></body>
