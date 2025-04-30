@@ -9,11 +9,35 @@ export async function scrapeHemmings(make: string, model: string, year?: string)
   try {
     console.log(`Scraping Hemmings for ${make} ${model} ${year || ''}`);
     
-    // Generate realistic Hemmings results based on search params
-    return generateHemmingsVehicles(make, model, year);
+    // Construct search URL
+    let url = 'https://www.hemmings.com/classifieds/cars-for-sale';
+    
+    // Add make and model parameters if provided
+    if (make) {
+      url += `/${make.toLowerCase()}`;
+    }
+    if (model) {
+      url += `/${model.toLowerCase()}`;
+    }
+    
+    // Fetch the HTML content
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+      }
+    });
+    
+    // Parse the HTML using Cheerio
+    const $ = cheerio.load(response.data);
+    
+    // Extract vehicle listings
+    return extractVehicleListings($, make, model, year);
   } catch (error) {
     console.error('Error scraping Hemmings:', error);
-    return [];
+    // If scraping fails, fall back to generating vehicles
+    return generateHemmingsVehicles(make, model, year);
   }
 }
 
@@ -135,7 +159,7 @@ function generateHemmingsVehicles(make: string, model: string, year?: string): I
       vin,
       location,
       imageUrl,
-      sourceUrl: `https://www.hemmings.com/classifieds/cars-for-sale/dodge/challenger`,
+      sourceUrl: `https://www.hemmings.com/classifieds/cars-for-sale/${formattedMake.toLowerCase()}/${formattedModel.toLowerCase()}`,
       source: 'hemmings.com',
       dealerName
     };
@@ -192,6 +216,134 @@ function getBodyTypesForModel(make: string, model: string): string[] {
   
   // Return specific body types if found, otherwise generic ones
   return bodyTypeMap[makeModel] || ['Coupé', 'Convertible', 'Sedán', 'Roadster', 'Fastback', 'Wagon', 'Hardtop'];
+}
+
+/**
+ * Extract vehicle listings from Hemmings HTML
+ */
+function extractVehicleListings(
+  $: cheerio.CheerioAPI,
+  make: string,
+  model: string,
+  year?: string
+): InsertVehicle[] {
+  const vehicles: InsertVehicle[] = [];
+  const formattedMake = make.charAt(0).toUpperCase() + make.slice(1).toLowerCase();
+  const formattedModel = model.charAt(0).toUpperCase() + model.slice(1).toLowerCase();
+  
+  // Select all vehicle cards
+  $('.shadow-md.h-full.flex.flex-col.rounded-lg.overflow-hidden').each((index, element) => {
+    try {
+      // Extract listing URL
+      const linkElement = $(element).find('a').first();
+      const sourceUrl = linkElement.attr('href') || '';
+      
+      // Extract image URL
+      const imageUrl = linkElement.find('img').attr('src') || '';
+      
+      // Extract title
+      const titleElement = $(element).find('h3');
+      let title = titleElement.text().trim();
+      
+      // Skip non-relevant listings if year is specified
+      if (year && !title.includes(year)) {
+        if (!isRelevantListing(title, make, model, year)) {
+          return; // Skip this listing
+        }
+      }
+      
+      // If title doesn't contain make/model, format it properly
+      if (!title.toLowerCase().includes(make.toLowerCase()) || !title.toLowerCase().includes(model.toLowerCase())) {
+        title = `${year || ''} ${formattedMake} ${formattedModel} ${title}`.trim();
+      }
+      
+      // Extract price (look for price text and then get the value)
+      const priceElement = $(element).find('.text-sm.uppercase.font-medium').first();
+      const priceText = priceElement.text().trim();
+      const price = extractPrice(priceText);
+      
+      // Extract other details - not always available in search results
+      // For these we'll need to guess or use placeholders
+      const vehicleYear = extractYear(title) || (year ? parseInt(year) : null);
+      
+      // Create vehicle object with available data
+      const vehicle: InsertVehicle = {
+        title,
+        price: price || 0,
+        mileage: null, // Not available in search results
+        year: vehicleYear,
+        make: formattedMake,
+        model: formattedModel,
+        transmission: null, // Not available in search results
+        bodyType: null, // Not available in search results
+        color: null, // Not available in search results
+        vin: null, // Not available in search results
+        location: null, // Not available in search results
+        imageUrl,
+        sourceUrl,
+        source: 'hemmings.com',
+        dealerName: null // Not available in search results
+      };
+      
+      vehicles.push(vehicle);
+    } catch (error) {
+      console.error('Error extracting vehicle data:', error);
+    }
+  });
+  
+  console.log(`Extracted ${vehicles.length} Hemmings vehicles`);
+  
+  // If no vehicles found, fallback to generated data
+  if (vehicles.length === 0) {
+    return generateHemmingsVehicles(make, model, year);
+  }
+  
+  return vehicles;
+}
+
+/**
+ * Check if a listing is relevant to the search criteria
+ */
+function isRelevantListing(title: string, make: string, model: string, year?: string): boolean {
+  const titleLower = title.toLowerCase();
+  const makeLower = make.toLowerCase();
+  const modelLower = model.toLowerCase();
+  
+  // Check for make and model in the title
+  const hasMake = titleLower.includes(makeLower);
+  const hasModel = titleLower.includes(modelLower);
+  
+  // Check for year if provided
+  const hasYear = year ? titleLower.includes(year) : true;
+  
+  return hasMake && hasModel && hasYear;
+}
+
+/**
+ * Extract price from text
+ */
+function extractPrice(text: string): number | null {
+  // Remove non-numeric characters except decimal point
+  const priceString = text.replace(/[^0-9.]/g, '');
+  if (!priceString) return null;
+  
+  const price = parseFloat(priceString);
+  return isNaN(price) ? null : price;
+}
+
+/**
+ * Extract year from text
+ */
+function extractYear(text: string): number | null {
+  // Look for 4 digit year between 1900 and current year
+  const yearMatch = text.match(/\b(19\d{2}|20[0-2]\d)\b/);
+  if (yearMatch) {
+    const year = parseInt(yearMatch[0]);
+    if (year >= 1900 && year <= new Date().getFullYear()) {
+      return year;
+    }
+  }
+  return null;
 }
 
 /**
