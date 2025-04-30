@@ -29,7 +29,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         url = buildCarsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
       } else if (vehicle.source === 'hemmings.com') {
         url = buildHemmingsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
-      } else if (vehicle.source === 'bringatrailer.com') {
+      } else if (vehicle.source === 'bringatrailer' || vehicle.source === 'bringatrailer.com') {
         url = buildBringATrailerUrl(vehicle.make, vehicle.model, vehicle.year?.toString());
       } else if (vehicle.source === 'classiccars.com') {
         url = buildClassicCarsUrl(vehicle.make, vehicle.model, vehicle.year?.toString());

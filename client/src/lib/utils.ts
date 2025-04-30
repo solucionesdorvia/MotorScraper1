@@ -62,7 +62,7 @@ export function getSourceClassName(source: string): string {
   if (source === 'edmunds') return 'bg-label-edmunds';
   if (source === 'cars.com') return 'bg-label-cars';
   if (source === 'hemmings.com') return 'bg-label-hemmings';
-  if (source === 'bringatrailer.com') return 'bg-label-bat';
+  if (source === 'bringatrailer' || source === 'bringatrailer.com') return 'bg-label-bat';
   if (source === 'classiccars.com') return 'bg-label-classiccars';
   return 'bg-gray-500';
 }
