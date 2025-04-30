@@ -99,7 +99,7 @@ function generateMockBaTResults(make: string, model: string, year?: string): Ins
       make,
       model,
       source: 'bringatrailer',
-      sourceUrl: `https://bringatrailer.com/listing/${make.toLowerCase()}-${model.toLowerCase()}-${Math.floor(Math.random() * 1000)}`,
+      sourceUrl: `https://bringatrailer.com/listing/${make.toLowerCase()}-${model.toLowerCase()}-${Math.floor(Math.random() * 1000)}/`,
       imageUrl,
       year: yearValue,
       price: currentBid,
@@ -147,7 +147,13 @@ function extractVehicleListings(
       // Solo procesa si el título es relevante para la búsqueda
       if (isRelevantListing(title, make, model, year)) {
         console.log(`Título relevante: "${title}"`);
-        const sourceUrl = $(element).attr('href') || '';
+        // Aseguramos que la URL sea completa
+        let sourceUrl = $(element).attr('href') || '';
+        // Si la URL no empieza con http, asumimos que es una ruta relativa a bringatrailer.com
+        if (sourceUrl && !sourceUrl.startsWith('http')) {
+          sourceUrl = `https://bringatrailer.com${sourceUrl}`;
+        }
+        console.log(`URL de la subasta: ${sourceUrl}`);
         const imageUrl = $(element).find('.thumbnail img').attr('src') || '';
         console.log(`URL de imagen: ${imageUrl}`);
         
@@ -266,7 +272,13 @@ function extractVehicleListings(
         // Solo procesa si el título es relevante para la búsqueda
         if (isRelevantListing(title, make, model, year)) {
           console.log(`Título alternativo relevante: "${title}"`);
-          const sourceUrl = $(element).attr('href') || '';
+          // Aseguramos que la URL sea completa
+          let sourceUrl = $(element).attr('href') || '';
+          // Si la URL no empieza con http, asumimos que es una ruta relativa a bringatrailer.com
+          if (sourceUrl && !sourceUrl.startsWith('http')) {
+            sourceUrl = `https://bringatrailer.com${sourceUrl}`;
+          }
+          console.log(`URL de la subasta (alt): ${sourceUrl}`);
           const imageUrl = $(element).find('img').first().attr('src') || '';
           
           // Extrae el precio de la oferta (si disponible)
