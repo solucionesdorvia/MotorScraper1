@@ -130,24 +130,31 @@ function extractVehicleListings(
   const $ = cheerio.load(html);
   
   console.log('Analizando HTML de Bring a Trailer, buscando tarjetas de vehículos...');
+  console.log('Estructura HTML detectada:');
+  
+  // Debug: Encuentra si existen tarjetas de listados y cuántas hay
+  const listingCards = $('.listing-card');
+  console.log(`Encontradas ${listingCards.length} tarjetas con clase 'listing-card'`);
   
   // Selecciona los elementos que contienen listados de vehículos
   // Basado en el HTML proporcionado por el usuario
-  $('.listing-card').each((index, element) => {
+  listingCards.each((index, element) => {
     try {
       // Extrae datos clave
       const title = $(element).find('h3').text().trim();
-      console.log(`Encontrado título: ${title}`);
+      console.log(`Encontrado título ${index + 1}: "${title}"`);
       
       // Solo procesa si el título es relevante para la búsqueda
       if (isRelevantListing(title, make, model, year)) {
-        console.log(`Título relevante: ${title}`);
+        console.log(`Título relevante: "${title}"`);
         const sourceUrl = $(element).attr('href') || '';
         const imageUrl = $(element).find('.thumbnail img').attr('src') || '';
+        console.log(`URL de imagen: ${imageUrl}`);
         
-        // Extrae información de la subasta basado en el HTML actual
-        const currentBidText = $(element).find('.bid-formatted').text().trim();
-        console.log(`Texto de oferta: ${currentBidText}`);
+        // Extrae información de la subasta basado en el HTML proporcionado
+        const bidDiv = $(element).find('.content-secondary .item-bidding');
+        const currentBidText = bidDiv.find('.bid-formatted').text().trim();
+        console.log(`Texto de oferta: "${currentBidText}"`);
         let currentBid = null;
         
         // Extrae el precio del texto de oferta
@@ -156,12 +163,12 @@ function extractVehicleListings(
           const priceMatch = currentBidText.match(/(\d[\d,]+)/); 
           if (priceMatch && priceMatch[1]) {
             currentBid = parseInt(priceMatch[1].replace(/,/g, ''), 10);
-            console.log(`Oferta actual extraida: ${currentBid}`);
+            console.log(`Oferta actual extraída: ${currentBid}`);
           }
         }
         
         // Extrae tiempo restante
-        const endsInText = $(element).find('.countdown-text').text().trim();
+        const endsInText = bidDiv.find('.countdown-text').text().trim();
         const endsIn = endsInText || null;
         console.log(`Tiempo restante: ${endsIn}`);
         
@@ -171,26 +178,34 @@ function extractVehicleListings(
         
         // Extrae una descripción si está disponible
         const description = $(element).find('.item-excerpt').text().trim() || null;
+        console.log(`Descripción: ${description ? (description.substring(0, 50) + '...') : 'No disponible'}`);
         
-        // Extraer estado o ubicación si está disponible
-        // Para BaT, a menudo está dentro del elemento con clase item-distance
-        const locationText = $(element).find('.item-distance').text().trim() || 'Estados Unidos';
+        // Extraer ubicación o país si está disponible
+        // Para BaT, a menudo está en el elemento con clase item-distance o en las etiquetas
+        let locationText = $(element).find('.item-distance').text().trim();
+        if (!locationText) {
+          // Busca en las etiquetas de país
+          const countryName = $(element).find('.show-country-name').text().trim();
+          locationText = countryName || 'Estados Unidos';
+        }
+        console.log(`Ubicación: ${locationText}`);
         
-        // Intenta determinar el tipo de carrocería desde el título
+        // Intenta determinar el tipo de carrocería desde el título o descripción
         let bodyType = null;
-        if (title.toLowerCase().includes('fastback')) {
+        const fullText = `${title} ${description || ''}`;
+        
+        if (fullText.toLowerCase().includes('fastback')) {
           bodyType = 'Fastback';
-        } else if (title.toLowerCase().includes('coupe')) {
+        } else if (fullText.toLowerCase().includes('coupe')) {
           bodyType = 'Coupe';
-        } else if (title.toLowerCase().includes('convertible') || title.toLowerCase().includes('cabrio')) {
+        } else if (fullText.toLowerCase().includes('convertible') || fullText.toLowerCase().includes('cabrio')) {
           bodyType = 'Convertible';
-        } else if (title.toLowerCase().includes('sedan')) {
+        } else if (fullText.toLowerCase().includes('sedan')) {
           bodyType = 'Sedan';
         }
         
         // Intenta determinar la transmisión desde el título o descripción
         let transmission = null;
-        const fullText = `${title} ${description || ''}`;
         if (fullText.toLowerCase().includes('manual') || fullText.toLowerCase().includes('speed') || 
             fullText.toLowerCase().includes('5-speed') || fullText.toLowerCase().includes('6-speed')) {
           transmission = 'Manual';
@@ -207,13 +222,19 @@ function extractVehicleListings(
           sourceUrl,
           imageUrl,
           year: extractedYear,
-          price: currentBid || null, // Usamos el precio actual como precio si está disponible
+          price: currentBid, // Usamos el precio actual como precio si está disponible
           isAuction: true,
           currentBid,
           endsIn,
           transmission,
           bodyType,
-          location: locationText
+          location: locationText,
+          mileage: null, // No disponible en el extracto de BaT
+          color: null, // No disponible en el extracto de BaT
+          vin: null, // No disponible en el extracto de BaT
+          fuelType: null, // No disponible en el extracto de BaT
+          dealerName: null, // No disponible en el extracto de BaT
+          hasDeals: false // No hay ofertas especiales en BaT, todo son subastas
         };
         
         vehicles.push(vehicle);
@@ -225,6 +246,79 @@ function extractVehicleListings(
       console.error('Error al procesar un listado de Bring a Trailer:', error);
     }
   });
+  
+  // Si no se encontraron vehículos con la clase 'listing-card', intenta otras alternativas
+  if (vehicles.length === 0) {
+    console.log('No se encontraron vehículos con la estructura estándar, probando estructuras alternativas...');
+    
+    // Intenta otro selector común en BaT
+    const searchResults = $('#search-result-listings a');
+    console.log(`Encontradas ${searchResults.length} entradas con selector alternativo`);
+    
+    searchResults.each((index, element) => {
+      try {
+        // Extrae datos clave
+        const title = $(element).find('h3').text().trim();
+        if (!title) return; // Salta si no hay título
+        
+        console.log(`Encontrado título alternativo ${index + 1}: "${title}"`);
+        
+        // Solo procesa si el título es relevante para la búsqueda
+        if (isRelevantListing(title, make, model, year)) {
+          console.log(`Título alternativo relevante: "${title}"`);
+          const sourceUrl = $(element).attr('href') || '';
+          const imageUrl = $(element).find('img').first().attr('src') || '';
+          
+          // Extrae el precio de la oferta (si disponible)
+          const bidText = $(element).find('.bid-formatted').text().trim() || 
+                          $(element).find('.bidding-bid').text().trim();
+          let currentBid = null;
+          
+          if (bidText) {
+            const priceMatch = bidText.match(/(\d[\d,]+)/);
+            if (priceMatch && priceMatch[1]) {
+              currentBid = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+            }
+          }
+          
+          // Extrae tiempo restante
+          const endsInText = $(element).find('.countdown-text').text().trim();
+          
+          // Extrae año y otros datos como antes
+          const extractedYear = extractYear(title);
+          const description = $(element).find('.item-excerpt').text().trim() || null;
+          
+          const vehicle: InsertVehicle = {
+            title,
+            make,
+            model,
+            source: 'bringatrailer',
+            sourceUrl,
+            imageUrl,
+            year: extractedYear,
+            price: currentBid,
+            isAuction: true,
+            currentBid,
+            endsIn: endsInText || null,
+            transmission: null,
+            bodyType: null,
+            location: 'Estados Unidos',
+            mileage: null,
+            color: null,
+            vin: null,
+            fuelType: null,
+            dealerName: null,
+            hasDeals: false
+          };
+          
+          vehicles.push(vehicle);
+          console.log(`Vehículo alternativo añadido: ${title}`);
+        }
+      } catch (error) {
+        console.error('Error al procesar listado alternativo de BaT:', error);
+      }
+    });
+  }
   
   console.log(`Total de vehículos encontrados en BaT: ${vehicles.length}`);
   return vehicles;
@@ -238,14 +332,26 @@ function buildBringATrailerUrl(make: string, model: string, year?: string): stri
   const baseUrl = 'https://bringatrailer.com/search/';
   
   // Construye los parámetros de búsqueda
-  let searchTerms = `${make} ${model}`;
-  if (year) {
-    searchTerms = `${year} ${searchTerms}`;
+  // Si el modelo es diferente de la marca (ejemplo: marca=ford, modelo=mustang)
+  // entonces incluimos ambos
+  let searchTerms = '';
+  
+  if (make.toLowerCase() === model.toLowerCase()) {
+    // Si son iguales, solo usamos uno para evitar duplicación (ejemplo: challenger challenger)
+    searchTerms = make;
+  } else {
+    // Si son diferentes, usamos ambos
+    searchTerms = `${model}`; // Priorizamos el modelo ya que suele ser más específico
   }
   
-  // Codifica los parámetros para la URL
-  const encodedSearch = encodeURIComponent(searchTerms);
-  return `${baseUrl}?s=${encodedSearch}`;
+  // Añadimos el año si está disponible
+  if (year) {
+    searchTerms = `${model}+${year}`;
+  }
+  
+  // Usamos el formato exacto que desea el usuario (con + en lugar de espacios)
+  // para que la URL quede como: https://bringatrailer.com/search/?s=mustang+1967
+  return `${baseUrl}?s=${searchTerms.replace(/ /g, '+')}`;
 }
 
 /**
