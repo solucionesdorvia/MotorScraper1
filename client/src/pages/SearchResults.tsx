@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import SearchForm from '@/components/search/SearchForm';
 import FilterPanel from '@/components/search/FilterPanel';
 import VehicleCard from '@/components/search/VehicleCard';
+import VehicleCardSkeleton from '@/components/search/VehicleCardSkeleton';
 import ResultsHeader from '@/components/search/ResultsHeader';
 import Pagination from '@/components/search/Pagination';
 import { searchParamsSchema, filterSchema, FilterParams, Vehicle } from '@shared/schema';
@@ -167,31 +168,44 @@ const SearchResults = () => {
               />
               
               {isLoading ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
-                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-neutral-300 border-t-primary"></div>
-                  <p className="mt-4 text-neutral-600">Searching for vehicles across multiple sources...</p>
-                </div>
+                <>
+                  <div className="bg-white rounded-lg shadow p-6 text-center mb-6 slide-up">
+                    <div className="inline-block loader-spin h-12 w-12 border-4 border-neutral-300 border-t-primary rounded-full"></div>
+                    <p className="mt-4 text-neutral-600">Buscando vehículos en múltiples fuentes...</p>
+                  </div>
+                  
+                  {/* Esqueletos para simular la carga de resultados */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {[...Array(6)].map((_, index) => (
+                      <VehicleCardSkeleton key={index} />
+                    ))}
+                  </div>
+                </>
               ) : error ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
-                  <p className="text-red-600">An error occurred while fetching results. Please try again.</p>
+                <div className="bg-white rounded-lg shadow p-8 text-center slide-up">
+                  <p className="text-red-600">Ha ocurrido un error al buscar resultados. Por favor, inténtalo de nuevo.</p>
                 </div>
               ) : vehicles.length === 0 ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
-                  <p className="text-neutral-600">No vehicles found matching your criteria. Try adjusting your search or filters.</p>
+                <div className="bg-white rounded-lg shadow p-8 text-center slide-up">
+                  <p className="text-neutral-600">No se encontraron vehículos que coincidan con tus criterios. Intenta ajustar tu búsqueda o filtros.</p>
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 staggered-grid">
                     {vehicles.map((vehicle) => (
-                      <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                      <div key={vehicle.id} className="staggered-item">
+                        <VehicleCard vehicle={vehicle} />
+                      </div>
                     ))}
                   </div>
                   
-                  <Pagination 
-                    currentPage={page} 
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                  />
+                  <div className="mt-8 fade-in">
+                    <Pagination 
+                      currentPage={page} 
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
                 </>
               )}
             </div>

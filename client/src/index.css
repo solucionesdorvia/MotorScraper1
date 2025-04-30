@@ -92,6 +92,69 @@
   @apply hover:shadow-md transition-shadow;
 }
 
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.5s ease-in forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.staggered-item {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* Animaciones para los elementos de forma escalonada */
+.staggered-grid > *:nth-child(1) { animation: staggerFade 0.5s ease forwards 0.1s; }
+.staggered-grid > *:nth-child(2) { animation: staggerFade 0.5s ease forwards 0.15s; }
+.staggered-grid > *:nth-child(3) { animation: staggerFade 0.5s ease forwards 0.2s; }
+.staggered-grid > *:nth-child(4) { animation: staggerFade 0.5s ease forwards 0.25s; }
+.staggered-grid > *:nth-child(5) { animation: staggerFade 0.5s ease forwards 0.3s; }
+.staggered-grid > *:nth-child(6) { animation: staggerFade 0.5s ease forwards 0.35s; }
+.staggered-grid > *:nth-child(7) { animation: staggerFade 0.5s ease forwards 0.4s; }
+.staggered-grid > *:nth-child(8) { animation: staggerFade 0.5s ease forwards 0.45s; }
+.staggered-grid > *:nth-child(9) { animation: staggerFade 0.5s ease forwards 0.5s; }
+
+/* Definición de keyframes para las animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0); 
+  }
+}
+
+@keyframes staggerFade {
+  from { 
+    opacity: 0;
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0); 
+  }
+}
+
+/* Animación para spinners de carga */
+.loader-spin {
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .btn-primary {
   @apply bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-md transition-colors;
 }

@@ -42,7 +42,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
   };
   
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow relative">
+    <div className="bg-white rounded-lg shadow overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 relative">
       <div className={`absolute top-2 left-2 ${getSourceClassName(vehicle.source)} text-white text-xs font-medium px-2 py-1 rounded`}>
         {getSourceLabel(vehicle.source)}
       </div>
