@@ -52,7 +52,7 @@ export function getSourceLabel(source: string): string {
   if (source === 'edmunds') return 'Edmunds';
   if (source === 'cars.com') return 'Cars.com';
   if (source === 'hemmings.com') return 'Hemmings';
-  if (source === 'bringatrailer.com') return 'Bring a Trailer';
+  if (source === 'bringatrailer' || source === 'bringatrailer.com') return 'Bring a Trailer';
   if (source === 'classiccars.com') return 'Classic Cars';
   return source;
 }

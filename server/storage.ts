@@ -97,7 +97,7 @@ export class MemStorage implements IStorage {
     if (searchParams.ebay) enabledSources.push('ebay');
     if (searchParams.edmunds) enabledSources.push('cars.com'); // edmunds maps to cars.com
     if (searchParams.hemmings) enabledSources.push('hemmings.com');
-    if (searchParams.bringatrailer) enabledSources.push('bringatrailer.com');
+    if (searchParams.bringatrailer) enabledSources.push('bringatrailer');
     if (searchParams.classiccars) enabledSources.push('classiccars.com');
     
     if (enabledSources.length > 0) {
