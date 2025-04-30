@@ -119,8 +119,8 @@ function generateBaTVehicles(make: string, model: string, year?: string): Insert
     // Create a unique listing ID for URL generation
     const auctionId = Math.floor(Math.random() * 1000000) + 30000000;
     
-    // Generate image URL (BaT style with auction number)
-    const imageUrl = `https://bringatrailer.com/wp-content/uploads/${2000 + Math.floor(Math.random() * 23)}/0${1 + Math.floor(Math.random() * 9)}/${formattedMake.toLowerCase()}-${formattedModel.toLowerCase()}-${vehicleYear}-bat-auction-${auctionId % 100000}.jpg`;
+    // Generate image URL (empty to use default)
+    const imageUrl = '';
     
     // Create vehicle object
     const vehicle: InsertVehicle = {

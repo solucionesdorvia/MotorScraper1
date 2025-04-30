@@ -107,8 +107,8 @@ function generateClassicCarsVehicles(make: string, model: string, year?: string)
     // Create a unique listing ID for URL generation
     const listingId = Math.floor(Math.random() * 1000000) + 40000000;
     
-    // Generate image URL
-    const imageUrl = `https://ccimages.classiccars.com/${formattedMake.toLowerCase()}/${formattedModel.toLowerCase()}/${vehicleYear}-${listingId}.jpg`;
+    // Generate image URL (empty to use default)
+    const imageUrl = '';
     
     // ClassicCars.com often has dealer listings
     const dealerNames = [

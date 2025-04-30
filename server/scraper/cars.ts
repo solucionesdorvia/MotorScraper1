@@ -102,8 +102,8 @@ function generateCarsVehicles(make: string, model: string, year?: string): Inser
     // Create a unique listing ID for URL generation
     const listingId = Math.floor(Math.random() * 10000000) + 10000000;
     
-    // Generate image URL
-    const imageUrl = `https://images.cars.com/classics/${formattedMake.toLowerCase()}-${formattedModel.toLowerCase()}-${vehicleYear}-${i + 1}.jpg`;
+    // Generate placeholder image URL (use default image functionality instead of broken URL)
+    const imageUrl = '';
     
     // Create vehicle object
     const vehicle: InsertVehicle = {

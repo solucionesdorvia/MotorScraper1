@@ -110,8 +110,8 @@ function generateHemmingsVehicles(make: string, model: string, year?: string): I
     // Create a unique listing ID for URL generation
     const listingId = Math.floor(Math.random() * 10000000) + 20000000;
     
-    // Generate image URL (more realistic looking Hemmings-style URL)
-    const imageUrl = `https://s3.amazonaws.com/hmg-prod/vehicles/hemmings/${formattedMake.toLowerCase()}/${formattedModel.toLowerCase()}/${vehicleYear}/${listingId}.jpg`;
+    // Generate image URL (blank - will use default image)
+    const imageUrl = '';
     
     // Hemmings often has dealer names for premium sellers
     const dealerNames = [
