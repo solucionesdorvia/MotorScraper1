@@ -159,7 +159,7 @@ function generateHemmingsVehicles(make: string, model: string, year?: string): I
       vin,
       location,
       imageUrl,
-      sourceUrl: `https://www.hemmings.com/classifieds/cars-for-sale/${formattedMake.toLowerCase()}/${formattedModel.toLowerCase()}`,
+      sourceUrl: `https://www.hemmings.com/classifieds/cars-for-sale`,
       source: 'hemmings.com',
       dealerName
     };

@@ -113,8 +113,7 @@ export function buildCarsUrl(make: string, model: string, year?: string): string
 }
 
 export function buildHemmingsUrl(make: string, model: string, year?: string): string {
-  const yearParam = year ? `/${year}` : '';
-  return `https://www.hemmings.com/classifieds/cars-for-sale/${make.toLowerCase()}/${model.toLowerCase()}${yearParam}`;
+  return `https://www.hemmings.com/classifieds/cars-for-sale`;
 }
 
 export function buildBringATrailerUrl(make: string, model: string, year?: string): string {
