@@ -101,7 +101,7 @@ function generateMockBaTResults(make: string, model: string, year?: string): Ins
       endsIn: endsIn,
       bodyType: ['Coupe', 'Convertible', 'Fastback', 'Sedan'][Math.floor(Math.random() * 4)],
       transmission: ['Manual', 'Automática'][Math.floor(Math.random() * 2)],
-      location: ['Los Angeles, CA', 'Miami, FL', 'Nueva York, NY', 'Chicago, IL'][Math.floor(Math.random() * l)]
+      location: ['Los Angeles, CA', 'Miami, FL', 'Nueva York, NY', 'Chicago, IL'][Math.floor(Math.random() * 4)]
     };
     
     vehicles.push(vehicle);
