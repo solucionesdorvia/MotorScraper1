@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { InsertVehicle } from '../../shared/schema';
+import { InsertVehicle } from '@shared/schema';
 
 /**
  * Scraper para Bring a Trailer - sitio premium de subastas para vehículos de colección
@@ -97,8 +97,8 @@ function generateMockBaTResults(make: string, model: string, year?: string): Ins
       year: yearValue,
       price: currentBid,
       isAuction: true,
-      currentBid: currentBid,
-      endsIn: endsIn,
+      currentBid,
+      endsIn,
       bodyType: ['Coupe', 'Convertible', 'Fastback', 'Sedan'][Math.floor(Math.random() * 4)],
       transmission: ['Manual', 'Automática'][Math.floor(Math.random() * 2)],
       location: ['Los Angeles, CA', 'Miami, FL', 'Nueva York, NY', 'Chicago, IL'][Math.floor(Math.random() * 4)]
@@ -155,8 +155,8 @@ function extractVehicleListings(
           year: extractedYear,
           price: currentBid || null, // Usamos el precio actual como precio si está disponible
           isAuction: true,
-          currentBid: currentBid,
-          endsIn: endsIn,
+          currentBid,
+          endsIn
         };
         
         vehicles.push(vehicle);
@@ -218,7 +218,7 @@ function extractPrice(text: string): number | null {
   if (!text) return null;
   
   // Extrae dígitos y comas, ignora el símbolo de dólar y otros caracteres
-  const priceMatch = text.match(/\$([\d,]+)/i);
+  const priceMatch = text.match(/\$([\d,]+)/);
   if (priceMatch && priceMatch[1]) {
     // Elimina comas y convierte a número
     return parseInt(priceMatch[1].replace(/,/g, ''), 10);
