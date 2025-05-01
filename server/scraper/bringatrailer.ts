@@ -61,11 +61,15 @@ function extractVehicleListings(
   
   // Selecciona los elementos que contienen listados de vehículos activos
   // Buscamos primero en #search-result-live-listings que contiene SOLO las subastas activas
-  const liveListings = $('#search-result-live-listings a');
+  const liveListings = $('#search-result-live-listings a.listing-card');
   console.log(`Encontradas ${liveListings.length} enlaces activos en #search-result-live-listings`);
   
-  // Caso de respaldo: Si no encontramos listados activos, intentamos con search-result-listings
-  const searchResultListings = liveListings.length > 0 ? liveListings : $('#search-result-listings a');
+  // Por si no encontramos todos los listados activos con el primer selector
+  const liveListingsAlt = $('#search-result-listings a.listing-card');
+  console.log(`Encontradas ${liveListingsAlt.length} enlaces activos en #search-result-listings`);
+  
+  // Combinamos todos los selectores para asegurar que encontramos todos los listados
+  const searchResultListings = liveListings.length > 0 ? liveListings : liveListingsAlt;
   console.log(`Total de listados a procesar: ${searchResultListings.length}`);
 
   
@@ -94,17 +98,23 @@ function extractVehicleListings(
           // Procesa la oferta
           const bidDiv = $(element).find('.content-secondary .item-bidding');
           const currentBidText = bidDiv.find('.bid-formatted').text().trim();
-          let currentBid = null;
+          console.log(`Texto de oferta: "${currentBidText}"`);
           
+          let currentBid = null;
           if (currentBidText) {
-            const priceMatch = currentBidText.match(/(\d[\d,]+)/);
+            // Busca patrones de precio: $69,500 o USD $69,500
+            const priceMatch = currentBidText.match(/[\$]?\s*(\d[\d,\.]+)/);
             if (priceMatch && priceMatch[1]) {
-              currentBid = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+              const cleanPrice = priceMatch[1].replace(/[^\d]/g, '');
+              currentBid = parseInt(cleanPrice, 10);
+              console.log(`Precio extraído: ${currentBid}`);
             }
           }
           
           // Procesa el tiempo restante
-          const endsInText = bidDiv.find('.countdown-text').text().trim();
+          const countdownSpan = bidDiv.find('.countdown-text');
+          const endsInText = countdownSpan.text().trim();
+          console.log(`Tiempo restante: "${endsInText}"`);
           const endsIn = endsInText || null;
           
           // Procesa el año
