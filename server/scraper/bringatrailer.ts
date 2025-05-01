@@ -138,6 +138,139 @@ function extractVehicleListings(
   
   // Selecciona los elementos que contienen listados de vehículos
   // Basado en el HTML proporcionado por el usuario
+  // Buscamos primero en #search-result-listings que contiene las subastas activas
+  // Si no hay clase .listing-card, buscaremos dentro de .search-result-listings
+  // En ambos casos, vamos tras las etiquetas <a> que contienen los listados
+  
+  // Intenta primero el selector visto en el HTML compartido
+  const searchResultListings = $('#search-result-listings a');
+  console.log(`Encontradas ${searchResultListings.length} enlaces en #search-result-listings`);
+  
+  if (searchResultListings.length > 0) {
+    searchResultListings.each((index, element) => {
+      try {
+        // Extrae datos clave
+        const title = $(element).find('h3').text().trim();
+        console.log(`Encontrado título ${index + 1} en search-result-listings: "${title}"`);
+        
+        // Solo procesa si el título es relevante para la búsqueda
+        if (isRelevantListing(title, make, model, year)) {
+          console.log(`Título relevante en search-result-listings: "${title}"`);
+          // Aseguramos que la URL sea completa
+          let sourceUrl = $(element).attr('href') || '';
+          // Si la URL no empieza con http, asumimos que es una ruta relativa a bringatrailer.com
+          if (sourceUrl && !sourceUrl.startsWith('http')) {
+            sourceUrl = `https://bringatrailer.com${sourceUrl}`;
+          }
+          console.log(`URL de la subasta: ${sourceUrl}`);
+          
+          // Extrae imagen
+          const imageUrl = $(element).find('.thumbnail img').attr('src') || '';
+          console.log(`URL de imagen: ${imageUrl}`);
+          
+          // Extrae información de la subasta
+          const bidDiv = $(element).find('.content-secondary .item-bidding');
+          const currentBidText = bidDiv.find('.bid-formatted').text().trim();
+          console.log(`Texto de oferta: "${currentBidText}"`);
+          let currentBid = null;
+          
+          // Extrae el precio del texto de oferta
+          if (currentBidText) {
+            // Elimina 'USD $' o cualquier otro prefijo y luego convierte a número
+            const priceMatch = currentBidText.match(/(\d[\d,]+)/);
+            if (priceMatch && priceMatch[1]) {
+              currentBid = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+              console.log(`Oferta actual extraída: ${currentBid}`);
+            }
+          }
+          
+          // Extrae tiempo restante
+          const endsInText = bidDiv.find('.countdown-text').text().trim();
+          const endsIn = endsInText || null;
+          console.log(`Tiempo restante: ${endsIn}`);
+          
+          // Extrae el año del título si está disponible
+          const extractedYear = extractYear(title);
+          console.log(`Año extraído: ${extractedYear}`);
+          
+          // Extrae una descripción si está disponible
+          const description = $(element).find('.item-excerpt').text().trim() || null;
+          console.log(`Descripción: ${description ? (description.substring(0, 50) + '...') : 'No disponible'}`);
+          
+          // Extraer ubicación o país si está disponible
+          let locationText = 'Estados Unidos';
+          const countryName = $(element).find('.show-country-name').text().trim();
+          if (countryName) {
+            locationText = countryName === 'USA' ? 'Estados Unidos' : countryName;
+          }
+          console.log(`Ubicación: ${locationText}`);
+          
+          // Intenta determinar el tipo de carrocería desde el título o descripción
+          let bodyType = null;
+          const fullText = `${title} ${description || ''}`;
+          
+          if (fullText.toLowerCase().includes('fastback')) {
+            bodyType = 'Fastback';
+          } else if (fullText.toLowerCase().includes('coupe')) {
+            bodyType = 'Coupe';
+          } else if (fullText.toLowerCase().includes('convertible') || fullText.toLowerCase().includes('cabrio')) {
+            bodyType = 'Convertible';
+          } else if (fullText.toLowerCase().includes('sedan')) {
+            bodyType = 'Sedan';
+          }
+          
+          // Intenta determinar la transmisión desde el título o descripción
+          let transmission = null;
+          if (fullText.toLowerCase().includes('manual') || fullText.toLowerCase().includes('speed') || 
+              fullText.toLowerCase().includes('5-speed') || fullText.toLowerCase().includes('6-speed')) {
+            transmission = 'Manual';
+          } else if (fullText.toLowerCase().includes('automatic') || fullText.toLowerCase().includes('auto')) {
+            transmission = 'Automática';
+          }
+          
+          // Crea el objeto del vehículo
+          const vehicle: InsertVehicle = {
+            title,
+            make,
+            model,
+            source: 'bringatrailer',
+            sourceUrl,
+            imageUrl,
+            year: extractedYear,
+            price: currentBid, // Usamos el precio actual como precio si está disponible
+            isAuction: true,
+            currentBid,
+            endsIn,
+            transmission,
+            bodyType,
+            location: locationText,
+            mileage: null, // No disponible en el extracto de BaT
+            color: null, // No disponible en el extracto de BaT
+            vin: null, // No disponible en el extracto de BaT
+            fuelType: null, // No disponible en el extracto de BaT
+            dealerName: null, // No disponible en el extracto de BaT
+            hasDeals: false // No hay ofertas especiales en BaT, todo son subastas
+          };
+          
+          vehicles.push(vehicle);
+          console.log(`Vehículo añadido desde search-result-listings: ${title} - ${currentBid}`);
+        } else {
+          console.log(`Ignorando título no relevante en search-result-listings: ${title}`);
+        }
+      } catch (error) {
+        console.error('Error al procesar un listado de search-result-listings:', error);
+      }
+    });
+  }
+  
+  // Si ya encontramos vehículos, no necesitamos buscar más
+  if (vehicles.length > 0) {
+    console.log(`Encontrados ${vehicles.length} vehículos en search-result-listings, omitiendo búsqueda adicional`);
+    return vehicles;
+  }
+  
+  // Si no encontramos nada en search-result-listings, intentamos con .listing-card
+  console.log('No se encontraron vehículos en #search-result-listings, intentando con .listing-card');
   listingCards.each((index, element) => {
     try {
       // Extrae datos clave
