@@ -25,10 +25,19 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     const $ = load(html);
     const vehicles: InsertVehicle[] = [];
     
+    // Buscar la estructura de la página para depuración
+    console.log('Detectando estructura DOM de la página');
+    console.log(`Existe div#search-result-live-listings: ${$('#search-result-live-listings').length > 0}`);
+    console.log(`Existe div#search-result-listings: ${$('#search-result-listings').length > 0}`);
+    console.log(`Elementos a.listing-card en toda la página: ${$('a.listing-card').length}`);
+    console.log(`Elementos div.listing-card en toda la página: ${$('div.listing-card').length}`);
+    console.log(`Elementos con clase .thumbnail: ${$('.thumbnail').length}`);
+    console.log(`Elementos h3 en toda la página: ${$('h3').length}`);
+    
     // Intenta con todos los posibles selectores de listados
     const liveListings = $('#search-result-live-listings a.listing-card');
     const regularListings = $('#search-result-listings a.listing-card');
-    const listingCards = $('.listing-card');
+    const listingCards = $('a.listing-card'); // Buscar todos los listing-card en la página
     
     // Elegimos el selector que encuentre más resultados
     let listings;
@@ -54,10 +63,33 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     // Si no encontramos nada con los selectores habituales, intentamos buscar más profundo
     if (listings.length === 0) {
       console.log('Intentando buscar listados en toda la página...');
+      
+      // Intentar encontrar divs con estructura similar a listados
+      console.log('Buscando divs que contengan h3 y metadata de vehículos...');
+      
+      // Buscar todos los h3 y ver si contienen títulos relevantes
       $('h3').each((i, el) => {
         const text = $(el).text().trim();
         if (text && isRelevant(text, make, model, year)) {
           console.log(`Título relevante encontrado: "${text}"`);
+          
+          // Buscar padres o hermanos que tengan información adicional
+          const parent = $(el).parent().parent(); // Subir dos niveles
+          const sourceUrl = parent.find('a').attr('href');
+          const imgSrc = parent.find('img').attr('src');
+          
+          if (sourceUrl || imgSrc) {
+            console.log(`Encontrado enlace: ${sourceUrl || 'no'}, imagen: ${imgSrc ? 'sí' : 'no'}`);
+          }
+        }
+      });
+      
+      // Buscar todos los enlaces que podrían ser listados
+      $('a').each((i, el) => {
+        const href = $(el).attr('href') || '';
+        if (href.includes('/listing/') && href.includes(model.toLowerCase())) {
+          const nearH3 = $(el).find('h3').text().trim() || $(el).parent().find('h3').text().trim();
+          console.log(`Posible listado encontrado: ${href} - Título: ${nearH3 || 'no encontrado'}`);
         }
       });
     }
