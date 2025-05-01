@@ -1,5 +1,6 @@
 /**
- * Scraper simplificado para Bring a Trailer
+ * Scraper mejorado para Bring a Trailer
+ * Diseñado para extraer listados de vehículos de la página de búsqueda
  */
 
 import { load } from 'cheerio';
@@ -10,7 +11,7 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
   console.log(`Iniciando scraping de Bring a Trailer para ${make} ${model} ${year || ''}`);
   
   try {
-    // Construye URL para buscar en Bring a Trailer
+    // Construye URL para buscar en Bring a Trailer con formato correcto
     const searchUrl = buildUrl(make, model, year);
     console.log(`URL de búsqueda: ${searchUrl}`);
     
@@ -21,134 +22,142 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     const html = await response.text();
     console.log(`HTML obtenido: ${html.length} caracteres`);
     
-    // Extrae listados de vehículos
+    // Extrae listados de vehículos usando Cheerio
     const $ = load(html);
     const vehicles: InsertVehicle[] = [];
     
-    // Buscar la estructura de la página para depuración
-    console.log('Detectando estructura DOM de la página');
-    console.log(`Existe div#search-result-live-listings: ${$('#search-result-live-listings').length > 0}`);
-    console.log(`Existe div#search-result-listings: ${$('#search-result-listings').length > 0}`);
-    console.log(`Elementos a.listing-card en toda la página: ${$('a.listing-card').length}`);
-    console.log(`Elementos div.listing-card en toda la página: ${$('div.listing-card').length}`);
-    console.log(`Elementos con clase .thumbnail: ${$('.thumbnail').length}`);
-    console.log(`Elementos h3 en toda la página: ${$('h3').length}`);
+    // Analizar la estructura de la página
+    console.log('Analizando estructura de la página de resultados...');
     
-    // Intenta con todos los posibles selectores de listados
-    const liveListings = $('#search-result-live-listings a.listing-card');
-    const regularListings = $('#search-result-listings a.listing-card');
-    const listingCards = $('a.listing-card'); // Buscar todos los listing-card en la página
+    // Buscar el título de los resultados de búsqueda
+    const searchResults = $('h2:contains("Search Results")').text().trim();
+    console.log(`Título de resultados: ${searchResults}`);
     
-    // Elegimos el selector que encuentre más resultados
-    let listings;
-    if (liveListings.length > 0) {
-      listings = liveListings;
-      console.log(`Encontrados ${listings.length} listados activos`);
-    } else if (regularListings.length > 0) {
-      listings = regularListings;
-      console.log(`Encontrados ${listings.length} listados regulares`);
-    } else {
-      listings = listingCards;
-      console.log(`Encontrados ${listings.length} tarjetas de listado generales`);
+    // Buscar la sección de listados activos
+    const liveListingsHeading = $('h2:contains("Live Listings")');
+    if (liveListingsHeading.length > 0) {
+      console.log(`Sección Live Listings: ${liveListingsHeading.text().trim()}`);
     }
     
-    // Imprimir los primeros títulos encontrados para depuración
-    listings.each((i, el) => {
-      if (i < 3) {
-        const title = $(el).find('h3').text().trim();
-        console.log(`Título ${i+1}: "${title}"`);
-      }
+    // Listados de vehículos - múltiples selectores para diferentes partes de la página
+    // Basado en la estructura vista en la captura de pantalla e HTML proporcionado
+    
+    // 1. Buscar enlaces directos a listados
+    const listingLinks = $('a[href*="/listing/"]').filter(function() {
+      const href = $(this).attr('href') || '';
+      // Solo incluir enlaces que parezcan ser de vehículos
+      return href.includes('mustang') || href.includes(model.toLowerCase());
     });
     
-    // Si no encontramos nada con los selectores habituales, intentamos buscar más profundo
-    if (listings.length === 0) {
-      console.log('Intentando buscar listados en toda la página...');
-      
-      // Intentar encontrar divs con estructura similar a listados
-      console.log('Buscando divs que contengan h3 y metadata de vehículos...');
-      
-      // Buscar todos los h3 y ver si contienen títulos relevantes
-      $('h3').each((i, el) => {
-        const text = $(el).text().trim();
-        if (text && isRelevant(text, make, model, year)) {
-          console.log(`Título relevante encontrado: "${text}"`);
-          
-          // Buscar padres o hermanos que tengan información adicional
-          const parent = $(el).parent().parent(); // Subir dos niveles
-          const sourceUrl = parent.find('a').attr('href');
-          const imgSrc = parent.find('img').attr('src');
-          
-          if (sourceUrl || imgSrc) {
-            console.log(`Encontrado enlace: ${sourceUrl || 'no'}, imagen: ${imgSrc ? 'sí' : 'no'}`);
-          }
-        }
-      });
-      
-      // Buscar todos los enlaces que podrían ser listados
-      $('a').each((i, el) => {
-        const href = $(el).attr('href') || '';
-        if (href.includes('/listing/') && href.includes(model.toLowerCase())) {
-          const nearH3 = $(el).find('h3').text().trim() || $(el).parent().find('h3').text().trim();
-          console.log(`Posible listado encontrado: ${href} - Título: ${nearH3 || 'no encontrado'}`);
-        }
-      });
-    }
+    console.log(`Encontrados ${listingLinks.length} enlaces a listados`);
     
-    listings.each((i, el) => {
+    // 2. Usar los enlaces para encontrar los contenedores de las tarjetas
+    const cardContainers = new Set();
+    
+    // Procesar cada enlace encontrado para extraer datos de vehículos
+    listingLinks.each((i, link) => {
       try {
-        const title = $(el).find('h3').text().trim();
-        if (!title) return;
+        // Obtener URL del listado
+        let url = $(link).attr('href') || '';
+        if (!url) return;
         
-        // Verifica si el título es relevante para la búsqueda
-        if (!isRelevant(title, make, model, year)) return;
+        if (!url.startsWith('http')) {
+          url = `https://bringatrailer.com${url}`;
+        }
         
-        // Extrae URL, imagen y precio
-        let url = $(el).attr('href') || '';
-        if (url && !url.startsWith('http')) url = `https://bringatrailer.com${url}`;
+        // Buscar el contenedor padre que tiene toda la info del listado
+        // Podemos navegar hacia arriba buscando contenedores que tengan la info completa
+        let container = $(link);
+        if (!container.hasClass('listing-card')) {
+          container = container.closest('.listing-card, .search-result-grid-item, .previous-listing');
+        }
         
-        const img = $(el).find('.thumbnail img').attr('src') || '';
+        // Si no encontramos contenedor, usar el enlace directamente
+        if (container.length === 0) {
+          container = $(link);
+        }
         
-        // Busca precio/oferta actual
-        const bidText = $(el).find('.bid-formatted').text().trim();
+        // Si ya procesamos este contenedor, omitirlo
+        if (cardContainers.has(container[0])) return;
+        cardContainers.add(container[0]);
+        
+        // Extraer título - buscar en diferentes lugares posibles
+        let title = '';
+        title = container.find('h3').text().trim() || 
+                $(link).text().trim() || 
+                $(link).attr('title') || 
+                $(link).find('img').attr('alt') || 
+                '';
+        
+        if (!title) {
+          // Si no encontramos título en el contenedor, buscar en el enlace o sus atributos
+          const linkText = $(link).text().trim();
+          const linkTitle = $(link).attr('title');
+          const imgAlt = $(link).find('img').attr('alt');
+          title = linkText || linkTitle || imgAlt || '';
+        }
+        
+        // Verificar si el título es relevante para nuestra búsqueda
+        if (!title || !isRelevant(title, make, model, year)) return;
+        
+        // Buscar imagen - puede estar en diferentes lugares
+        let imageUrl = container.find('img').attr('src') || 
+                        $(link).find('img').attr('src') || 
+                        '';
+        
+        // Buscar información de la subasta
+        // El precio puede estar en diferentes lugares dependiendo de la estructura
+        let bidText = container.find('.bid-formatted').text().trim() || 
+                      container.find('.bidding-bid').text().trim();
+        
+        // Si no hay texto de oferta directo, buscar otros indicadores de precio
+        if (!bidText) {
+          bidText = container.find('.item-results').text().trim() || 
+                    container.text().match(/(?:USD|\$)\s*[\d,]+/) || 
+                    '';
+        }
+        
+        // Convertir el texto de la oferta a un número
         let price = null;
         if (bidText) {
-          const match = bidText.match(/[\$]?\s*(\d[\d,\.]+)/);
-          if (match?.[1]) {
-            price = parseInt(match[1].replace(/[^\d]/g, ''), 10);
+          // Intentar extraer el número de diferentes formatos posibles
+          const priceMatch = bidText.toString().match(/(?:\$)?\s*(\d[\d,]*)/);
+          if (priceMatch && priceMatch[1]) {
+            price = parseInt(priceMatch[1].replace(/[^\d]/g, ''), 10);
           }
         }
         
-        // Tiempo restante de subasta
-        const timeText = $(el).find('.countdown-text').text().trim();
-        
-        // Verifica si la subasta está activa
+        // Buscar tiempo restante
+        let timeText = container.find('.countdown-text').text().trim() || 
+                      container.find('.bidding-countdown').text().trim();
+                      
+        // Verificar si la subasta está activa
         const isActive = !!timeText && 
                         !timeText.toLowerCase().includes('sold') &&
-                        !timeText.toLowerCase().includes('ended') &&
-                        (timeText.includes('days') || 
-                         timeText.includes('hours') || 
-                         timeText.includes('mins') || 
-                         timeText.includes(':'));
+                        !timeText.toLowerCase().includes('ended');
         
-        if (!isActive) return;
+        // Solo incluir subastas activas si estamos en la sección Live Listings
+        if (liveListingsHeading.length > 0 && !isActive) {
+          return;
+        }
         
-        // Extrae año del título
+        // Extraer año del título
         const yearMatch = title.match(/(19\d{2}|20\d{2})/);
-        const extractedYear = yearMatch ? parseInt(yearMatch[0], 10) : null;
+        const extractedYear = yearMatch ? parseInt(yearMatch[0], 10) : (year ? parseInt(year, 10) : null);
         
-        // Crea objeto de vehículo
+        // Crear objeto de vehículo
         const vehicle: InsertVehicle = {
           title,
           make,
           model,
           source: 'bringatrailer',
           sourceUrl: url,
-          imageUrl: img,
+          imageUrl,
           year: extractedYear,
-          price: price,
+          price,
           isAuction: true,
           currentBid: price,
-          endsIn: timeText || null,
+          endsIn: isActive ? timeText : null,
           transmission: null,
           bodyType: null,
           location: 'Estados Unidos',
@@ -160,8 +169,12 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
           hasDeals: false
         };
         
-        vehicles.push(vehicle);
-        console.log(`Añadido: ${title} - ${price || 'sin precio'} - ${timeText || 'sin tiempo'}`);
+        // Solo añadir vehículo si tiene URL, título y (idealmente) precio
+        if (url && title) {
+          vehicles.push(vehicle);
+          console.log(`Añadido: ${title} - ${price || 'sin precio'} - ${timeText || 'sin tiempo'}`);
+        }
+        
       } catch (err) {
         console.error('Error procesando listado:', err);
       }
