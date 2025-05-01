@@ -46,10 +46,21 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     // La estructura típica es: <div class="search-results"><h2>Live Listings (2)</h2></div>
     // Seguido por <div class="listings-toolbar"> y luego los elements
     // Intentamos varias estrategias para encontrar la sección correcta
-    const liveListingsHeader = $('div:contains("Live Listings")').filter(function() {
+    
+    // Buscar la etiqueta H2 que contiene exactamente "Live Listings" - esto es lo más preciso
+    const liveListingsH2 = $('h2').filter(function() {
       const text = $(this).text().trim();
-      return text.includes('Live Listings');
+      return text.startsWith('Live Listings');
     });
+    console.log(`¿Se encontró encabezado H2 Live Listings?: ${liveListingsH2.length > 0}`);
+    
+    // Buscar cualquier elemento que contenga "Live Listings" como respaldo
+    const liveListingsHeader = liveListingsH2.length > 0 ? 
+      liveListingsH2.closest('div.search-results, div') : 
+      $('div:contains("Live Listings")').filter(function() {
+        const text = $(this).text().trim();
+        return text.includes('Live Listings');
+      });
     
     console.log(`Encontrado encabezado de Live Listings: ${liveListingsHeader.length > 0}`);
     
@@ -273,7 +284,28 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
         
         // Buscar tiempo restante - clave para identificar subastas activas
         let timeText = container.find('.countdown-text').text().trim() || 
-                      container.find('.bidding-countdown').text().trim();
+                      container.find('.bidding-countdown').text().trim() ||
+                      container.find('[class*="count"][class*="down"]').text().trim() ||
+                      container.find('[class*="time"][class*="remain"]').text().trim();
+                      
+        // Si no hay tiempo exacto pero hay progreso o indicadores, usar un texto por defecto
+        if (!timeText && container.find('progress').length > 0) {
+          timeText = 'En curso'; // Valor por defecto para auctions activas con progreso
+        }
+        
+        // Buscar otros elementos de tiempo en el contenedor
+        if (!timeText) {
+          // Buscar texto que coincida con patrones de tiempo
+          const timePattern = /\b\d+[d|h|m|s]\b|\b\d+:\d+\b|\bends\s+in\b|\bending\b|\bends\s+soon\b/i;
+          const containerText = container.text();
+          if (timePattern.test(containerText)) {
+            // Extraer el fragmento que contiene la información de tiempo
+            const match = containerText.match(new RegExp(`.{0,10}(${timePattern.source}).{0,10}`, 'i'));
+            if (match) {
+              timeText = match[0].trim();
+            }
+          }
+        }
         
         // Comprobar si el listado es de la sección "Live Listings"
         // Buscar por estructura del DOM para determinar si está en la sección de activos
@@ -300,18 +332,47 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
           isInLiveSection
         );
         
-        // Verificar si la subasta está activa
-        const isActive = (
-          // Si está en la sección "Live Listings", considerarlo activo automáticamente
-          isInLiveSection || 
-          // O si tiene indicadores y no está marcado como finalizado
-          (hasActiveIndicators && 
-            !(timeText && (
-              timeText.toLowerCase().includes('sold') ||
-              timeText.toLowerCase().includes('ended')
-            ))
-          )
-        );
+        // IMPORTANTE: Solo queremos listados que estén REALMENTE activos
+        // Verificar si la subasta está activa - siendo MUY estrictos
+        let isActive = false;
+        
+        // Condición 1: Está en la sección "Live Listings" y tiene algún indicador de actividad
+        if (isInLiveSection && hasActiveIndicators) {
+          isActive = true;
+        }
+        // Condición 2: Tiene tiempo restante explícito (debe tener formato de tiempo)
+        else if (timeText && (
+          timeText.includes('day') || 
+          timeText.includes('hour') || 
+          timeText.includes('min') || 
+          timeText.includes(':') ||
+          /\d+d \d+h/.test(timeText) // Formato: "5d 2h"
+        )) {
+          isActive = true;
+        }
+        // Condición 3: Tiene barra de progreso Y contiene texto de finalización
+        else if (container.find('progress').length > 0 && 
+                container.text().toLowerCase().includes('ending')) {
+          isActive = true;
+        }
+        
+        // RECHAZAR explicitamente si contiene indicadores de finalización
+        if (timeText && (
+          timeText.toLowerCase().includes('sold') ||
+          timeText.toLowerCase().includes('ended') ||
+          timeText.toLowerCase().includes('complete') ||
+          timeText.toLowerCase().includes('finalizada')
+        )) {
+          isActive = false;
+        }
+        
+        // Si no hay tiempo, probablemente no está activa
+        if (!timeText) {
+          // A menos que tenga barra de progreso y otros indicadores claros
+          if (!(container.find('progress').length > 0 && hasActiveIndicators)) {
+            isActive = false;
+          }
+        }
         
         // Sólo incluir subastas activas - importante para los requisitos del usuario
         if (!isActive) {

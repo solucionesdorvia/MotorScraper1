@@ -56,13 +56,37 @@ export async function scrapeBringATrailerWithAI(make: string, model: string, yea
       console.error('Error al procesar HTML con OpenAI:', error);
     }
     
-    // Filtramos solo vehículos con subastas activas
+    // Filtramos solo vehículos con subastas activas usando criterios más estrictos
     const activeVehicles = vehicles.filter(v => {
-      return v.isAuction === true && 
-             v.endsIn !== null && 
-             v.endsIn !== undefined &&
-             !v.endsIn.toLowerCase().includes('ended') &&
-             !v.endsIn.toLowerCase().includes('sold');
+      // Si no tiene endsIn, no es una subasta activa
+      if (!v.endsIn) return false;
+      
+      const endsInLower = v.endsIn.toLowerCase();
+      
+      // Excluir si tiene palabras que indican que la subasta ha terminado
+      if (endsInLower.includes('ended') || 
+          endsInLower.includes('sold') ||
+          endsInLower.includes('complete') ||
+          endsInLower.includes('finalizada') ||
+          endsInLower.includes('terminada')) {
+        return false;
+      }
+      
+      // Incluir si tiene indicadores claros de tiempo restante
+      const hasTimeIndicators = (
+        endsInLower.includes('day') ||
+        endsInLower.includes('hour') ||
+        endsInLower.includes('min') ||
+        endsInLower.includes('second') ||
+        endsInLower.includes('seconds') ||
+        endsInLower.includes(':') ||
+        endsInLower.includes('ending soon') ||
+        endsInLower.includes('en curso') ||
+        /\d+[dhms]/.test(endsInLower) // Formato como "5d" o "2h"
+      );
+      
+      // Solo incluir vehículos que tengan tiempo restante explícito
+      return hasTimeIndicators;
     });
     
     console.log(`Total vehículos BaT: ${vehicles.length} (${activeVehicles.length} activos)`);
@@ -74,22 +98,64 @@ export async function scrapeBringATrailerWithAI(make: string, model: string, yea
 }
 
 /**
- * Extrae la sección de resultados del HTML
+ * Extrae la sección de resultados del HTML, priorizando "Live Listings"
  */
 function extractResultsSection(html: string): string {
   try {
-    // Buscar elementos que contengan listados
+    // Primero intentamos encontrar "Live Listings" por su texto específico
+    const liveListingsTextIndex = html.indexOf('Live Listings');
+    if (liveListingsTextIndex !== -1) {
+      console.log('Encontrado texto "Live Listings" en el HTML');
+      
+      // Buscar el div que contiene este texto hacia atrás
+      const divStartBeforeText = html.lastIndexOf('<div', liveListingsTextIndex);
+      if (divStartBeforeText !== -1) {
+        // Encontrar el div padre que contiene toda la sección
+        const containerStartIndex = html.lastIndexOf('<div', divStartBeforeText - 10);
+        if (containerStartIndex !== -1) {
+          // Buscar varios divs de cierre para capturar la sección completa
+          let depth = 0;
+          let currentPos = containerStartIndex;
+          let foundOpeningDiv = false;
+          
+          // Contar apertura y cierre de divs para encontrar el cierre correcto
+          while (currentPos < html.length) {
+            const openingTag = html.indexOf('<div', currentPos + 1);
+            const closingTag = html.indexOf('</div>', currentPos + 1);
+            
+            if (closingTag === -1) break;
+            
+            if (openingTag !== -1 && openingTag < closingTag) {
+              depth++;
+              currentPos = openingTag;
+              foundOpeningDiv = true;
+            } else {
+              if (foundOpeningDiv) depth--;
+              currentPos = closingTag;
+              if (depth < 0) {
+                // Encontramos el cierre del div contenedor
+                return html.substring(containerStartIndex, closingTag + 6);
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // Si no podemos extraer mediante el método anterior, usar el método original
     const liveListingsStart = html.indexOf('<div class="search-result-live-listings"');
     const listingsStart = html.indexOf('<div class="search-result-listings"');
     
     // Si encontramos alguna de las secciones
     if (liveListingsStart !== -1) {
+      console.log('Encontrada sección "search-result-live-listings"');
       // Encontrar el final de esta sección
       const endIndex = html.indexOf('</div>', liveListingsStart + 100);
       if (endIndex !== -1) {
         return html.substring(liveListingsStart, endIndex + 6);
       }
     } else if (listingsStart !== -1) {
+      console.log('Encontrada sección "search-result-listings"');
       // Encontrar el final de esta sección
       const endIndex = html.indexOf('</div>', listingsStart + 100);
       if (endIndex !== -1) {
@@ -110,15 +176,20 @@ async function extractVehiclesWithAI(html: string, make: string, model: string, 
   try {
     // Crear un prompt para OpenAI que extraiga la información de los vehículos
     const prompt = `
-    Analiza este HTML de Bring a Trailer y extrae todos los vehículos relevantes con estos criterios:
+    Analiza este HTML de Bring a Trailer y extrae SOLO los listados de vehículos con subastas ACTIVAS.
+    
+    REQUISITO CRÍTICO: SOLO QUIERO SUBASTAS ACTIVAS/EN VIVO/ONGOING. 
+    NO EXTRAIGAS listados que digan "SOLD" o listados terminados sin indicación de tiempo restante.
+    
+    Parámetros de búsqueda:
     - Marca: ${make}
     - Modelo: ${model}
     ${year ? `- Año: ${year}` : ''}
     
-    Busca listados de vehículos en la página. Estos pueden estar en:
-    1. Elementos con clase "listing-card"
-    2. Elementos con clase "search-result-live-listings" o "search-result-listings"
-    3. Enlaces (<a>) que contienen imágenes de vehículos y títulos
+    Busca listados en secciones como:
+    1. "Live Listings" o "Current Auctions" - estas son las más importantes
+    2. Elementos con clase "search-result-live-listings"
+    3. Elementos que contengan barras de progreso o contadores de tiempo
     
     Para cada vehículo relevante, extrae:
     1. Título del vehículo - debe contener el modelo "${model}" y el año "${year || ''}" si se especifica
@@ -127,13 +198,17 @@ async function extractVehiclesWithAI(html: string, make: string, model: string, 
     4. Precio actual de la oferta (número entero sin símbolos)
     5. Tiempo restante (texto indicando cuánto queda para terminar la subasta)
     
-    Busca especialmente información sobre subastas activas que contengan texto como "days left", "hours left", "ending soon".
+    ESTOS SON INDICADORES DE SUBASTA ACTIVA:
+    - Texto como "X days left", "X hours left", "ending soon", "ending in"
+    - Barras de progreso (elementos <progress>)
+    - Contadores de tiempo (spans o divs con clases que contengan "countdown")
+    
     Es muy importante que extraigas la URL correcta para cada listado y la URL de la imagen.
     
     Devuelve los resultados en formato JSON como un array de objetos con las propiedades:
     "title", "sourceUrl", "imageUrl", "price" (número entero), "endsIn" (string).
     
-    Si no encuentras vehículos relevantes, devuelve un array vacío.
+    Si no encuentras vehículos relevantes ACTIVOS, devuelve un array vacío.
     
     HTML:
     ${html}
