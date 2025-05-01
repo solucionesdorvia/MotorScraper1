@@ -79,27 +79,57 @@ export class MemStorage implements IStorage {
     console.log(`getVehicles: Total vehículos en almacenamiento: ${filteredVehicles.length}`);
     console.log(`getVehicles: Parámetros de búsqueda:`, JSON.stringify(searchParams));
     
-    // Caso especial para Mustang
+    // Casos especiales para modelos icónicos
     const isMustangSearch = searchParams.make?.toLowerCase() === 'mustang' || 
                            searchParams.model?.toLowerCase() === 'mustang';
+    const isChallengerSearch = searchParams.make?.toLowerCase() === 'challenger' || 
+                              searchParams.model?.toLowerCase() === 'challenger';
+    const isCamaroSearch = searchParams.make?.toLowerCase() === 'camaro' || 
+                          searchParams.model?.toLowerCase() === 'camaro';
+    const isCorvetteSearch = searchParams.make?.toLowerCase() === 'corvette' || 
+                            searchParams.model?.toLowerCase() === 'corvette';
     
-    // Apply search filters
+    // Apply search filters with special cases
     if (searchParams.make) {
-      // Caso especial: si buscamos por Mustang (como marca), buscar por Ford (marca) y Mustang (modelo)
+      // Ford Mustang
       if (searchParams.make.toLowerCase() === 'mustang') {
         console.log('getVehicles: Aplicando caso especial para Mustang');
         filteredVehicles = filteredVehicles.filter(v => 
           (v.make.toLowerCase() === 'ford' && v.model.toLowerCase() === 'mustang')
         );
-      } else {
+      }
+      // Dodge Challenger
+      else if (searchParams.make.toLowerCase() === 'challenger') {
+        console.log('getVehicles: Aplicando caso especial para Challenger');
+        filteredVehicles = filteredVehicles.filter(v => 
+          (v.make.toLowerCase() === 'dodge' && v.model.toLowerCase() === 'challenger')
+        );
+      }
+      // Chevrolet Camaro
+      else if (searchParams.make.toLowerCase() === 'camaro') {
+        console.log('getVehicles: Aplicando caso especial para Camaro');
+        filteredVehicles = filteredVehicles.filter(v => 
+          (v.make.toLowerCase() === 'chevrolet' && v.model.toLowerCase() === 'camaro')
+        );
+      }
+      // Chevrolet Corvette
+      else if (searchParams.make.toLowerCase() === 'corvette') {
+        console.log('getVehicles: Aplicando caso especial para Corvette');
+        filteredVehicles = filteredVehicles.filter(v => 
+          (v.make.toLowerCase() === 'chevrolet' && v.model.toLowerCase() === 'corvette')
+        );
+      }
+      // Caso normal: búsqueda estándar por marca
+      else {
         filteredVehicles = filteredVehicles.filter(v => 
           v.make.toLowerCase() === searchParams.make?.toLowerCase()
         );
       }
     }
     
-    if (searchParams.model && !isMustangSearch) {
-      // Si ya aplicamos el filtro de Mustang arriba, no lo volvemos a aplicar
+    // Aplicar filtro por modelo solo si no aplicamos un caso especial arriba
+    const isSpecialCase = isMustangSearch || isChallengerSearch || isCamaroSearch || isCorvetteSearch;
+    if (searchParams.model && !isSpecialCase) {
       filteredVehicles = filteredVehicles.filter(v => 
         v.model.toLowerCase() === searchParams.model?.toLowerCase()
       );
