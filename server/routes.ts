@@ -6,6 +6,7 @@ import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
 import { scrapeBringATrailer } from "./scraper/bat";
+import { scrapeBringATrailerWithAI } from "./scraper/bringatrailer-ai";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -151,15 +152,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
+            // Primero intentamos con el scraper normal
             bringATrailerResults = await scrapeBringATrailer(
               make, 
               model,
               searchParams.year?.toString()
             );
-            console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer`);
+            
+            // Si no hay resultados, intentamos con el scraper basado en OpenAI
+            if (bringATrailerResults.length === 0) {
+              console.log('No se encontraron resultados con el scraper normal, intentando con OpenAI...');
+              bringATrailerResults = await scrapeBringATrailerWithAI(
+                make, 
+                model,
+                searchParams.year?.toString()
+              );
+              console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con OpenAI`);
+            } else {
+              console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con scraper normal`);
+            }
           } catch (error) {
             console.error('Error al obtener resultados de Bring a Trailer:', error);
-            bringATrailerResults = [];
+            // Intento de respaldo con OpenAI si falló el scraper normal
+            try {
+              console.log('Intentando obtener resultados con OpenAI como respaldo...');
+              bringATrailerResults = await scrapeBringATrailerWithAI(
+                make, 
+                model,
+                searchParams.year?.toString()
+              );
+              console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con OpenAI (respaldo)`);
+            } catch (backupError) {
+              console.error('Error al obtener resultados de Bring a Trailer con OpenAI:', backupError);
+              bringATrailerResults = [];
+            }
           }
         } else {
           console.log('No se solicitan resultados de Bring a Trailer');
