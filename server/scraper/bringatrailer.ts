@@ -195,6 +195,9 @@ function extractVehicleListings(
       const title = $(element).find('h3').text().trim();
       if (!title) return; // Salta si no hay título
       
+      // Para depuración: imprimimos el título antes de verificar relevancia
+      console.log(`Evaluando título de listado alternativo: "${title}"`);
+      
       // Solo procesa si el título es relevante
       if (isRelevantListing(title, make, model, year)) {
         let sourceUrl = $(element).attr('href') || '';
@@ -266,17 +269,21 @@ function buildBringATrailerUrl(make: string, model: string, year?: string): stri
   // Construye los parámetros de búsqueda
   let searchTerms = '';
   
+  // Si make y model son iguales (como cuando se busca por "mustang" sin especificar "ford")
   if (make.toLowerCase() === model.toLowerCase()) {
-    // Si son iguales, solo usamos uno para evitar duplicación
+    // Usamos el término
     searchTerms = make;
   } else {
-    // Si son diferentes, usamos ambos
-    searchTerms = `${model}`; // Priorizamos el modelo
+    // Para casos como "dodge challenger", usamos ambos
+    searchTerms = `${make} ${model}`;
   }
+  
+  console.log(`Términos de búsqueda iniciales: "${searchTerms}"`);
+
   
   // Añadimos el año si está disponible
   if (year) {
-    searchTerms = `${model}+${year}`;
+    searchTerms = `${searchTerms}+${year}`;
   }
   
   // Agregamos el parámetro 'order=end_date' para mostrar primero subastas a punto de terminar
@@ -291,48 +298,62 @@ function isRelevantListing(title: string, make: string, model: string, year?: st
   const makeLower = make.toLowerCase();
   const modelLower = model.toLowerCase();
   
+  console.log(`Verificando relevancia para: "${title}" contra modelo "${model}" y año "${year || 'no especificado'}"`);
+  
+  // Caso especial: cuando make y model son idénticos (ej: búsqueda genérica "mustang")
+  if (makeLower === modelLower) {
+    // Basta con que el título contenga el modelo
+    const hasModel = titleLower.includes(modelLower);
+    const hasYear = !year || titleLower.includes(year);
+    
+    const result = hasModel && hasYear;
+    console.log(`Relevancia (búsqueda general): ${result ? 'SÍ' : 'NO'} - Contiene modelo: ${hasModel}, Contiene año: ${hasYear || 'No requerido'}`);
+    return result;
+  }
+  
+  // Para vehículos populares, usamos criterios más específicos
+  
   // Para Ford Mustang
-  if (makeLower === 'ford' && modelLower === 'mustang') {
+  if ((makeLower === 'ford' && modelLower === 'mustang') || 
+      (makeLower === 'mustang' || modelLower === 'mustang')) {
     const isMustang = titleLower.includes('mustang') || titleLower.includes('shelby');
+    const hasYear = !year || titleLower.includes(year);
     
-    // Si se especificó un año, comprueba si coincide
-    if (year && !titleLower.includes(year)) {
-      return false;
-    }
-    
-    return isMustang;
+    const result = isMustang && hasYear;
+    console.log(`Relevancia (Mustang): ${result ? 'SÍ' : 'NO'}`);
+    return result;
   }
   
   // Para Dodge Challenger
-  if (makeLower === 'dodge' && modelLower === 'challenger') {
+  if ((makeLower === 'dodge' && modelLower === 'challenger') ||
+      (makeLower === 'challenger' || modelLower === 'challenger')) {
     const isChallenger = titleLower.includes('challenger');
+    const hasYear = !year || titleLower.includes(year);
     
-    // Si se especificó un año, comprueba si coincide
-    if (year && !titleLower.includes(year)) {
-      return false;
-    }
-    
-    return isChallenger;
+    const result = isChallenger && hasYear;
+    console.log(`Relevancia (Challenger): ${result ? 'SÍ' : 'NO'}`);
+    return result;
   }
   
   // Para Chevrolet Corvette
-  if (makeLower === 'chevrolet' && modelLower === 'corvette') {
-    const isCorvette = titleLower.includes('corvette');
+  if ((makeLower === 'chevrolet' && modelLower === 'corvette') ||
+      (makeLower === 'corvette' || modelLower === 'corvette')) {
+    const isCorvette = titleLower.includes('corvette') || titleLower.includes('vette');
+    const hasYear = !year || titleLower.includes(year);
     
-    // Si se especificó un año, comprueba si coincide
-    if (year && !titleLower.includes(year)) {
-      return false;
-    }
-    
-    return isCorvette;
+    const result = isCorvette && hasYear;
+    console.log(`Relevancia (Corvette): ${result ? 'SÍ' : 'NO'}`);
+    return result;
   }
   
   // Método general para otros modelos
-  const hasMake = titleLower.includes(makeLower);
+  const hasMake = makeLower !== modelLower ? titleLower.includes(makeLower) : true;
   const hasModel = titleLower.includes(modelLower);
   const hasYear = !year || titleLower.includes(year);
   
-  return hasMake && hasModel && hasYear;
+  const result = hasModel && hasYear; // Relajamos la condición del fabricante
+  console.log(`Relevancia (genérico): ${result ? 'SÍ' : 'NO'} - Contiene modelo: ${hasModel}, Contiene año: ${hasYear || 'No requerido'}`);
+  return result;
 }
 
 /**
