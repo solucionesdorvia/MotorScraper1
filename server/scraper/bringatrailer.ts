@@ -59,10 +59,15 @@ function extractVehicleListings(
   
   console.log('Analizando HTML de Bring a Trailer...');
   
-  // Selecciona los elementos que contienen listados de vehículos
-  // Intentamos primero con #search-result-listings que contiene las subastas activas
-  const searchResultListings = $('#search-result-listings a');
-  console.log(`Encontradas ${searchResultListings.length} enlaces en #search-result-listings`);
+  // Selecciona los elementos que contienen listados de vehículos activos
+  // Buscamos primero en #search-result-live-listings que contiene SOLO las subastas activas
+  const liveListings = $('#search-result-live-listings a');
+  console.log(`Encontradas ${liveListings.length} enlaces activos en #search-result-live-listings`);
+  
+  // Caso de respaldo: Si no encontramos listados activos, intentamos con search-result-listings
+  const searchResultListings = liveListings.length > 0 ? liveListings : $('#search-result-listings a');
+  console.log(`Total de listados a procesar: ${searchResultListings.length}`);
+
   
   if (searchResultListings.length > 0) {
     searchResultListings.each(function(index: number, element: any) {
@@ -138,7 +143,12 @@ function extractVehicleListings(
           }
           
           // Verifica si la subasta está activa
-          const isActiveAuction = !!endsIn && endsIn !== 'Terminado' && endsIn !== 'Completed' && !endsIn.toLowerCase().includes('sold');
+          const isActiveAuction = !!endsIn && 
+                                endsIn !== 'No disponible' &&
+                                endsIn !== 'Terminado' && 
+                                endsIn !== 'Completed' && 
+                                !endsIn.toLowerCase().includes('sold') &&
+                                !endsIn.toLowerCase().includes('ended');
           
           // Solo agregar si la subasta está activa
           if (isActiveAuction) {
@@ -249,9 +259,14 @@ function extractVehicleListings(
         console.log(`Tiempo restante encontrado: "${endsInText}"`); 
         const extractedYear = extractYear(title);
         
-        // Verifica si la subasta está activa - para fines de desarrollo, consideramos todos los listados como activos
-        // const isActiveAuction = !!endsInText && endsInText !== 'Terminado' && endsInText !== 'Completed' && !endsInText.toLowerCase().includes('sold');
-        const isActiveAuction = true; // Temporalmente mostramos todos los resultados
+        // Verifica si la subasta está activa
+        // Solo mostrar subastas activas basado en el mensaje del tiempo restante
+        const isActiveAuction = !!endsInText && 
+                            endsInText !== 'No disponible' &&
+                            endsInText !== 'Terminado' && 
+                            endsInText !== 'Completed' && 
+                            !endsInText.toLowerCase().includes('sold') &&
+                            !endsInText.toLowerCase().includes('ended');
         
         if (isActiveAuction) {
           const vehicle: InsertVehicle = {
