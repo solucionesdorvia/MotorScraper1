@@ -133,6 +133,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ];
         console.log(`Combined ${allResults.length} total results from eBay Motors and Bring a Trailer`);
         
+        // Log para depurar BringATrailer resultados en detalle
+        if (bringATrailerResults.length > 0) {
+          console.log('Listado de vehículos de Bring a Trailer:');
+          bringATrailerResults.forEach((vehicle, index) => {
+            console.log(`Vehículo ${index + 1}: ${vehicle.title} - Precio: ${vehicle.price} - Tiempo: ${vehicle.endsIn}`);
+          });
+        }
+        
         if (allResults.length > 0) {
           await storage.saveVehicles(allResults);
         } else {
