@@ -106,13 +106,15 @@ export async function scrapeBringATrailerAdapter(make: string, model: string, ye
           const yearMatch = title.match(/(19\d{2}|20\d{2})/);
           const extractedYear = yearMatch ? parseInt(yearMatch[0], 10) : (year ? parseInt(year, 10) : null);
           
-          // Verificar que tenga claros indicadores de subasta activa
-          const hasTimeIndicator = $(this).find('.countdown-text').length > 0 || 
-                                  $(this).find('[class*="countdown"]').length > 0 || 
-                                  $(this).find('progress').length > 0 || 
-                                  $(this).find('[class*="progress"]').length > 0;
+          // DETECCIÓN ULTRA PRECISA de subastas activas
+          // 1. Debe tener elemento bidding visible (data-bind="visible: active")
+          // 2. No debe tener soldText visible
+          const hasActiveBidding = $(this).find('.item-bidding[data-bind*="visible: active"]').length > 0;
+          const hasSoldText = $(this).find('.item-results[data-bind*="soldText"]').is(':visible');
+          const isCompleted = hasSoldText || $(this).find('.item-results').text().trim() !== 'false';
           
-          if (hasTimeIndicator) {
+          // Solo mostrar si tiene bidding activo Y NO tiene indicador de venta completada
+          if (hasActiveBidding && !isCompleted) {
             console.log(`✅ Tiene indicadores de tiempo: ${title}`);
             
             // Crear objeto de vehículo
@@ -193,14 +195,13 @@ export async function scrapeBringATrailerAdapter(make: string, model: string, ye
       // Extraer tiempo - criterio crítico para ser una subasta activa
       const timeText = parentCard.find('.countdown-text, [class*="countdown"]').text().trim() || 'En curso';
       
-      // Indicadores claros de subasta activa
-      const hasProgress = parentCard.find('progress').length > 0 || 
-                         parentCard.find('[class*="progress"]').length > 0;
-      const hasCountdown = parentCard.find('[class*="countdown"]').length > 0 || 
-                          parentCard.find('[class*="timer"]').length > 0;
+      // DETECCIÓN ULTRA PRECISA de subastas activas (método 2)
+      const hasActiveBidding = parentCard.find('.item-bidding[data-bind*="visible: active"]').length > 0;
+      const hasSoldText = parentCard.find('.item-results[data-bind*="soldText"]').is(':visible');
+      const isCompleted = hasSoldText || parentCard.find('.item-results').text().trim() !== 'false';
       
-      // Solo aceptar si tiene claros indicadores de subasta activa
-      const isActive = hasProgress || hasCountdown;
+      // Solo aceptar si tiene bidding activo Y NO tiene indicador de venta completada
+      const isActive = hasActiveBidding && !isCompleted;
       
       if (isActive) {
         // Extraer año
