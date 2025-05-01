@@ -163,18 +163,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
-        // Filtrar resultados que no son vehículos (repuestos, accesorios, etc.)
+        // Temporalmente deshabilitamos el filtro de no-vehículos ya que está eliminando resultados válidos
+        // Comentario: el filtro OpenAI está eliminando todos los vehículos válidos, lo que sugiere que
+        // necesitamos mejorar el prompt o replantearlo - por ahora lo deshabilitamos
+        /*
         if (allResults.length > 0) {
           try {
             console.log('Filtrando resultados para eliminar repuestos o artículos que no sean autos...');
             const filteredResults = await openAIService.filterNonVehicles(allResults);
             console.log(`Filtrado completado: ${allResults.length} resultados totales → ${filteredResults.length} vehículos válidos (${allResults.length - filteredResults.length} eliminados)`);
-            allResults = filteredResults;
+            // Solo aplicamos el filtrado si quedan algunos resultados
+            if (filteredResults.length > 0) {
+              allResults = filteredResults;
+            } else {
+              console.log('El filtro eliminó todos los resultados, manteniendo los originales');
+            }
           } catch (error) {
             console.error('Error al filtrar no-vehículos:', error);
             // En caso de error, continuamos con los resultados sin filtrar
           }
         }
+        */
         
         if (allResults.length > 0) {
           await storage.saveVehicles(allResults);
