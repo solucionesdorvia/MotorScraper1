@@ -113,12 +113,10 @@ export async function scrapeBringATrailerWithAI(make: string, model: string, yea
         }
       }
       
-      // Si tiene precio y no ha sido rechazado explicitamente, lo incluimos
-      // como potencialmente activo (enfoque más permisivo)
-      if (v.price && v.price > 0) {
-        console.log(`OpenAI - Aceptando listing con precio: ${v.title} - ${v.price}`);
-        return true;
-      }
+      // Solo porque tiene precio no significa que esté activo
+      // En Bring a Trailer, todos los listings tienen precio
+      console.log(`OpenAI - Rechazando por falta de indicadores claros de actividad: ${v.title}`);
+      return false;
       
       // Si no hay ni precio ni tiempo, lo rechazamos
       return false;

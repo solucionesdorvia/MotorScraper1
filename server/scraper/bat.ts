@@ -364,12 +364,11 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
           isActive = true;
           console.log(`Tiene indicadores de tiempo: ${title}`);
         }
-        // Enfoque más permisivo: aceptar listings con precio que parezcan recientes
-        else if (price && price > 0 && !explicitlyClosed) {
-          // Preferimos tener algunos resultados aunque no sepamos con certeza
-          // si están activos, en lugar de no mostrar nada
-          isActive = true;
-          console.log(`Aceptando listing con precio: ${title} - ${price}`);
+        // NO aceptamos listings solo por tener precio - en Bring a Trailer, todos tienen precio
+        else {
+          // Si no podemos confirmar que está activo, lo rechazamos
+          isActive = false;
+          console.log(`Rechazando por falta de indicadores claros de actividad: ${title}`);
         }
         
         // Sólo incluir subastas activas - importante para los requisitos del usuario
