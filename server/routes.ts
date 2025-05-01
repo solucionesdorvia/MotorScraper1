@@ -124,24 +124,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
-        if (searchParams.ebay && make) {
-          ebayResults = await scrapeEbay(
-            make, 
-            model,
-            searchParams.year?.toString()
-          );
-        }
+        // Ya manejamos la búsqueda de eBay Motors más abajo
         
         // Según la solicitud del usuario, ahora incluimos eBay Motors y Bring a Trailer
-        console.log(`Parámetro bringatrailer: ${searchParams.bringatrailer}`);
+        console.log(`Parámetros de búsqueda - ebay: ${searchParams.ebay}, bringatrailer: ${searchParams.bringatrailer}`);
+        
+        // Buscamos en eBay Motors si está seleccionado y tenemos marca
+        if (searchParams.ebay && make) {
+          console.log(`Solicitando resultados de eBay Motors para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
+          try {
+            ebayResults = await scrapeEbay(
+              make, 
+              model,
+              searchParams.year?.toString()
+            );
+            console.log(`Obtenidos ${ebayResults.length} resultados de eBay Motors`);
+          } catch (error) {
+            console.error('Error al obtener resultados de eBay Motors:', error);
+            ebayResults = [];
+          }
+        } else {
+          console.log('No se solicitan resultados de eBay Motors');
+        }
+        
+        // Buscamos en Bring a Trailer si está seleccionado y tenemos marca
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
-          bringATrailerResults = await scrapeBringATrailer(
-            make, 
-            model,
-            searchParams.year?.toString()
-          );
-          console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer`);
+          try {
+            bringATrailerResults = await scrapeBringATrailer(
+              make, 
+              model,
+              searchParams.year?.toString()
+            );
+            console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer`);
+          } catch (error) {
+            console.error('Error al obtener resultados de Bring a Trailer:', error);
+            bringATrailerResults = [];
+          }
         } else {
           console.log('No se solicitan resultados de Bring a Trailer');
         }

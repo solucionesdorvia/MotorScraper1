@@ -19,7 +19,7 @@ const formSchema = z.object({
   // pero mantenemos los campos para compatibilidad
   edmunds: z.boolean().default(false),
   hemmings: z.boolean().default(false),
-  bringatrailer: z.boolean().default(false),
+  bringatrailer: z.boolean().default(true), // Activado por defecto
   classiccars: z.boolean().default(false),
 });
 
