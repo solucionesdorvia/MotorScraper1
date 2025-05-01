@@ -115,15 +115,21 @@ async function extractVehiclesWithAI(html: string, make: string, model: string, 
     - Modelo: ${model}
     ${year ? `- Año: ${year}` : ''}
     
-    Busca elementos con clase "listing-card" que contienen las subastas.
-    Para cada subasta relevante, extrae:
-    1. Título del vehículo
-    2. URL del listado (href del enlace principal)
-    3. URL de la imagen (atributo src de la imagen)
+    Busca listados de vehículos en la página. Estos pueden estar en:
+    1. Elementos con clase "listing-card"
+    2. Elementos con clase "search-result-live-listings" o "search-result-listings"
+    3. Enlaces (<a>) que contienen imágenes de vehículos y títulos
+    
+    Para cada vehículo relevante, extrae:
+    1. Título del vehículo - debe contener el modelo "${model}" y el año "${year || ''}" si se especifica
+    2. URL del listado (href del enlace)
+    3. URL de la imagen (atributo src de la imagen dentro del listado)
     4. Precio actual de la oferta (número entero sin símbolos)
     5. Tiempo restante (texto indicando cuánto queda para terminar la subasta)
     
-    Sólo incluye vehículos cuya subasta esté activa (con tiempo restante).
+    Busca especialmente información sobre subastas activas que contengan texto como "days left", "hours left", "ending soon".
+    Es muy importante que extraigas la URL correcta para cada listado y la URL de la imagen.
+    
     Devuelve los resultados en formato JSON como un array de objetos con las propiedades:
     "title", "sourceUrl", "imageUrl", "price" (número entero), "endsIn" (string).
     
@@ -208,6 +214,7 @@ async function extractVehiclesWithAI(html: string, make: string, model: string, 
  */
 function buildUrl(make: string, model: string, year?: string): string {
   const terms = make === model ? make : `${make} ${model}`;
-  const search = year ? `${terms}+${year}` : terms;
-  return `https://bringatrailer.com/search/?s=${search.replace(/ /g, '+')}&order=end_date`;
+  const search = year ? `${terms} ${year}` : terms;
+  // Usamos el parámetro view=all para obtener todos los resultados y no solo los destacados
+  return `https://bringatrailer.com/search/?view=all&s=${search.replace(/ /g, '%20')}`;
 }

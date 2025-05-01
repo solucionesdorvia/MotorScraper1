@@ -146,8 +146,9 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
 // Funciones auxiliares
 function buildUrl(make: string, model: string, year?: string): string {
   const terms = make === model ? make : `${make} ${model}`;
-  const search = year ? `${terms}+${year}` : terms;
-  return `https://bringatrailer.com/search/?s=${search.replace(/ /g, '+')}&order=end_date`;
+  const search = year ? `${terms} ${year}` : terms;
+  // Usamos el parámetro view=all para obtener todos los resultados y no solo los destacados
+  return `https://bringatrailer.com/search/?view=all&s=${search.replace(/ /g, '%20')}`;
 }
 
 function isRelevant(title: string, make: string, model: string, year?: string): boolean {
