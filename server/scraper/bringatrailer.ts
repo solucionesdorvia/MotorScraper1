@@ -5,9 +5,9 @@
 import { load } from 'cheerio';
 import { InsertVehicle } from '../../shared/schema';
 
-/**
- * Generador de vehículos de muestra para distintas combinaciones de marca/modelo/año
- */
+// Ya no usamos generador de muestras
+// La siguiente función está comentada y no se usa más
+/*
 function generateSampleVehicles(make: string, model: string, year?: string): InsertVehicle[] | null {
   // Normalizar marca y modelo para comparación
   const normalizedMake = make.toLowerCase();
@@ -336,28 +336,17 @@ function generateSampleVehicles(make: string, model: string, year?: string): Ins
   return null; // No tenemos datos de ejemplo para esta combinación
 }
 
+// Definimos y exportamos la función principal
 export async function scrapeBringATrailer(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
+  console.log(`Iniciando scraping de Bring a Trailer para ${make} ${model} ${year || ''}`);
+  
   try {
-    console.log(`Iniciando scraping de Bring a Trailer para ${make} ${model} ${year || ''}`);
-    
-    // Primero intentamos generar vehículos de muestra para esta combinación
-    const sampleVehicles = generateSampleVehicles(make, model, year);
-    if (sampleVehicles) {
-      return sampleVehicles;
-    }
-    
     // Construye la URL para la búsqueda
     const searchUrl = buildBringATrailerUrl(make, model, year);
     console.log(`URL de búsqueda: ${searchUrl}`);
     
     // Realiza la solicitud HTTP para obtener los resultados de búsqueda
-    const response = await fetch(searchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3',
-      }
-    });
+    const response = await fetch(searchUrl);
     
     if (!response.ok) {
       console.error(`Error al obtener resultados de Bring a Trailer: ${response.status} ${response.statusText}`);
@@ -489,13 +478,19 @@ function extractVehicleListings(
             transmission = 'Automática';
           }
           
-          // Verifica si la subasta está activa
+          // Verifica si la subasta está activa - criterio más estricto
           const isActiveAuction = !!endsIn && 
                                 endsIn !== 'No disponible' &&
                                 endsIn !== 'Terminado' && 
                                 endsIn !== 'Completed' && 
                                 !endsIn.toLowerCase().includes('sold') &&
-                                !endsIn.toLowerCase().includes('ended');
+                                !endsIn.toLowerCase().includes('ended') &&
+                                (endsIn.includes('days') || 
+                                 endsIn.includes('hours') || 
+                                 endsIn.includes('mins') || 
+                                 endsIn.includes(':') || 
+                                 endsIn.includes('day') || 
+                                 endsIn.includes('hour'));
           
           // Solo agregar si la subasta está activa
           if (isActiveAuction) {
@@ -606,14 +601,20 @@ function extractVehicleListings(
         console.log(`Tiempo restante encontrado: "${endsInText}"`); 
         const extractedYear = extractYear(title);
         
-        // Verifica si la subasta está activa
+        // Verifica si la subasta está activa - criterio más estricto
         // Solo mostrar subastas activas basado en el mensaje del tiempo restante
         const isActiveAuction = !!endsInText && 
                             endsInText !== 'No disponible' &&
                             endsInText !== 'Terminado' && 
                             endsInText !== 'Completed' && 
                             !endsInText.toLowerCase().includes('sold') &&
-                            !endsInText.toLowerCase().includes('ended');
+                            !endsInText.toLowerCase().includes('ended') &&
+                            (endsInText.includes('days') || 
+                             endsInText.includes('hours') || 
+                             endsInText.includes('mins') || 
+                             endsInText.includes(':') || 
+                             endsInText.includes('day') || 
+                             endsInText.includes('hour'));
         
         if (isActiveAuction) {
           const vehicle: InsertVehicle = {

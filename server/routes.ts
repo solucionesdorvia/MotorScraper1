@@ -5,7 +5,7 @@ import { scrapeEbay } from "./scraper/ebay";
 import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
-import { scrapeBringATrailer } from "./scraper/bringatrailer";
+import { scrapeBringATrailer } from "./scraper/bat";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
