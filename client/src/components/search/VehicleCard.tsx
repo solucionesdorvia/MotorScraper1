@@ -86,8 +86,18 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         {/* Regular price or auction information */}
         {vehicle.isAuction ? (
           <div className="mt-1">
-            <p className="text-price">{formatPrice(vehicle.currentBid === null ? undefined : vehicle.currentBid)}</p>
-            <p className="text-xs text-green-600 font-medium">Subasta termina en: {vehicle.endsIn}</p>
+            <p className="text-price">
+              {formatPrice(vehicle.currentBid === null ? undefined : vehicle.currentBid)}
+              <span className="text-xs text-slate-500 ml-1">oferta actual</span>
+            </p>
+            {vehicle.endsIn && (
+              <p className="text-xs text-green-600 font-medium">
+                {vehicle.endsIn.toLowerCase().includes('sold') ? 'Subasta finalizada' : 
+                 vehicle.endsIn.toLowerCase().includes('completed') ? 'Subasta finalizada' :
+                 vehicle.endsIn === 'No disponible' ? 'Tiempo no disponible' : 
+                 `Termina en: ${vehicle.endsIn}`}
+              </p>
+            )}
           </div>
         ) : (
           <p className="text-price mt-1">{formatPrice(vehicle.price === null ? undefined : vehicle.price)}</p>

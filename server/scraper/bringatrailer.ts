@@ -211,17 +211,42 @@ function extractVehicleListings(
         }
         
         const imageUrl = $(element).find('img').first().attr('src') || '';
-        const currentBidText = $(element).find('.bid-formatted').text().trim();
-        let currentBid = null;
+        // Extraemos el precio de la oferta actual
+        let currentBidText = $(element).find('.bid-formatted').text().trim();
         
+        // Si no encontramos el precio, buscamos en otros elementos posibles
+        if (!currentBidText) {
+          currentBidText = $(element).find('.current-bid').text().trim() ||
+                           $(element).find('.amount').text().trim() ||
+                           $(element).find('.highest-bid').text().trim();
+        }
+        
+        console.log(`Texto de oferta encontrado: "${currentBidText}"`);
+        
+        let currentBid = null;
         if (currentBidText) {
-          const priceMatch = currentBidText.match(/(\d[\d,]+)/);
+          // Eliminamos símbolos de moneda y cualquier texto no numérico
+          const priceMatch = currentBidText.match(/(\$?\s?\d[\d,\.]+)/);
           if (priceMatch && priceMatch[1]) {
-            currentBid = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+            // Limpia el texto para extraer solo los números
+            const cleanPrice = priceMatch[1].replace(/[^\d]/g, '');
+            currentBid = parseInt(cleanPrice, 10);
+            console.log(`Precio extraído: ${currentBid}`);
           }
         }
         
-        const endsInText = $(element).find('.countdown-text').text().trim();
+        // Extraemos el tiempo restante de la subasta
+        let endsInText = $(element).find('.countdown-text').text().trim();
+        
+        // Si no encontramos texto de tiempo restante, buscamos en otros elementos
+        if (!endsInText) {
+          endsInText = $(element).find('.listing-available-timeremaining').text().trim() ||
+                       $(element).find('.timeremaining').text().trim() ||
+                       $(element).find('.completed-timeremaining').text().trim() || 
+                       'No disponible';
+        }
+        
+        console.log(`Tiempo restante encontrado: "${endsInText}"`); 
         const extractedYear = extractYear(title);
         
         // Verifica si la subasta está activa - para fines de desarrollo, consideramos todos los listados como activos
