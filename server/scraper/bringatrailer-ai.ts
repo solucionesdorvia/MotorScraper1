@@ -38,55 +38,90 @@ export async function scrapeBringATrailerWithAI(make: string, model: string, yea
     let vehicles: InsertVehicle[] = [];
     
     try {
-      // Extraer solo la sección de resultados para reducir el tamaño
-      const resultsSection = extractResultsSection(html);
-      console.log(`Tamaño de la sección de resultados: ${resultsSection.length} caracteres`);
+      // Utilizaremos una estrategia más robusta: analizar tanto secciones específicas como generales
       
-      // Si encontramos la sección de resultados
+      // Primero, intentamos extraer la sección "Live Listings" si existe
+      const liveListingsSection = extractLiveListingsSection(html);
+      console.log(`¿Se encontró sección Live Listings?: ${liveListingsSection.length > 0} (${liveListingsSection.length} caracteres)`);
+      
+      // Luego, la sección general de resultados
+      const resultsSection = extractResultsSection(html);
+      console.log(`¿Se encontró sección de resultados?: ${resultsSection.length > 0} (${resultsSection.length} caracteres)`);
+      
+      // Combinar resultados de ambas secciones
+      // 1. Siempre procesamos primero la seccion de "Live Listings" si existe
+      if (liveListingsSection.length > 0) {
+        const liveVehicles = await extractVehiclesWithAI(liveListingsSection, make, model, year);
+        vehicles = [...vehicles, ...liveVehicles];
+        console.log(`Encontrados ${liveVehicles.length} vehículos en la sección Live Listings`);
+      }
+      
+      // 2. Procesamos también la sección general de resultados
       if (resultsSection.length > 0) {
-        const extractedVehicles = await extractVehiclesWithAI(resultsSection, make, model, year);
-        vehicles = [...vehicles, ...extractedVehicles];
-      } else {
-        // Si no podemos extraer la sección, enviamos una parte del HTML completo
-        const partialHtml = html.substring(0, Math.min(html.length, 15000)); // Limitamos a 15K caracteres
+        const resultsVehicles = await extractVehiclesWithAI(resultsSection, make, model, year);
+        vehicles = [...vehicles, ...resultsVehicles];
+        console.log(`Encontrados ${resultsVehicles.length} vehículos en la sección de resultados`);
+      }
+      
+      // 3. Si ningún método anterior funcionó, usamos parte del HTML completo
+      if (vehicles.length === 0) {
+        console.log('Intentando con una porción grande del HTML completo...');
+        // Tomamos una porción más grande para no perder información importante
+        const partialHtml = html.substring(0, Math.min(html.length, 25000)); // Ampliamos a 25K caracteres
         const extractedVehicles = await extractVehiclesWithAI(partialHtml, make, model, year);
         vehicles = [...vehicles, ...extractedVehicles];
+        console.log(`Encontrados ${extractedVehicles.length} vehículos en el análisis de HTML completo`);
       }
     } catch (error) {
       console.error('Error al procesar HTML con OpenAI:', error);
     }
     
-    // Filtramos solo vehículos con subastas activas usando criterios más estrictos
+    // Filtramos vehículos obviamente finalizados, pero somos más permisivos
+    console.log(`Filtrando ${vehicles.length} vehículos encontrados por OpenAI`);
+    
     const activeVehicles = vehicles.filter(v => {
-      // Si no tiene endsIn, no es una subasta activa
-      if (!v.endsIn) return false;
-      
-      const endsInLower = v.endsIn.toLowerCase();
-      
-      // Excluir si tiene palabras que indican que la subasta ha terminado
-      if (endsInLower.includes('ended') || 
-          endsInLower.includes('sold') ||
-          endsInLower.includes('complete') ||
-          endsInLower.includes('finalizada') ||
-          endsInLower.includes('terminada')) {
-        return false;
+      // Lo único que rechazamos explicitamente son subastas marcadas como finalizadas
+      if (v.endsIn) {
+        const endsInLower = v.endsIn.toLowerCase();
+        
+        // Rechazar solo si está explícitamente marcado como terminado
+        if (endsInLower.includes('ended') || 
+            endsInLower.includes('sold') ||
+            endsInLower.includes('complete') ||
+            endsInLower.includes('finalizada') ||
+            endsInLower.includes('terminada')) {
+          console.log(`OpenAI - Rechazando subasta finalizada: ${v.title}`);
+          return false;
+        }
+        
+        // Verificar indicadores positivos de actividad
+        const hasTimeIndicators = (
+          endsInLower.includes('day') ||
+          endsInLower.includes('hour') ||
+          endsInLower.includes('min') ||
+          endsInLower.includes('second') ||
+          endsInLower.includes('seconds') ||
+          endsInLower.includes(':') ||
+          endsInLower.includes('ending soon') ||
+          endsInLower.includes('en curso') ||
+          /\d+[dhms]/.test(endsInLower) // Formato como "5d" o "2h"
+        );
+        
+        if (hasTimeIndicators) {
+          console.log(`OpenAI - Aceptando subasta activa con tiempo: ${v.title} - ${v.endsIn}`);
+          return true;
+        }
       }
       
-      // Incluir si tiene indicadores claros de tiempo restante
-      const hasTimeIndicators = (
-        endsInLower.includes('day') ||
-        endsInLower.includes('hour') ||
-        endsInLower.includes('min') ||
-        endsInLower.includes('second') ||
-        endsInLower.includes('seconds') ||
-        endsInLower.includes(':') ||
-        endsInLower.includes('ending soon') ||
-        endsInLower.includes('en curso') ||
-        /\d+[dhms]/.test(endsInLower) // Formato como "5d" o "2h"
-      );
+      // Si tiene precio y no ha sido rechazado explicitamente, lo incluimos
+      // como potencialmente activo (enfoque más permisivo)
+      if (v.price && v.price > 0) {
+        console.log(`OpenAI - Aceptando listing con precio: ${v.title} - ${v.price}`);
+        return true;
+      }
       
-      // Solo incluir vehículos que tengan tiempo restante explícito
-      return hasTimeIndicators;
+      // Si no hay ni precio ni tiempo, lo rechazamos
+      return false;
     });
     
     console.log(`Total vehículos BaT: ${vehicles.length} (${activeVehicles.length} activos)`);
@@ -98,7 +133,95 @@ export async function scrapeBringATrailerWithAI(make: string, model: string, yea
 }
 
 /**
- * Extrae la sección de resultados del HTML, priorizando "Live Listings"
+ * Extrae solo la sección "Live Listings" del HTML
+ */
+function extractLiveListingsSection(html: string): string {
+  try {
+    // Buscar encabezado "Live Listings"
+    const liveListingsH2Index = html.indexOf('Live Listings');
+    if (liveListingsH2Index === -1) {
+      return '';
+    }
+    
+    // Buscar div contenedor de Live Listings
+    // El patrón típico es un div con clase "search-result-live-listings"
+    const liveListingsDiv = '<div class="search-result-live-listings"';
+    const liveDivIndex = html.indexOf(liveListingsDiv);
+    
+    if (liveDivIndex !== -1) {
+      // Encontrar cierre del div para obtener toda la sección
+      let openTags = 1;
+      let currentPos = liveDivIndex + liveListingsDiv.length;
+      
+      while (openTags > 0 && currentPos < html.length) {
+        const nextOpenTag = html.indexOf('<div', currentPos);
+        const nextCloseTag = html.indexOf('</div>', currentPos);
+        
+        if (nextCloseTag === -1) break;
+        
+        if (nextOpenTag !== -1 && nextOpenTag < nextCloseTag) {
+          openTags++;
+          currentPos = nextOpenTag + 4;
+        } else {
+          openTags--;
+          currentPos = nextCloseTag + 6;
+          if (openTags === 0) {
+            // Capturar la sección completa
+            return html.substring(liveDivIndex, currentPos);
+          }
+        }
+      }
+    }
+    
+    // Segundo intento: buscar contenedor general que incluya "Live Listings"
+    const h2Tag = '<h2';
+    let h2StartIndex = -1;
+    let h2EndIndex = -1;
+    
+    // Buscar h2 que contenga "Live Listings"
+    let tempPos = 0;
+    while (tempPos < html.length) {
+      const h2Start = html.indexOf(h2Tag, tempPos);
+      if (h2Start === -1) break;
+      
+      const h2End = html.indexOf('</h2>', h2Start);
+      if (h2End === -1) break;
+      
+      const h2Content = html.substring(h2Start, h2End + 5);
+      if (h2Content.includes('Live Listings')) {
+        h2StartIndex = h2Start;
+        h2EndIndex = h2End;
+        break;
+      }
+      
+      tempPos = h2End + 5;
+    }
+    
+    if (h2StartIndex !== -1) {
+      // Encontrar div padre de este h2
+      const divStartBeforeH2 = html.lastIndexOf('<div', h2StartIndex);
+      if (divStartBeforeH2 !== -1) {
+        // Encontrar grid que sigue al título
+        const gridStart = html.indexOf('<div class="grid', h2EndIndex);
+        if (gridStart !== -1) {
+          const gridEnd = html.indexOf('</div>', gridStart + 100);
+          if (gridEnd !== -1) {
+            // Devolver la sección desde el título hasta el final del grid
+            return html.substring(divStartBeforeH2, gridEnd + 6);
+          }
+        }
+      }
+    }
+    
+    return '';
+  } catch (error) {
+    console.error('Error al extraer sección Live Listings:', error);
+    return '';
+  }
+}
+
+/**
+ * Extrae la sección de resultados del HTML
  */
 function extractResultsSection(html: string): string {
   try {

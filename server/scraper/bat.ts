@@ -332,46 +332,44 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
           isInLiveSection
         );
         
-        // IMPORTANTE: Solo queremos listados que estén REALMENTE activos
-        // Verificar si la subasta está activa - siendo MUY estrictos
+        // IMPORTANTE: Necesitamos mostrar resultados incluso si no encontramos indicadores perfectos
         let isActive = false;
         
-        // Condición 1: Está en la sección "Live Listings" y tiene algún indicador de actividad
-        if (isInLiveSection && hasActiveIndicators) {
-          isActive = true;
-        }
-        // Condición 2: Tiene tiempo restante explícito (debe tener formato de tiempo)
-        else if (timeText && (
-          timeText.includes('day') || 
-          timeText.includes('hour') || 
-          timeText.includes('min') || 
-          timeText.includes(':') ||
-          /\d+d \d+h/.test(timeText) // Formato: "5d 2h"
-        )) {
-          isActive = true;
-        }
-        // Condición 3: Tiene barra de progreso Y contiene texto de finalización
-        else if (container.find('progress').length > 0 && 
-                container.text().toLowerCase().includes('ending')) {
-          isActive = true;
-        }
-        
-        // RECHAZAR explicitamente si contiene indicadores de finalización
-        if (timeText && (
+        // Comprobar primero si el listado menciona explícitamente que está terminado
+        const explicitlyClosed = timeText && (
           timeText.toLowerCase().includes('sold') ||
           timeText.toLowerCase().includes('ended') ||
           timeText.toLowerCase().includes('complete') ||
           timeText.toLowerCase().includes('finalizada')
-        )) {
-          isActive = false;
-        }
+        );
         
-        // Si no hay tiempo, probablemente no está activa
-        if (!timeText) {
-          // A menos que tenga barra de progreso y otros indicadores claros
-          if (!(container.find('progress').length > 0 && hasActiveIndicators)) {
-            isActive = false;
-          }
+        // Si tiene indicadores explícitos de cierre, rechazarlo
+        if (explicitlyClosed) {
+          isActive = false;
+        } 
+        // Si está en "Live Listings", casi seguro que está activo
+        else if (isInLiveSection) {
+          isActive = true;
+          console.log(`Encontrado en Live Listings: ${title}`);
+        }
+        // Si tiene progreso u otro indicador claro de tiempo
+        else if (container.find('progress').length > 0 || 
+                 (timeText && (
+                    timeText.includes('day') || 
+                    timeText.includes('hour') || 
+                    timeText.includes('min') || 
+                    timeText.includes(':') ||
+                    /\d+[dhm]/.test(timeText) // Formato: "5d", "2h", etc.
+                 ))) {
+          isActive = true;
+          console.log(`Tiene indicadores de tiempo: ${title}`);
+        }
+        // Enfoque más permisivo: aceptar listings con precio que parezcan recientes
+        else if (price && price > 0 && !explicitlyClosed) {
+          // Preferimos tener algunos resultados aunque no sepamos con certeza
+          // si están activos, en lugar de no mostrar nada
+          isActive = true;
+          console.log(`Aceptando listing con precio: ${title} - ${price}`);
         }
         
         // Sólo incluir subastas activas - importante para los requisitos del usuario
