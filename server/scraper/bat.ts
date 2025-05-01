@@ -42,14 +42,141 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     // Listados de vehículos - múltiples selectores para diferentes partes de la página
     // Basado en la estructura vista en la captura de pantalla e HTML proporcionado
     
-    // 1. Buscar enlaces directos a listados
+    // Encontrar la sección de "Live Listings" y extraer sus listados
+    // La estructura típica es: <div class="search-results"><h2>Live Listings (2)</h2></div>
+    // Seguido por <div class="listings-toolbar"> y luego los elements
+    // Intentamos varias estrategias para encontrar la sección correcta
+    const liveListingsHeader = $('div:contains("Live Listings")').filter(function() {
+      const text = $(this).text().trim();
+      return text.includes('Live Listings');
+    });
+    
+    console.log(`Encontrado encabezado de Live Listings: ${liveListingsHeader.length > 0}`);
+    
+    // Intentar encontrar el contenedor que sigue al encabezado de Live Listings
+    const liveSection = liveListingsHeader.next();
+    
+    // Si no encontramos la sección directamente, buscar por clases conocidas
+    let liveGrid = $('div.grid-items, div.search-result-grid');
+    
+    console.log(`¿Se encontró rejilla de resultados alternativa?: ${liveGrid.length > 0}`);
+    console.log(`¿Se encontró sección de Live Listings?: ${liveSection.length > 0}`);
+    
+    // Buscar el contenedor que contiene todos los listados "Live"
+    // En el HTML proporcionado, parece ser el div que sigue al encabezado y contiene las tarjetas
+    let liveListingsContainer;
+    
+    // Estrategia 1: Buscar directamente en el siguiente elemento
+    if (liveSection.length > 0) {
+      liveListingsContainer = liveSection;
+    } 
+    // Estrategia 2: Buscar el contenedor que contiene la clase grid-items que esté más cerca del encabezado
+    else if (liveGrid.length > 0) {
+      liveListingsContainer = liveGrid.eq(0); // Tomar el primer grid encontrado
+    }
+    // Estrategia 3: Buscar cualquier div que contenga elementos de listing después del encabezado
+    else {
+      const possibleContainers = $('div').filter(function() {
+        return $(this).find('.search-results-listing, .listing-card, .search-result-grid-item').length > 0;
+      });
+      if (possibleContainers.length > 0) {
+        liveListingsContainer = possibleContainers.eq(0);
+      } else {
+        // Si todo falla, usar el propio encabezado como referencia para buscar cercanos
+        liveListingsContainer = liveListingsHeader.parent();
+      }
+    }
+    
+    console.log(`¿Se encontró contenedor de listados activos?: ${liveListingsContainer && liveListingsContainer.length > 0}`);
+    
+    // Buscar tarjetas dentro de la sección de listados activos primero
+    const liveLinkCards = liveListingsContainer ? liveListingsContainer.find('a[href*="/listing/"]') : $([]);
+    console.log(`Encontrados ${liveLinkCards.length} enlaces directos en sección Live Listings`);
+    
+    // Buscar elementos <div> que contengan h3 (títulos) y posiblemente datos de auto
+    const liveCardsDivs = liveListingsContainer ? liveListingsContainer.find('div').filter(function() {
+      return $(this).find('h3').length > 0;
+    }) : $([]);
+    console.log(`Encontrados ${liveCardsDivs.length} divs con títulos en sección Live Listings`);
+    
+    // Para depuración, imprimir algunos títulos encontrados
+    liveCardsDivs.each((i, el) => {
+      if (i < 3) {
+        const title = $(el).find('h3').text().trim();
+        console.log(`Título activo ${i+1}: "${title}"`);
+        
+        // Buscar elementos h3 con enlaces para construir información completa
+        const anchor = $(el).find('h3 a');
+        if (anchor.length > 0) {
+          const href = anchor.attr('href');
+          const fullUrl = href ? (href.startsWith('http') ? href : `https://bringatrailer.com${href}`) : '';
+          console.log(`URL encontrada: ${fullUrl}`);
+          
+          // Buscar elementos de progreso e indicadores de tiempo
+          const progressEls = $(el).find('progress');
+          const hasProgress = progressEls.length > 0;
+          console.log(`¿Tiene barra de progreso?: ${hasProgress}`);
+          
+          // Buscar información de precio/puja
+          const priceInfo = $(el).find('.results-price, .bidding-bid, .bid-formatted, .item-results').text().trim();
+          if (priceInfo) {
+            console.log(`Información de precio: ${priceInfo}`);
+          }
+          
+          // Intentar extraer datos de este listing de la sección Live directamente
+          if (fullUrl && title) {
+            const img = $(el).find('img').attr('src') || '';
+            const yearMatch = title.match(/(19\d{2}|20\d{2})/);
+            const extractedYear = yearMatch ? parseInt(yearMatch[0], 10) : (year ? parseInt(year, 10) : null);
+            
+            // Precio
+            let price = null;
+            if (priceInfo) {
+              const priceMatch = priceInfo.match(/(?:\$)?\s*(\d[\d,]*)/);
+              if (priceMatch && priceMatch[1]) {
+                price = parseInt(priceMatch[1].replace(/[^\d]/g, ''), 10);
+              }
+            }
+            
+            // Añadir directamente vehículos de la sección Live
+            const vehicle: InsertVehicle = {
+              title,
+              make,
+              model,
+              source: 'bringatrailer',
+              sourceUrl: fullUrl,
+              imageUrl: img,
+              year: extractedYear,
+              price,
+              isAuction: true,
+              currentBid: price,
+              endsIn: 'En curso', // Sabemos que es un listing activo
+              transmission: null,
+              bodyType: null,
+              location: 'Estados Unidos',
+              mileage: null,
+              color: null,
+              vin: null,
+              fuelType: null,
+              dealerName: null,
+              hasDeals: false
+            };
+            
+            vehicles.push(vehicle);
+            console.log(`Añadido directamente desde Live Listings: ${title}`);
+          }
+        }
+      }
+    });
+    
+    // 1. Buscar enlaces directos a listados en toda la página (enfoque original)
     const listingLinks = $('a[href*="/listing/"]').filter(function() {
       const href = $(this).attr('href') || '';
       // Solo incluir enlaces que parezcan ser de vehículos
-      return href.includes('mustang') || href.includes(model.toLowerCase());
+      return href.includes(model.toLowerCase()) || href.toLowerCase().includes('mustang');
     });
     
-    console.log(`Encontrados ${listingLinks.length} enlaces a listados`);
+    console.log(`Encontrados ${listingLinks.length} enlaces a listados en total`);
     
     // 2. Usar los enlaces para encontrar los contenedores de las tarjetas
     const cardContainers = new Set();
@@ -148,29 +275,53 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
         let timeText = container.find('.countdown-text').text().trim() || 
                       container.find('.bidding-countdown').text().trim();
         
+        // Comprobar si el listado es de la sección "Live Listings"
+        // Buscar por estructura del DOM para determinar si está en la sección de activos
+        const isInLiveSection = liveCardsDivs.toArray().some(div => {
+          return container[0] === div || $.contains(div, container[0]) || $.contains(container[0], div);
+        });
+
         // Buscar indicadores adicionales de subasta activa
         // 1. Buscar iconos o textos que indiquen actividad
         const hasActiveIndicators = (
           container.find('.icon-clock').length > 0 ||
           container.find('.progress-counting').length > 0 ||
+          container.find('progress').length > 0 ||
           container.find('progress[value]').length > 0 ||
-          timeText.includes('days') ||
-          timeText.includes('hours') ||
-          timeText.includes('mins') ||
-          timeText.includes(':') ||
-          container.text().includes('ending')
+          (timeText && (
+            timeText.includes('day') ||
+            timeText.includes('hour') ||
+            timeText.includes('min') ||
+            timeText.includes(':')
+          )) ||
+          container.text().toLowerCase().includes('ending') ||
+          container.text().toLowerCase().includes('ending soon') ||
+          // Si está en la sección de Live Listings, considerarlo activo
+          isInLiveSection
         );
         
         // Verificar si la subasta está activa
-        const isActive = !!timeText && 
-                        !timeText.toLowerCase().includes('sold') &&
-                        !timeText.toLowerCase().includes('ended') &&
-                        hasActiveIndicators;
+        const isActive = (
+          // Si está en la sección "Live Listings", considerarlo activo automáticamente
+          isInLiveSection || 
+          // O si tiene indicadores y no está marcado como finalizado
+          (hasActiveIndicators && 
+            !(timeText && (
+              timeText.toLowerCase().includes('sold') ||
+              timeText.toLowerCase().includes('ended')
+            ))
+          )
+        );
         
         // Sólo incluir subastas activas - importante para los requisitos del usuario
         if (!isActive) {
           console.log(`Omitiendo subasta no activa: ${title}`);
           return;
+        }
+        
+        // Indicar si este listado se encontró en la sección "Live Listings"
+        if (isInLiveSection) {
+          console.log(`Listado encontrado en sección Live Listings: ${title}`);
         }
         
         // Extraer año del título
