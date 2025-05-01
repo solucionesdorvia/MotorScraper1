@@ -34,7 +34,7 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     const vehicles = extractVehicleListings(html, make, model, year);
     
     if (vehicles.length === 0) {
-      console.log('BaT scraper - No se encontraron vehículos en el HTML');
+      console.log('No se encontraron vehículos en Bring a Trailer');
       return [];
     }
     
@@ -55,7 +55,7 @@ function extractVehicleListings(
   year?: string
 ): InsertVehicle[] {
   const vehicles: InsertVehicle[] = [];
-  const $ = cheerio.load(html);
+  const $ = load(html);
   
   console.log('Analizando HTML de Bring a Trailer...');
   
@@ -65,7 +65,7 @@ function extractVehicleListings(
   console.log(`Encontradas ${searchResultListings.length} enlaces en #search-result-listings`);
   
   if (searchResultListings.length > 0) {
-    searchResultListings.each(function(index, element) {
+    searchResultListings.each(function(index: number, element: any) {
       try {
         // Extrae el título
         const title = $(element).find('h3').text().trim();
@@ -189,7 +189,7 @@ function extractVehicleListings(
   const listingCards = $('.listing-card');
   console.log(`Intentando con selector alternativo: .listing-card (${listingCards.length} encontrados)`);
   
-  listingCards.each(function(index, element) {
+  listingCards.each(function(index: number, element: any) {
     try {
       // Extrae datos básicos
       const title = $(element).find('h3').text().trim();
