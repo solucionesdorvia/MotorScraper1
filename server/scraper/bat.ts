@@ -69,7 +69,12 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
         // Podemos navegar hacia arriba buscando contenedores que tengan la info completa
         let container = $(link);
         if (!container.hasClass('listing-card')) {
-          container = container.closest('.listing-card, .search-result-grid-item, .previous-listing');
+          // Usar closest para buscar el contenedor más cercano que coincida con estos selectores
+          const closestContainer = container.closest('.listing-card, .search-result-grid-item, .previous-listing');
+          // Solo asignar si encontramos algo
+          if (closestContainer.length > 0) {
+            container = closestContainer;
+          }
         }
         
         // Si no encontramos contenedor, usar el enlace directamente
@@ -112,9 +117,21 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
         
         // Si no hay texto de oferta directo, buscar otros indicadores de precio
         if (!bidText) {
-          bidText = container.find('.item-results').text().trim() || 
-                    container.text().match(/(?:USD|\$)\s*[\d,]+/) || 
-                    '';
+          // Buscar en el texto resultados formateados de precio
+          const priceResultsText = container.find('.item-results').text().trim();
+          
+          // Si encontramos resultados, usarlos
+          if (priceResultsText) {
+            bidText = priceResultsText;
+          } else {
+            // Intentar buscar patrones de precio en el texto del contenedor
+            const priceMatch = container.text().match(/(?:USD|\$)\s*[\d,]+/);
+            if (priceMatch && priceMatch[0]) {
+              bidText = priceMatch[0];
+            } else {
+              bidText = '';
+            }
+          }
         }
         
         // Convertir el texto de la oferta a un número
@@ -127,17 +144,32 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
           }
         }
         
-        // Buscar tiempo restante
+        // Buscar tiempo restante - clave para identificar subastas activas
         let timeText = container.find('.countdown-text').text().trim() || 
                       container.find('.bidding-countdown').text().trim();
-                      
+        
+        // Buscar indicadores adicionales de subasta activa
+        // 1. Buscar iconos o textos que indiquen actividad
+        const hasActiveIndicators = (
+          container.find('.icon-clock').length > 0 ||
+          container.find('.progress-counting').length > 0 ||
+          container.find('progress[value]').length > 0 ||
+          timeText.includes('days') ||
+          timeText.includes('hours') ||
+          timeText.includes('mins') ||
+          timeText.includes(':') ||
+          container.text().includes('ending')
+        );
+        
         // Verificar si la subasta está activa
         const isActive = !!timeText && 
                         !timeText.toLowerCase().includes('sold') &&
-                        !timeText.toLowerCase().includes('ended');
+                        !timeText.toLowerCase().includes('ended') &&
+                        hasActiveIndicators;
         
-        // Solo incluir subastas activas si estamos en la sección Live Listings
-        if (liveListingsHeading.length > 0 && !isActive) {
+        // Sólo incluir subastas activas - importante para los requisitos del usuario
+        if (!isActive) {
+          console.log(`Omitiendo subasta no activa: ${title}`);
           return;
         }
         
