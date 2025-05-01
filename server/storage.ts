@@ -75,14 +75,31 @@ export class MemStorage implements IStorage {
   ): Promise<{ vehicles: Vehicle[], totalResults: number, totalPages: number }> {
     let filteredVehicles = Array.from(this.vehicles.values());
     
+    // MOSTRAR VARIABLES para depuración
+    console.log(`getVehicles: Total vehículos en almacenamiento: ${filteredVehicles.length}`);
+    console.log(`getVehicles: Parámetros de búsqueda:`, JSON.stringify(searchParams));
+    
+    // Caso especial para Mustang
+    const isMustangSearch = searchParams.make?.toLowerCase() === 'mustang' || 
+                           searchParams.model?.toLowerCase() === 'mustang';
+    
     // Apply search filters
     if (searchParams.make) {
-      filteredVehicles = filteredVehicles.filter(v => 
-        v.make.toLowerCase() === searchParams.make?.toLowerCase()
-      );
+      // Caso especial: si buscamos por Mustang (como marca), buscar por Ford (marca) y Mustang (modelo)
+      if (searchParams.make.toLowerCase() === 'mustang') {
+        console.log('getVehicles: Aplicando caso especial para Mustang');
+        filteredVehicles = filteredVehicles.filter(v => 
+          (v.make.toLowerCase() === 'ford' && v.model.toLowerCase() === 'mustang')
+        );
+      } else {
+        filteredVehicles = filteredVehicles.filter(v => 
+          v.make.toLowerCase() === searchParams.make?.toLowerCase()
+        );
+      }
     }
     
-    if (searchParams.model) {
+    if (searchParams.model && !isMustangSearch) {
+      // Si ya aplicamos el filtro de Mustang arriba, no lo volvemos a aplicar
       filteredVehicles = filteredVehicles.filter(v => 
         v.model.toLowerCase() === searchParams.model?.toLowerCase()
       );
