@@ -10,6 +10,7 @@ import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
 import NodeCache from "node-cache";
+import { openAIService } from "./services/openai-service";
 
 // Cache for search results (TTL: 5 minutes)
 const searchCache = new NodeCache({ stdTTL: 300 });
