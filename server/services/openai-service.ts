@@ -12,6 +12,22 @@ export class OpenAIService {
    * Mejora los términos de búsqueda para hacerlos más precisos
    */
   async enhanceSearchQuery(query: string): Promise<{ make: string; model: string; year?: string }> {
+    // Mejora especial para Mustang - aseguramos que siempre se busque como Ford Mustang
+    const queryLower = query.toLowerCase();
+    if (queryLower.includes("mustang") && !queryLower.includes("ford")) {
+      console.log(`Mejora especial: detectado Mustang sin marca Ford -> Añadiendo marca Ford`);
+      
+      // Extraer el año si existe en la consulta
+      const yearMatch = queryLower.match(/\b(19\d{2}|20\d{2})\b/);
+      const year = yearMatch ? yearMatch[0] : undefined;
+      
+      return {
+        make: "Ford",
+        model: "Mustang",
+        year
+      };
+    }
+    
     try {
       console.log(`Mejorando consulta de búsqueda: "${query}"`);
       
@@ -66,7 +82,7 @@ export class OpenAIService {
           },
           {
             role: "user",
-            content: `Analiza estos títulos de listados y determina cuáles corresponden a vehículos completos y cuáles a repuestos o accesorios. Responde con un array de índices (comenzando desde 0) que representen solamente los listados que son vehículos completos.
+            content: `Analiza estos títulos de listados y determina cuáles corresponden a vehículos completos y cuáles a repuestos o accesorios. Responde con un array de índices (comenzando desde 0) que representen solamente los listados que son vehículos completos. Proporciona tu respuesta en formato JSON.
             
             Títulos: ${JSON.stringify(vehicleTitles)}
             

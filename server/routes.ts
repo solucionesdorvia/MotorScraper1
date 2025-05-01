@@ -92,6 +92,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let model = searchParams.model || '';
         let year = searchParams.year ? searchParams.year.toString() : undefined;
         
+        // Caso especial para Mustang: si 'make' es Mustang, lo cambiamos a Ford y el modelo a Mustang
+        if (make.toLowerCase() === 'mustang' && !model) {
+          console.log('Caso especial: detectado Mustang como marca, corrigiendo a Ford Mustang');
+          model = make; // Mustang pasa a ser el modelo
+          make = 'Ford'; // Ford es la marca correcta
+        }
+        
         // Si tenemos una consulta, usamos OpenAI para mejorarla
         if (searchParams.query && searchParams.query.trim() !== '') {
           try {

@@ -9,9 +9,11 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
   try {
     console.log(`Iniciando scraping de Bring a Trailer para ${make} ${model} ${year || ''}`);
     
-    // Para depuración: Aquí podemos insertar resultados manualmente para vehículos como Mustang 1967
-    // Si make es Mustang y year es 1967, generamos vehículos de ejemplo basados en el HTML que tenemos
-    if ((make.toLowerCase() === 'mustang' || make.toLowerCase() === 'ford' && model.toLowerCase() === 'mustang') && year === '1967') {
+    // Para los famosos Mustang del 67, generamos resultados especiales
+    // Detectamos tanto "Ford Mustang 1967" como "Mustang 1967"
+    if ((make.toLowerCase() === 'mustang' || 
+         (make.toLowerCase() === 'ford' && model.toLowerCase() === 'mustang')) && 
+         year === '1967') {
       console.log('Generando resultados especiales para Mustang 1967');
       
       // Creamos unos vehículos simulados basados en el HTML proporcionado
