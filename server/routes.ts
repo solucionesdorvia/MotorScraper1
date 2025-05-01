@@ -111,12 +111,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Según la solicitud del usuario, ahora incluimos eBay Motors y Bring a Trailer
+        console.log(`Parámetro bringatrailer: ${searchParams.bringatrailer}`);
         if (searchParams.bringatrailer && make) {
+          console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           bringATrailerResults = await scrapeBringATrailer(
             make, 
             model,
             searchParams.year?.toString()
           );
+          console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer`);
+        } else {
+          console.log('No se solicitan resultados de Bring a Trailer');
         }
         
         console.log(`Obtained results: ${ebayResults.length} from eBay Motors, ${bringATrailerResults.length} from Bring a Trailer`);
