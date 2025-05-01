@@ -90,15 +90,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Extract make and model from query or use direct parameters
         let make = searchParams.make || '';
         let model = searchParams.model || '';
+        let year = searchParams.year ? searchParams.year.toString() : undefined;
         
-        // If query parameter is provided, try to extract make and model
-        if (searchParams.query) {
-          const queryParts = searchParams.query.split(' ').filter(part => part.trim() !== '');
-          if (queryParts.length > 0 && !make) {
-            make = queryParts[0];
+        // Si tenemos una consulta, usamos OpenAI para mejorarla
+        if (searchParams.query && searchParams.query.trim() !== '') {
+          try {
+            console.log(`Usando OpenAI para mejorar la consulta: ${searchParams.query}`);
+            const enhancedQuery = await openAIService.enhanceSearchQuery(searchParams.query);
+            console.log(`Consulta original: "${searchParams.query}" → Mejorada: marca="${enhancedQuery.make}", modelo="${enhancedQuery.model}", año="${enhancedQuery.year || 'no especificado'}"`);
             
-            if (queryParts.length > 1 && !model) {
-              model = queryParts.slice(1).join(' ');
+            // Solo actualizamos los campos si no fueron proporcionados directamente
+            if (!make && enhancedQuery.make) make = enhancedQuery.make;
+            if (!model && enhancedQuery.model) model = enhancedQuery.model;
+            if (!year && enhancedQuery.year) year = enhancedQuery.year;
+          } catch (error) {
+            console.error('Error al mejorar la consulta con OpenAI:', error);
+            // Si falla OpenAI, usamos el método tradicional
+            const queryParts = searchParams.query.split(' ').filter(part => part.trim() !== '');
+            if (queryParts.length > 0 && !make) {
+              make = queryParts[0];
+              
+              if (queryParts.length > 1 && !model) {
+                model = queryParts.slice(1).join(' ');
+              }
             }
           }
         }
@@ -128,7 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Obtained results: ${ebayResults.length} from eBay Motors, ${bringATrailerResults.length} from Bring a Trailer`);
         
         // Combinar resultados de eBay Motors y Bring a Trailer
-        const allResults = [
+        let allResults = [
           ...ebayResults,
           ...bringATrailerResults
         ];
@@ -140,6 +154,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           bringATrailerResults.forEach((vehicle, index) => {
             console.log(`Vehículo ${index + 1}: ${vehicle.title} - Precio: ${vehicle.price} - Tiempo: ${vehicle.endsIn}`);
           });
+        }
+        
+        // Filtrar resultados que no son vehículos (repuestos, accesorios, etc.)
+        if (allResults.length > 0) {
+          try {
+            console.log('Filtrando resultados para eliminar repuestos o artículos que no sean autos...');
+            const filteredResults = await openAIService.filterNonVehicles(allResults);
+            console.log(`Filtrado completado: ${allResults.length} resultados totales → ${filteredResults.length} vehículos válidos (${allResults.length - filteredResults.length} eliminados)`);
+            allResults = filteredResults;
+          } catch (error) {
+            console.error('Error al filtrar no-vehículos:', error);
+            // En caso de error, continuamos con los resultados sin filtrar
+          }
         }
         
         if (allResults.length > 0) {
