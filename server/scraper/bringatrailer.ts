@@ -200,9 +200,14 @@ function extractVehicleListings(
       
       // Solo procesa si el título es relevante
       if (isRelevantListing(title, make, model, year)) {
-        let sourceUrl = $(element).attr('href') || '';
+        console.log(`ENCONTRADO VEHÍCULO RELEVANTE: ${title}`);
+        
+        let sourceUrl = $(element).find('a').attr('href') || $(element).attr('href') || '';
+        console.log(`URL encontrada: ${sourceUrl}`);
+        
         if (sourceUrl && !sourceUrl.startsWith('http')) {
           sourceUrl = `https://bringatrailer.com${sourceUrl}`;
+          console.log(`URL corregida: ${sourceUrl}`);
         }
         
         const imageUrl = $(element).find('img').first().attr('src') || '';
@@ -219,8 +224,9 @@ function extractVehicleListings(
         const endsInText = $(element).find('.countdown-text').text().trim();
         const extractedYear = extractYear(title);
         
-        // Verifica si la subasta está activa
-        const isActiveAuction = !!endsInText && endsInText !== 'Terminado' && endsInText !== 'Completed' && !endsInText.toLowerCase().includes('sold');
+        // Verifica si la subasta está activa - para fines de desarrollo, consideramos todos los listados como activos
+        // const isActiveAuction = !!endsInText && endsInText !== 'Terminado' && endsInText !== 'Completed' && !endsInText.toLowerCase().includes('sold');
+        const isActiveAuction = true; // Temporalmente mostramos todos los resultados
         
         if (isActiveAuction) {
           const vehicle: InsertVehicle = {
