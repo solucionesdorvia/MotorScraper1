@@ -13,7 +13,7 @@ import { InsertVehicle } from '../../shared/schema';
 /**
  * Extrae subastas activas de la página de auctions de Bring a Trailer
  */
-export async function scrapeBringATrailerAuctions(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
+export async function scrapeBringATrailerAuctionsV2(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   try {
     console.log(`Buscando subastas activas en BaT para: ${make} ${model} ${year || ''}`);
     
@@ -33,7 +33,7 @@ export async function scrapeBringATrailerAuctions(make: string, model: string, y
     });
     
     // Extraer datos del HTML
-    return extractData(response.data, make, model, year);
+    return parseHtmlForVehicles(response.data, make, model, year);
   } catch (error: any) {
     console.error(`Error al obtener datos de BaT: ${error.message}`);
     return [];
@@ -41,43 +41,84 @@ export async function scrapeBringATrailerAuctions(make: string, model: string, y
 }
 
 /**
- * Extrae datos del HTML
+ * Extrae vehículos de subastas activas a partir del HTML
  */
-function extractData(html: string, make: string, model: string, year?: string): InsertVehicle[] {
+function parseHtmlForVehicles(html: string, make: string, model: string, year?: string): InsertVehicle[] {
   try {
     const $ = cheerio.load(html);
     const vehicles: InsertVehicle[] = [];
     
-    // Buscar tarjetas de listado
-    const listingCards = $('a.listing-card');
-    console.log(`Encontradas ${listingCards.length} tarjetas de listado`);
+    console.log(`Analizando estructura HTML para Bring a Trailer...`);
+    console.log(`- Etiquetas <a>: ${$('a').length}`);
+    console.log(`- Etiquetas <a> con href que contiene "listing": ${$('a[href*="/listing/"]').length}`);
+    console.log(`- Etiquetas con clase "listing-card": ${$('.listing-card').length}`);
+    console.log(`- Etiquetas <a> con clase "listing-card": ${$('a.listing-card').length}`);
     
-    listingCards.each((index, element) => {
-      try {
-        const card = $(element);
-        const href = card.attr('href') || '';
+    // Primero, buscar enlaces directos a listados
+    const directListingLinks = $('a[href*="/listing/"]');
+    console.log(`Encontrados ${directListingLinks.length} enlaces directos a listados`);
+    
+    // Procesar los enlaces directos
+    directListingLinks.each((i, element) => {
+      const link = $(element);
+      const href = link.attr('href') || '';
+      
+      // Verificar si el enlace es realmente a un listado
+      if (href.includes('/listing/')) {
+        // Buscar título, preferiblemente en un h3 cercano o dentro del enlace
+        let title = '';
         
-        // Extraer título del elemento h3
-        const titleElement = card.find('h3');
-        const title = titleElement.text().trim();
+        // Intentar encontrar título en h3 cercanos
+        const h3Element = link.find('h3').first();
+        if (h3Element.length) {
+          title = h3Element.text().trim();
+        }
         
-        // Extraer imagen
-        const imageElement = card.find('.thumbnail img');
-        const imageUrl = imageElement.attr('src') || '';
+        // Si no encontramos título en h3, buscarlo en el contenido del enlace
+        if (!title) {
+          title = link.text().trim();
+        }
         
-        // Extraer información de puja (bid)
-        const bidElement = card.find('.bid-formatted');
-        const bidText = bidElement.text().trim();
-        const price = extractPrice(bidText);
+        // Si sigue sin título, buscar en atributos
+        if (!title) {
+          title = link.attr('title') || link.attr('alt') || '';
+        }
         
-        // Extraer tiempo restante
-        const timeElement = card.find('.countdown-text');
-        const timeRemaining = timeElement.text().trim();
+        // Buscar elementos relacionados con pujas y tiempo restante
+        const parentElement = link.parent();
+        let bidText = '';
+        let timeRemaining = '';
+        let imageUrl = '';
         
-        console.log(`Subasta #${index + 1}: "${title}" - Puja: ${bidText} - Tiempo: ${timeRemaining}`);
+        // Buscar elementos de puja en el contexto cercano
+        const bidElement = link.find('.bid-formatted, .bidding-bid .bold').first();
+        if (bidElement.length) {
+          bidText = bidElement.text().trim();
+        }
         
-        // Verificar si el título es relevante para nuestra búsqueda
+        // Buscar elementos de tiempo en el contexto cercano
+        const timeElement = link.find('.countdown-text').first();
+        if (timeElement.length) {
+          timeRemaining = timeElement.text().trim();
+        }
+        
+        // Buscar imágenes en el contexto cercano
+        const imgElement = link.find('img').first();
+        if (imgElement.length) {
+          imageUrl = imgElement.attr('src') || '';
+        }
+        
+        console.log(`Listado encontrado: ${title || 'Sin título'} - ${href}`);
+        console.log(`- Puja: ${bidText || 'No encontrada'}, Tiempo: ${timeRemaining || 'No encontrado'}`);
+        
+        // Verificar si el título es relevante y tenemos datos mínimos
         if (title && isRelevant(title, make, model, year)) {
+          // Extraer precio
+          let price = 0;
+          if (bidText) {
+            price = extractPrice(bidText) || 0;
+          }
+          
           // Crear objeto de vehículo
           const vehicle: InsertVehicle = {
             title,
@@ -87,9 +128,9 @@ function extractData(html: string, make: string, model: string, year?: string): 
             sourceUrl: href,
             imageUrl,
             year: extractYear(title) || (year ? parseInt(year) : null),
-            price: price || 0,
+            price,
             isAuction: true,
-            currentBid: price || 0,
+            currentBid: price,
             endsIn: timeRemaining,
             transmission: extractTransmission(title),
             bodyType: extractBodyType(title),
@@ -104,13 +145,76 @@ function extractData(html: string, make: string, model: string, year?: string): 
           
           vehicles.push(vehicle);
           console.log(`✅ Vehículo relevante añadido: "${title}"`);
-        } else {
+        } else if (title) {
           console.log(`❌ Vehículo no relevante para ${make} ${model} ${year || ''}: "${title}"`);
+        } else {
+          console.log(`❌ Enlace descartado por falta de título: ${href}`);
         }
-      } catch (error: any) {
-        console.error(`Error al procesar tarjeta: ${error.message}`);
       }
     });
+    
+    // Si no encontramos listados directos, probar con tarjetas de listado
+    if (vehicles.length === 0) {
+      const listingCards = $('a.listing-card');
+      console.log(`Buscando tarjetas de listado: ${listingCards.length} encontradas`);
+      
+      listingCards.each((i, element) => {
+        const card = $(element);
+        const href = card.attr('href') || '';
+        
+        // Extraer título
+        const titleElement = card.find('h3');
+        const title = titleElement.text().trim();
+        
+        // Extraer imagen
+        const imgElement = card.find('.thumbnail img, img');
+        const imageUrl = imgElement.attr('src') || '';
+        
+        // Extraer información de puja
+        const bidElement = card.find('.bid-formatted, .bidding-bid .bold');
+        const bidText = bidElement.text().trim();
+        const price = extractPrice(bidText) || 0;
+        
+        // Extraer tiempo restante
+        const timeElement = card.find('.countdown-text');
+        const timeRemaining = timeElement.text().trim();
+        
+        console.log(`Tarjeta de listado: ${title || 'Sin título'} - ${href}`);
+        console.log(`- Puja: ${bidText || 'No encontrada'}, Tiempo: ${timeRemaining || 'No encontrado'}`);
+        
+        // Verificar si el título es relevante
+        if (title && isRelevant(title, make, model, year)) {
+          // Crear objeto de vehículo
+          const vehicle: InsertVehicle = {
+            title,
+            make,
+            model,
+            source: 'bringatrailer',
+            sourceUrl: href,
+            imageUrl,
+            year: extractYear(title) || (year ? parseInt(year) : null),
+            price,
+            isAuction: true,
+            currentBid: price,
+            endsIn: timeRemaining,
+            transmission: extractTransmission(title),
+            bodyType: extractBodyType(title),
+            location: 'Estados Unidos',
+            mileage: null,
+            color: null,
+            vin: null,
+            fuelType: null,
+            dealerName: null,
+            hasDeals: false
+          };
+          
+          vehicles.push(vehicle);
+          console.log(`✅ Vehículo relevante añadido: "${title}"`);
+        } else if (title) {
+          console.log(`❌ Vehículo no relevante para ${make} ${model} ${year || ''}: "${title}"`);
+        }
+      });
+    }
     
     console.log(`Total de vehículos relevantes encontrados: ${vehicles.length}`);
     return vehicles;
@@ -124,6 +228,8 @@ function extractData(html: string, make: string, model: string, year?: string): 
  * Determina si un título es relevante para los criterios de búsqueda
  */
 function isRelevant(title: string, make: string, model: string, year?: string): boolean {
+  if (!title) return false;
+  
   const titleLower = title.toLowerCase();
   const makeLower = make.toLowerCase();
   const modelLower = model.toLowerCase();
