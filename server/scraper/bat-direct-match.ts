@@ -203,11 +203,10 @@ export async function scrapeBringATrailerDirectMatch(make: string, model: string
       }
     }
     
-    // Si la marca es "ford" y el modelo es "mustang", tenemos un ejemplo específico
-    // que sabemos que funciona bien
+    // Si la marca es "ford" y el modelo es "mustang", intentar una búsqueda HTTP real
     if (safeSearch.make.toLowerCase() === 'ford' && safeSearch.model.toLowerCase() === 'mustang') {
-      console.log('✅ Usando ejemplo específico de Ford Mustang');
-      return extractVehiclesFromExample(HTML_EXAMPLES["ford-mustang"], safeSearch.make, safeSearch.model, safeSearch.year);
+      console.log('✅ Buscando Ford Mustang en BaT mediante una solicitud HTTP real');
+      // La búsqueda HTTP real se hace a continuación
     }
     
     // ESTRATEGIA #2: Hacer una solicitud HTTP real con un timeout muy estricto
@@ -253,7 +252,7 @@ export async function scrapeBringATrailerDirectMatch(make: string, model: string
         // Si fue cancelado por timeout, registrarlo pero continuar
         if (error instanceof Error) {
           if (error.name === 'AbortError' || (error as any).code === 'ECONNABORTED') {
-            console.log('⚠️ La solicitud HTTP excedió el tiempo límite, usando ejemplos estáticos');
+            console.log('⚠️ La solicitud HTTP excedió el tiempo límite');
           } else {
             console.error(`Error al obtener HTML real: ${error.message}`);
           }
@@ -263,9 +262,10 @@ export async function scrapeBringATrailerDirectMatch(make: string, model: string
       }
     }
     
-    // ESTRATEGIA #3: Usar ejemplo genérico como último recurso
-    console.log('⚠️ Usando ejemplo genérico de Ford Mustang como último recurso');
-    return extractVehiclesFromExample(HTML_EXAMPLES["ford-mustang"], safeSearch.make, safeSearch.model, safeSearch.year);
+    // ESTRATEGIA #3: Retornar un arreglo vacío (NO usar ejemplo estático)
+    // Esto es importante: solo queremos devolver resultados reales
+    console.log('⚠️ No se encontraron subastas activas para estos criterios de búsqueda');
+    return [];
     
   } catch (error) {
     if (error instanceof Error) {
