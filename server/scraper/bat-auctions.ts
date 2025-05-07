@@ -50,8 +50,34 @@ function extractAuctionsFromHTML(html: string, make: string, model: string, year
     
     // Buscar las tarjetas de listado que están dentro del contenedor auctions-grid
     // (Según el HTML proporcionado)
-    const listingCards = $('.listings-container.auctions-grid a.listing-card');
-    console.log(`Encontradas ${listingCards.length} tarjetas de listado en la sección "auctions"`);
+    console.log(`Buscando selectores en el HTML: listings-container.auctions-grid, a.listing-card`);
+    
+    // Añadimos logs para ver la estructura del HTML
+    console.log(`Comprobando existencia de elementos clave:`);
+    console.log(`- listings-container: ${$('.listings-container').length}`);
+    console.log(`- auctions-grid: ${$('.auctions-grid').length}`);
+    console.log(`- listing-card: ${$('.listing-card').length}`);
+    console.log(`- a elementos: ${$('a').length}`);
+    
+    // Probar con varios selectores por si hay diferencias en la estructura
+    const listingCards1 = $('.listings-container.auctions-grid a.listing-card');
+    const listingCards2 = $('.auctions-grid .listing-card');
+    const listingCards3 = $('a.listing-card');
+    const listingCards4 = $('.listings-container a');
+    
+    console.log(`Resultados por selector:`);
+    console.log(`- Selector 1 (listings-container.auctions-grid a.listing-card): ${listingCards1.length}`);
+    console.log(`- Selector 2 (auctions-grid .listing-card): ${listingCards2.length}`);
+    console.log(`- Selector 3 (a.listing-card): ${listingCards3.length}`);
+    console.log(`- Selector 4 (listings-container a): ${listingCards4.length}`);
+    
+    // Usar el selector que encuentre más elementos
+    let listingCards = listingCards1;
+    if (listingCards2.length > listingCards.length) listingCards = listingCards2;
+    if (listingCards3.length > listingCards.length) listingCards = listingCards3;
+    if (listingCards4.length > listingCards.length) listingCards = listingCards4;
+    
+    console.log(`Seleccionado el selector con más resultados: ${listingCards.length} tarjetas de listado en la sección "auctions"`);
     
     listingCards.each((index, element) => {
       try {

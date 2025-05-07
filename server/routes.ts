@@ -9,6 +9,7 @@ import { scrapeBringATrailerSimple } from "./scraper/bat-simple";
 import { scrapeBringATrailerFromExample } from "./scraper/bat-html-example";
 import { scrapeBringATrailerPattern } from "./scraper/bat-pattern";
 import { scrapeBringATrailerUniversal } from "./scraper/bat-universal";
+import { scrapeBringATrailerAuctions } from "./scraper/bat-auctions";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -154,18 +155,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // Usamos el nuevo scraper universal que funciona con cualquier búsqueda
-            console.log('Usando scraper universal para extraer subastas activas...');
-            bringATrailerResults = await scrapeBringATrailerUniversal(
+            // Primero intentamos con el nuevo scraper específico para la sección "auctions"
+            console.log('Intentando scraper especializado para la sección "auctions"...');
+            bringATrailerResults = await scrapeBringATrailerAuctions(
               make, 
               model,
               searchParams.year?.toString()
             );
             
             if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper universal`);
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper de auctions`);
             } else {
-              console.log('⚠️ No se encontraron subastas activas con el scraper universal');
+              console.log('⚠️ No se encontraron subastas activas con el scraper de auctions');
+              
+              // Si no encontramos resultados, intentamos con el scraper universal como respaldo
+              console.log('Usando scraper universal como respaldo...');
+              bringATrailerResults = await scrapeBringATrailerUniversal(
+                make, 
+                model,
+                searchParams.year?.toString()
+              );
+              
+              if (bringATrailerResults.length > 0) {
+                console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper universal`);
+              } else {
+                console.log('⚠️ No se encontraron subastas activas con el scraper universal');
+              }
             }
           } catch (error) {
             console.error('Error al obtener resultados de Bring a Trailer:', error);

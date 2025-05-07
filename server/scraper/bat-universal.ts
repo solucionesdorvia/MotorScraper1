@@ -325,7 +325,7 @@ function extractActiveAuctionsFromAuctionsPage(html: string, make: string, model
  * Procesa un elemento de subasta genérico
  */
 function processAuctionElement(
-  auction: cheerio.Cheerio, 
+  auction: cheerio.Cheerio<any>, 
   title: string, 
   href: string, 
   make: string, 
