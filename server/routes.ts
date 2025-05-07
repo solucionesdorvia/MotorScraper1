@@ -153,13 +153,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // Primero intentamos con el nuevo scraper basado en patrones HTML
-            console.log('Usando scraper basado en patrones HTML para encontrar subastas activas...');
-            bringATrailerResults = await scrapeBringATrailerPattern(
-              make, 
-              model,
-              searchParams.year?.toString()
-            );
+            // NOTA: El scraper de patron aún tiene problemas para extraer elementos en tiempo real
+            // Nos saltamos su ejecución por ahora hasta resolver este problema
+            console.log('Nota: scraper de patrón HTML todavía en desarrollo, omitiendo...');
+            bringATrailerResults = [];
             
             if (bringATrailerResults.length > 0) {
               console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper basado en patrones HTML`);

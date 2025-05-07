@@ -88,24 +88,43 @@ function extractLiveVehicles(html: string, make: string, model: string, year?: s
   const $ = cheerio.load(html);
   const vehicles: InsertVehicle[] = [];
   
-  // Método 1: Buscar primero en la sección "Live Listings" específica
-  console.log('Método 1: Buscando en la sección de "Live Listings"...');
+  // Método 1: Basado EXACTAMENTE en la estructura HTML real proporcionada
+  console.log('Método 1: Buscando en la sección de "Live Listings" con estructura exacta...');
+  // Primero buscamos el div de "search-result-live-listings"
   const liveListingsSection = $('.search-result-live-listings, #search-result-live-listings');
   
   if (liveListingsSection.length > 0) {
     console.log('✅ Encontrada sección "Live Listings"');
     
-    // Buscar listados dentro de la sección Live Listings
+    // En el HTML real, las tarjetas (a.listing-card) están dentro de un div.search-result-listings
+    // que está dentro del div.search-result-live-listings
     const liveListings = liveListingsSection.find('a.listing-card');
-    console.log(`Encontrados ${liveListings.length} listados en la sección Live Listings`);
+    console.log(`Encontrados ${liveListings.length} tarjetas de listados en la sección Live Listings`);
     
-    liveListings.each((index: number, element: CheerioElement) => {
-      const vehicle = extractVehicleFromCard($, element, make, model, year);
-      if (vehicle) {
-        console.log(`Procesado vehículo #${index + 1}: ${vehicle.title}`);
-        vehicles.push(vehicle);
-      }
-    });
+    if (liveListings.length > 0) {
+      console.log('Analizando tarjetas de subastas activas:');
+      
+      liveListings.each((index: number, element: CheerioElement) => {
+        // Verificamos si este es un listado activo buscando los elementos que solo aparecen en subastas activas
+        const $el = $(element);
+        const hasBidding = $el.find('.item-bidding').length > 0;
+        const hasCountdown = $el.find('.countdown-text').length > 0;
+        
+        console.log(`Tarjeta #${index + 1} - ¿Tiene sección de pujas?: ${hasBidding}, ¿Tiene contador?: ${hasCountdown}`);
+        
+        if (hasBidding && hasCountdown) {
+          const vehicle = extractVehicleFromCard($, element, make, model, year);
+          if (vehicle) {
+            console.log(`✅ Procesado vehículo activo #${index + 1}: ${vehicle.title}`);
+            vehicles.push(vehicle);
+          }
+        } else {
+          console.log(`❌ Tarjeta #${index + 1} no es una subasta activa (sin pujas o contador)`);
+        }
+      });
+    } else {
+      console.log('❌ No se encontraron tarjetas dentro de la sección Live Listings');
+    }
   } else {
     console.log('❌ No se encontró la sección "Live Listings"');
   }
@@ -114,29 +133,45 @@ function extractLiveVehicles(html: string, make: string, model: string, year?: s
   if (vehicles.length === 0) {
     console.log('Método 2: Buscando en toda la página por listados activos...');
     
-    // Buscar cualquier div search-result-listings
+    // Buscar cualquier div search-result-listings que esté directamente en la página
     const searchResultListings = $('.search-result-listings, #search-result-listings');
     
     if (searchResultListings.length > 0) {
-      console.log('✅ Encontrada sección "search-result-listings"');
+      console.log('✅ Encontrada sección "search-result-listings" directamente en la página');
       
-      // Buscar tarjetas de listado con elemento item-bidding (indica subasta activa)
-      // Nota: evitamos usar :visible que no es compatible con cheerio
-      const activeListings = searchResultListings.find('a.listing-card').filter(function(this: any) {
-        return $(this).find('.item-bidding, .item-bidding[style*="display: block"], .item-bidding:not([style*="display: none"])').length > 0;
-      });
+      // Buscar TODAS las tarjetas de listado
+      const allListings = searchResultListings.find('a.listing-card');
+      console.log(`Total de ${allListings.length} tarjetas encontradas en la sección general`);
       
-      console.log(`Encontrados ${activeListings.length} listados activos en la búsqueda general`);
+      // Filtramos para quedarnos solo con las que tienen elementos de subasta activa
+      console.log('Analizando TODAS las tarjetas para encontrar subastas activas:');
       
-      activeListings.each((index: number, element: CheerioElement) => {
-        const vehicle = extractVehicleFromCard($, element, make, model, year);
-        if (vehicle) {
-          console.log(`Procesado vehículo #${index + 1}: ${vehicle.title}`);
-          vehicles.push(vehicle);
+      allListings.each((index: number, element: CheerioElement) => {
+        const $el = $(element);
+        // Verificamos múltiples señales de que es una subasta activa
+        const hasBidding = $el.find('.item-bidding').length > 0;
+        const hasCountdown = $el.find('.countdown-text').length > 0;
+        const hasBidFormatted = $el.find('.bid-formatted').length > 0;
+        
+        console.log(`Tarjeta general #${index + 1} - ¿Tiene sección de pujas?: ${hasBidding}, ¿Tiene contador?: ${hasCountdown}, ¿Tiene precio formateado?: ${hasBidFormatted}`);
+        
+        // Solo procesar si es una subasta ACTIVA (tiene elementos de puja y contador)
+        if ((hasBidding || hasBidFormatted) && hasCountdown) {
+          // Extraer el título para un primer log más claro
+          const title = $el.find('h3').text().trim();
+          console.log(`💰 Parece una subasta ACTIVA: "${title}"`);
+          
+          const vehicle = extractVehicleFromCard($, element, make, model, year);
+          if (vehicle) {
+            console.log(`✅ Procesado vehículo activo #${index + 1}: ${vehicle.title}`);
+            vehicles.push(vehicle);
+          }
+        } else {
+          console.log(`❌ Tarjeta general #${index + 1} no es una subasta activa (sin elementos de puja o contador)`);
         }
       });
     } else {
-      console.log('❌ No se encontró ninguna sección "search-result-listings"');
+      console.log('❌ No se encontró ninguna sección "search-result-listings" directamente en la página');
     }
   }
   
@@ -156,7 +191,7 @@ function extractLiveVehicles(html: string, make: string, model: string, year?: s
 function extractVehicleFromCard($: CheerioAPI, element: CheerioElement, make: string, model: string, year?: string): InsertVehicle | null {
   const $el = $(element);
   
-  // Extraer información básica
+  // Extraer información básica - basado exactamente en el HTML real proporcionado
   const title = $el.find('h3').text().trim();
   const link = $el.attr('href') || '';
   const image = $el.find('.thumbnail img').attr('src') || '';
@@ -168,9 +203,14 @@ function extractVehicleFromCard($: CheerioAPI, element: CheerioElement, make: st
     return null;
   }
   
-  // Extraer precio actual
+  console.log(`Procesando título: ${title}`);
+  console.log(`URL: ${link}`);
+  
+  // Extraer precio actual - basado exactamente en el HTML real proporcionado
   let price: number | null = null;
   const bidFormatted = $el.find('.bid-formatted').text().trim();
+  
+  console.log(`Precio encontrado en HTML: "${bidFormatted}"`);
   
   if (bidFormatted) {
     // Varios formatos posibles: USD $25,000 o $25,000 o 25,000
@@ -180,11 +220,17 @@ function extractVehicleFromCard($: CheerioAPI, element: CheerioElement, make: st
     
     if (priceMatch && priceMatch[1]) {
       price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+      console.log(`Precio extraído: $${price}`);
+    } else {
+      console.log('No se pudo extraer el precio del texto');
     }
+  } else {
+    console.log('No se encontró elemento de precio en esta tarjeta');
   }
   
-  // Extraer tiempo restante
+  // Extraer tiempo restante - basado exactamente en el HTML real proporcionado
   let timeRemaining = $el.find('.countdown-text').text().trim();
+  console.log(`Tiempo restante encontrado: "${timeRemaining}"`);
   let endsIn = 'En curso';
   
   if (timeRemaining) {
