@@ -16,6 +16,7 @@ import { scrapeBringATrailerDirectOptimized } from "./scraper/bat-direct-optimiz
 import { scrapeBringATrailerDirectMatch } from "./scraper/bat-direct-match";
 import { scrapeBringATrailerDodge } from "./scraper/bat-dodge-improved";
 import { scrapeBringATrailerDirectFixed } from "./scraper/bat-direct-fixed";
+import { scrapeBringATrailerSearchResults } from "./scraper/bat-search-results";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
