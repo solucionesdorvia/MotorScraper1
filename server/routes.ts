@@ -223,13 +223,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
             
             // 7. Intentamos con el nuevo scraper de resultados de búsqueda general
-            if (bringATrailerResults.length === 0) {
-              console.log('7. Intentando scraper de resultados de búsqueda general...');
-              bringATrailerResults = await scrapeBringATrailerSearchResults(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
+            // IMPORTANTE: Primero probar este scraper para resultados más completos
+            console.log('7. Intentando scraper de resultados de búsqueda general...');
+            const searchResultsVehicles = await scrapeBringATrailerSearchResults(
+              make, 
+              model,
+              searchParams.year?.toString()
+            );
+            
+            if (searchResultsVehicles.length > 0) {
+              console.log(`✅ Encontradas ${searchResultsVehicles.length} subastas en la página general de búsqueda`);
+              bringATrailerResults = [...bringATrailerResults, ...searchResultsVehicles];
+            } else {
+              console.log('⚠️ No se encontraron subastas en la página general de búsqueda');
             }
             
             // 8. Como último recurso, usamos el scraper universal

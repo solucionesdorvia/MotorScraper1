@@ -136,7 +136,19 @@ export class MemStorage implements IStorage {
     }
     
     if (searchParams.year) {
-      filteredVehicles = filteredVehicles.filter(v => v.year === searchParams.year);
+      console.log(`getVehicles: Filtrando por año ${searchParams.year}`);
+
+      // Filtro más flexible para el año: aceptamos +/- 3 años de diferencia
+      filteredVehicles = filteredVehicles.filter(v => {
+        // Si el vehículo no tiene año, lo excluimos
+        if (!v.year) return false;
+        
+        // Calculamos la diferencia absoluta con el año buscado
+        const yearDifference = Math.abs(v.year - searchParams.year);
+        
+        // Aceptamos vehículos con una diferencia de hasta 3 años
+        return yearDifference <= 3;
+      });
     }
     
     // Filter by source
@@ -144,7 +156,12 @@ export class MemStorage implements IStorage {
     if (searchParams.ebay) enabledSources.push('ebay');
     if (searchParams.edmunds) enabledSources.push('cars.com'); // edmunds maps to cars.com
     if (searchParams.hemmings) enabledSources.push('hemmings.com');
-    if (searchParams.bringatrailer) enabledSources.push('bringatrailer');
+    if (searchParams.bringatrailer) {
+      // Bring a Trailer puede venir con diferentes formatos en source
+      enabledSources.push('bringatrailer');
+      enabledSources.push('Bring a Trailer');
+      enabledSources.push('BAT');
+    }
     if (searchParams.classiccars) enabledSources.push('classiccars.com');
     
     if (enabledSources.length > 0) {
