@@ -90,32 +90,19 @@ export async function scrapeBringATrailerFromExample(make: string, model: string
     let listings = extractListingsFromExample(exampleHtml);
     console.log(`Encontrados ${listings.length} listados de ejemplo`);
 
-    // Si no encontramos resultados relevantes con el HTML de ejemplo,
-    // generar ejemplos adaptados para la búsqueda actual
+    // Solo filtrar los listados relevantes sin generar ejemplos adaptados
     const filteredListings = listings.filter(listing => isRelevant(listing.title, make, model, year));
     
-    if (filteredListings.length === 0 && (make.toLowerCase() !== 'ford' || model.toLowerCase() !== 'mustang')) {
+    if (filteredListings.length === 0) {
       console.log(`No se encontraron listados relevantes para ${make} ${model} ${year || ''} en el HTML de ejemplo`);
-      console.log('Generando ejemplos adaptados para esta búsqueda...');
-      
-      // Generar ejemplos adaptados basados en la búsqueda actual
-      const adaptedListings = generateAdaptedListings(make, model, year);
-      console.log(`Generados ${adaptedListings.length} listados adaptados para ${make} ${model} ${year || ''}`);
-      
-      // Agregar los listados adaptados a los existentes
-      listings = [...listings, ...adaptedListings];
     }
 
-    // Volver a filtrar con los nuevos listados adaptados incluidos
-    const allFilteredListings = listings.filter(listing => {
-      const isRelevantListing = isRelevant(listing.title, make, model, year);
-      if (isRelevantListing) {
-        console.log(`✅ Listing relevante para ${make} ${model} ${year || ''}: ${listing.title}`);
-      } else {
-        console.log(`❌ Listing NO relevante para ${make} ${model} ${year || ''}: ${listing.title}`);
-      }
-      return isRelevantListing;
+    // Usar los listados filtrados directamente, sin adaptación
+    filteredListings.forEach(listing => {
+      console.log(`✅ Listing relevante para ${make} ${model} ${year || ''}: ${listing.title}`);
     });
+    
+    const allFilteredListings = filteredListings;
 
     console.log(`${allFilteredListings.length} listados relevantes encontrados después de filtrar`);
 
