@@ -153,34 +153,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // Para Ford Mustang 1967 podemos usar el HTML de ejemplo directamente
-            if (make.toLowerCase() === 'ford' && model.toLowerCase() === 'mustang' && 
-                searchParams.year?.toString() === '1967') {
-              console.log('Búsqueda de Ford Mustang 1967: Usando scraper basado en HTML de ejemplo directamente...');
-              bringATrailerResults = await scrapeBringATrailerFromExample(
-                make,
-                model,
-                searchParams.year?.toString()
-              );
-              
-              if (bringATrailerResults.length > 0) {
-                console.log(`✅ ÉXITO con el scraper de HTML de ejemplo: Encontradas ${bringATrailerResults.length} subastas ACTIVAS para Ford Mustang 1967`);
-              } else {
-                console.log('⚠️ No se encontraron subastas activas para Ford Mustang 1967 en el HTML de ejemplo');
-              }
+            // Primero intentamos con el nuevo scraper basado en patrones HTML
+            console.log('Usando scraper basado en patrones HTML para encontrar subastas activas...');
+            bringATrailerResults = await scrapeBringATrailerPattern(
+              make, 
+              model,
+              searchParams.year?.toString()
+            );
+            
+            if (bringATrailerResults.length > 0) {
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper basado en patrones HTML`);
             } else {
-              // Para otros modelos, solo usar el scraper simplificado (sin generación de ejemplos)
-              console.log('Usando scraper simplificado para encontrar subastas activas...');
-              bringATrailerResults = await scrapeBringATrailerSimple(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
+              console.log('⚠️ No se encontraron subastas activas con el scraper basado en patrones HTML');
               
-              if (bringATrailerResults.length > 0) {
-                console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper simplificado`);
+              // Si no hay resultados y es Ford Mustang 1967, podemos usar el HTML de ejemplo
+              if (make.toLowerCase() === 'ford' && model.toLowerCase() === 'mustang' && 
+                  searchParams.year?.toString() === '1967') {
+                console.log('Búsqueda de Ford Mustang 1967: Usando scraper basado en HTML de ejemplo como respaldo...');
+                bringATrailerResults = await scrapeBringATrailerFromExample(
+                  make,
+                  model,
+                  searchParams.year?.toString()
+                );
+                
+                if (bringATrailerResults.length > 0) {
+                  console.log(`✅ ÉXITO con el scraper de HTML de ejemplo: Encontradas ${bringATrailerResults.length} subastas ACTIVAS para Ford Mustang 1967`);
+                } else {
+                  console.log('⚠️ No se encontraron subastas activas para Ford Mustang 1967 en el HTML de ejemplo');
+                }
               } else {
-                console.log('⚠️ No se encontraron subastas activas para esta búsqueda');
+                // Como último recurso, intentamos con el scraper simple
+                console.log('Intentando con scraper simplificado como último recurso...');
+                bringATrailerResults = await scrapeBringATrailerSimple(
+                  make, 
+                  model,
+                  searchParams.year?.toString()
+                );
+                
+                if (bringATrailerResults.length > 0) {
+                  console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper simplificado`);
+                } else {
+                  console.log('⚠️ No se encontraron subastas activas para esta búsqueda con ningún método');
+                }
               }
             }
           } catch (error) {

@@ -99,7 +99,7 @@ function extractLiveVehicles(html: string, make: string, model: string, year?: s
     const liveListings = liveListingsSection.find('a.listing-card');
     console.log(`Encontrados ${liveListings.length} listados en la sección Live Listings`);
     
-    liveListings.each((index: number, element: cheerio.Element) => {
+    liveListings.each((index: number, element: CheerioElement) => {
       const vehicle = extractVehicleFromCard($, element, make, model, year);
       if (vehicle) {
         console.log(`Procesado vehículo #${index + 1}: ${vehicle.title}`);
@@ -120,14 +120,15 @@ function extractLiveVehicles(html: string, make: string, model: string, year?: s
     if (searchResultListings.length > 0) {
       console.log('✅ Encontrada sección "search-result-listings"');
       
-      // Buscar tarjetas de listado con elemento item-bidding visible (indica subasta activa)
-      const activeListings = searchResultListings.find('a.listing-card').filter(function(this: cheerio.Element) {
-        return $(this).find('.item-bidding:visible, .item-bidding[style*="display: block"], .item-bidding:not([style*="display: none"])').length > 0;
+      // Buscar tarjetas de listado con elemento item-bidding (indica subasta activa)
+      // Nota: evitamos usar :visible que no es compatible con cheerio
+      const activeListings = searchResultListings.find('a.listing-card').filter(function(this: any) {
+        return $(this).find('.item-bidding, .item-bidding[style*="display: block"], .item-bidding:not([style*="display: none"])').length > 0;
       });
       
       console.log(`Encontrados ${activeListings.length} listados activos en la búsqueda general`);
       
-      activeListings.each((index: number, element: any) => {
+      activeListings.each((index: number, element: CheerioElement) => {
         const vehicle = extractVehicleFromCard($, element, make, model, year);
         if (vehicle) {
           console.log(`Procesado vehículo #${index + 1}: ${vehicle.title}`);
@@ -152,7 +153,7 @@ function extractLiveVehicles(html: string, make: string, model: string, year?: s
 /**
  * Extrae los datos de un vehículo desde una tarjeta de listado
  */
-function extractVehicleFromCard($: cheerio.CheerioAPI, element: cheerio.Element, make: string, model: string, year?: string): InsertVehicle | null {
+function extractVehicleFromCard($: CheerioAPI, element: CheerioElement, make: string, model: string, year?: string): InsertVehicle | null {
   const $el = $(element);
   
   // Extraer información básica
