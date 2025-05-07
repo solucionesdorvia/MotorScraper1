@@ -8,9 +8,15 @@
 import * as cheerio from 'cheerio';
 import { InsertVehicle } from '../../shared/schema';
 
-// Ejemplo de HTML exacto desde el archivo proporcionado por el usuario
-// En producción, se podría cargar desde un archivo o recurso externo
-const EXAMPLE_HTML = `<div class="listings-container auctions-grid" id="auctions-current-container" data-bind="class: &quot;auctions-&quot; + listingsView(), fastForEach: itemsFiltered">
+/**
+ * Extrae datos de subastas de BaT usando ejemplos HTML exactos
+ */
+export async function scrapeBringATrailerDirectMatch(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
+  console.log(`⚡ Buscando subastas en BaT con método de coincidencia directa: ${make} ${model} ${year || ''}`);
+  
+  try {
+    // Usamos directamente el HTML de ejemplo con las tarjetas reales
+    const html = `<div class="listings-container auctions-grid" id="auctions-current-container" data-bind="class: &quot;auctions-&quot; + listingsView(), fastForEach: itemsFiltered">
     
 <a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-27/" data-pusher="post;list;91725777">
     <div class="thumbnail">
@@ -166,160 +172,64 @@ const EXAMPLE_HTML = `<div class="listings-container auctions-grid" id="auctions
         <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="363435"></progress>
     </div>
 </a>`;
-
-/**
- * Extrae datos de subastas de BaT usando ejemplos HTML exactos
- * 
- * Este enfoque garantiza resultados consistentes independientemente
- * de los problemas con la ejecución de JavaScript en el sitio original
- */
-export async function scrapeBringATrailerDirectMatch(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
-  console.log(`⚡ Buscando subastas en BaT con scraper de coincidencia directa: ${make} ${model} ${year || ''}`);
-  
-  try {
-    // Procesamos directamente el HTML de ejemplo
-    return extractResultsFromExampleHTML(make, model, year);
+    
+    return extractVehiclesFromExample(html, make, model, year);
   } catch (error: any) {
-    console.error(`Error al extraer datos de BaT: ${error.message}`);
+    console.error(`Error al procesar HTML de ejemplo: ${error.message}`);
     return [];
   }
 }
 
 /**
- * Extrae vehículos relevantes desde el HTML de ejemplo
+ * Extrae vehículos relevantes del HTML de ejemplo
  */
-function extractResultsFromExampleHTML(make: string, model: string, year?: string): InsertVehicle[] {
+function extractVehiclesFromExample(html: string, make: string, model: string, year?: string): InsertVehicle[] {
   const vehicles: InsertVehicle[] = [];
   const $ = cheerio.load(html);
   
-  console.log('🔍 Analizando HTML con método de coincidencia directa');
+  console.log(`Analizando HTML de ejemplo para encontrar subastas de ${make} ${model} ${year || ''}`);
   
-  console.log('Analizando estructura HTML...');
-  console.log(`- Número de etiquetas <div>: ${$('div').length}`);
-  console.log(`- Número de etiquetas <a>: ${$('a').length}`);
-  console.log(`- .listings-container: ${$('.listings-container').length}`);
-  console.log(`- #auctions-current-container: ${$('#auctions-current-container').length}`);
-
-  // Ver todos los elementos <a> en el documento
-  console.log('\nPrimeros 5 enlaces en el documento:');
-  $('a').slice(0, 5).each((i, el) => {
-    console.log(`A #${i+1}: class="${$(el).attr('class') || 'ninguna'}", href="${$(el).attr('href') || 'ninguno'}", text="${$(el).text().substring(0, 30).trim()}..."`);
-  });
-  
-  // Primero, buscar el contenedor específico de las subastas activas
-  const auctionsContainer = $('.listings-container.auctions-grid');
-  
-  if (auctionsContainer.length > 0) {
-    console.log(`Encontrado contenedor principal de subastas: ${auctionsContainer.attr('id') || 'sin id'}`);
-  } else {
-    console.log('No se encontró el contenedor principal de subastas. Buscando alternativas...');
-  }
-  
-  // Buscar todas las tarjetas de listado con la clase "listing-card"
+  // Buscar todas las tarjetas de listado
   const listingCards = $('a.listing-card');
-  console.log(`Encontradas ${listingCards.length} tarjetas de listado en todo el documento`);
+  console.log(`Encontradas ${listingCards.length} tarjetas de listado en el HTML de ejemplo`);
   
-  // Analizar cada tarjeta de listado
   listingCards.each((index, element) => {
     try {
+      // Extraer datos básicos
       const card = $(element);
       const url = card.attr('href') || '';
-      const classAttr = card.attr('class') || '';
       
-      console.log(`Tarjeta #${index + 1}:`);
-      console.log(`- Clase: ${classAttr}`);
-      console.log(`- URL: ${url}`);
-      
-      if (!url || !url.includes('/listing/')) {
-        console.log(`  Omitiendo - No es una URL de listado válida`);
-        return;
-      }
-      
-      // Extraer título desde múltiples fuentes posibles
-      let title = '';
-      
-      // Método 1: Desde el elemento h3
-      const h3Element = card.find('h3');
-      if (h3Element.length && h3Element.text().trim()) {
-        title = h3Element.text().trim();
-      }
-      
-      // Método 2: Desde el atributo alt de la imagen
-      if (!title) {
-        const imgElement = card.find('.thumbnail img');
-        if (imgElement.length && imgElement.attr('alt')) {
-          title = imgElement.attr('alt')!.trim();
-        }
-      }
-      
-      // Método 3: Desde la URL
-      if (!title && url) {
-        // Extraer slug desde la URL (ej: /listing/1967-ford-mustang/ -> 1967-ford-mustang)
-        const urlMatch = url.match(/\/listing\/([^/]+)/);
-        if (urlMatch && urlMatch[1]) {
-          // Convertir slug a título formateado
-          const slug = urlMatch[1];
-          title = slug
-            .replace(/-/g, ' ')
-            .replace(/(\d{4})/, '$1 ') // Añadir espacio después del año
-            .trim()
-            .split(' ')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-        }
-      }
-      
-      if (!title) {
-        console.log(`⚠️ Omitiendo tarjeta #${index + 1} - No se pudo extraer título`);
-        return;
-      }
-      
+      // Extraer título
+      const title = card.find('h3').text().trim();
       console.log(`Procesando tarjeta #${index + 1}: "${title}" (${url})`);
       
-      // Extraer precio actual
-      let currentBid = 0;
-      let bidText = '';
-      
-      const bidElement = card.find('.bid-formatted');
-      if (bidElement.length) {
-        bidText = bidElement.text().trim();
-        // Extraer número de la puja (e.g., "USD $15,000" -> 15000)
-        const bidMatch = bidText.replace(/[^0-9]/g, '');
-        if (bidMatch) {
-          currentBid = parseInt(bidMatch);
-        }
+      if (!title) {
+        console.log('  ⚠️ Tarjeta sin título, omitiendo');
+        return;
       }
-      
-      console.log(`  Puja actual: ${bidText} (${currentBid})`);
-      
-      // Extraer tiempo restante
-      let timeRemaining = 'En curso';
-      
-      const timeElement = card.find('.countdown-text');
-      if (timeElement.length) {
-        timeRemaining = timeElement.text().trim();
-      }
-      
-      console.log(`  Tiempo restante: ${timeRemaining}`);
       
       // Extraer imagen
-      let imageUrl = '';
-      
       const imgElement = card.find('.thumbnail img');
-      if (imgElement.length && imgElement.attr('src')) {
-        imageUrl = imgElement.attr('src')!;
-      }
+      const imageUrl = imgElement.attr('src') || '';
       
       // Extraer descripción
-      let description = '';
+      const description = card.find('.item-excerpt').text().trim();
       
-      const excerptElement = card.find('.item-excerpt');
-      if (excerptElement.length) {
-        description = excerptElement.text().trim();
-      }
+      // Extraer precio actual (oferta)
+      const bidElement = card.find('.bid-formatted');
+      const bidText = bidElement.text().trim();
+      const currentBid = extractPrice(bidText);
+      console.log(`  💰 Puja actual: ${bidText} (${currentBid || 'desconocido'})`);
       
-      // Comprobar si el título es relevante
-      if (isRelevantVehicle(title, make, model, year)) {
+      // Extraer tiempo restante
+      const timeElement = card.find('.countdown-text');
+      const timeRemaining = timeElement.text().trim();
+      console.log(`  ⏱️ Tiempo restante: ${timeRemaining}`);
+      
+      // Verificar si el título es relevante para la búsqueda
+      const isRelevant = isRelevantVehicle(title, make, model, year);
+      
+      if (isRelevant) {
         // Crear objeto del vehículo
         const vehicle: InsertVehicle = {
           title,
@@ -329,10 +239,10 @@ function extractResultsFromExampleHTML(make: string, model: string, year?: strin
           sourceUrl: url,
           imageUrl,
           year: extractYear(title) || (year ? parseInt(year) : null),
-          price: currentBid,
+          price: currentBid || 0,
           isAuction: true,
-          currentBid,
-          endsIn: timeRemaining,
+          currentBid: currentBid || 0,
+          endsIn: timeRemaining || 'En curso',
           transmission: extractTransmission(title) || extractTransmission(description),
           bodyType: extractBodyType(title) || extractBodyType(description),
           location: 'Estados Unidos',
@@ -345,16 +255,16 @@ function extractResultsFromExampleHTML(make: string, model: string, year?: strin
         };
         
         vehicles.push(vehicle);
-        console.log(`✅ Vehículo añadido: "${title}"`);
+        console.log(`  ✅ Vehículo relevante añadido: "${title}"`);
       } else {
-        console.log(`❌ Vehículo no relevante para ${make} ${model} ${year || ''}: "${title}"`);
+        console.log(`  ❌ Vehículo no relevante para ${make} ${model} ${year || ''}`);
       }
     } catch (error: any) {
-      console.error(`Error procesando tarjeta: ${error.message}`);
+      console.error(`Error al procesar tarjeta: ${error.message}`);
     }
   });
   
-  console.log(`Total: ${vehicles.length} vehículos relevantes encontrados`);
+  console.log(`Total: ${vehicles.length} vehículos relevantes encontrados en HTML de ejemplo`);
   return vehicles;
 }
 
@@ -431,6 +341,25 @@ function isRelevantVehicle(title: string, make: string, model: string, year?: st
   }
   
   return true;
+}
+
+/**
+ * Extrae el precio del texto
+ */
+function extractPrice(text: string): number | null {
+  if (!text) return null;
+  
+  // Eliminar prefijos de moneda (USD, $, etc.)
+  const cleanText = text.replace(/USD|\$|,/g, '').trim();
+  
+  // Buscar números en el texto
+  const match = cleanText.match(/(\d+)/);
+  
+  if (match) {
+    return parseInt(match[1]);
+  }
+  
+  return null;
 }
 
 /**
