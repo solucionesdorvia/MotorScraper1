@@ -7,6 +7,7 @@ import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
 import { scrapeBringATrailerSimple } from "./scraper/bat-simple";
 import { scrapeBringATrailerFromExample } from "./scraper/bat-html-example";
+import { scrapeBringATrailerPattern } from "./scraper/bat-pattern";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
