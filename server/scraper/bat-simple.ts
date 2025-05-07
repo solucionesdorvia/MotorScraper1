@@ -46,7 +46,19 @@ export async function scrapeBringATrailerSimple(make: string, model: string, yea
   try {
     console.log(`Consultando URL simplificada: ${searchUrl}`);
     const { data: html } = await axios.get(searchUrl, { headers });
-    const listings = extractListings(html);
+    
+    // Si no obtenemos resultados de la búsqueda principal, intentar con la URL de subastas activas
+    let listings = extractListings(html);
+    
+    if (listings.length === 0) {
+      console.log(`No se encontraron resultados en la URL principal, intentando URL directa a subastas activas: ${auctionResultsUrl}`);
+      try {
+        const { data: auctionHtml } = await axios.get(auctionResultsUrl, { headers });
+        listings = extractListings(auctionHtml);
+      } catch (auctionError) {
+        console.error(`Error consultando URL de subastas activas: ${auctionError}`);
+      }
+    }
 
     console.log(`Encontrados ${listings.length} listados en la versión simplificada`);
 
@@ -117,6 +129,12 @@ export async function scrapeBringATrailerSimple(make: string, model: string, yea
       console.log(`Vehículo ${index + 1}: ${vehicle.title} - Precio: ${vehicle.price} - Tiempo: ${vehicle.endsIn}`);
     });
     
+    if (vehicles.length === 0) {
+      console.log('⚠️ No se encontraron subastas activas para esta búsqueda');
+    } else {
+      console.log('✅ ÉXITO: Encontradas ' + vehicles.length + ' subastas ACTIVAS con el scraper simplificado');
+    }
+    
     return vehicles;
   } catch (error) {
     console.error('Error scraping Bring a Trailer (simple):', error);
@@ -140,88 +158,272 @@ function removeDuplicates(listings: BaTListing[]): BaTListing[] {
 }
 
 /**
- * Extrae los listados de Bring a Trailer desde el HTML enfocándose en las subastas en vivo
- * dentro del div "search-result-listings" específicamente
+ * Extrae los listados de Bring a Trailer desde el HTML enfocándose específicamente en las
+ * subastas en vivo dentro del div "search-result-listings", basándose en el HTML de ejemplo.
  */
 function extractListings(html: string): BaTListing[] {
   const $ = cheerio.load(html);
   const listings: BaTListing[] = [];
 
-  console.log('Buscando subastas ACTIVAS en el div "search-result-listings"...');
+  console.log('Analizando HTML para encontrar subastas ACTIVAS...');
   
-  // Buscar específicamente el div search-result-listings que contiene las subastas activas
-  const searchResultListings = $('#search-result-listings');
+  // Lógica de extracción 1: Buscar específicamente el div search-result-listings
+  console.log('Método 1: Buscando div "search-result-listings"...');
+  const searchResultListings = $('div.search-result-listings, #search-result-listings');
   
-  if (searchResultListings.length === 0) {
-    console.log('❌ No se encontró el div "search-result-listings" que contiene las subastas activas');
-    return listings;
+  if (searchResultListings.length > 0) {
+    console.log('✅ Encontrado el div "search-result-listings"');
+    
+    // Buscar todas las tarjetas de listado dentro de search-result-listings
+    const liveListingsCards = searchResultListings.find('a.listing-card');
+    console.log(`Encontradas ${liveListingsCards.length} tarjetas de subastas ACTIVAS con Método 1`);
+    
+    if (liveListingsCards.length === 0) {
+      console.log('⚠️ No se encontraron tarjetas dentro del div search-result-listings');
+    }
+    
+    // Procesar cada tarjeta de subasta activa
+    liveListingsCards.each((index, element) => {
+      const $el = $(element);
+      
+      // Extraer el título exactamente como en el HTML de ejemplo
+      const title = $el.find('h3').text().trim();
+      
+      // Extraer la imagen exactamente como en el HTML de ejemplo
+      const image = $el.find('.thumbnail img').attr('src') || '';
+      
+      // Obtener el enlace completo exactamente como en el HTML de ejemplo
+      const link = $el.attr('href') || '';
+      
+      // Buscar descripción exactamente como en el HTML de ejemplo
+      const description = $el.find('.item-excerpt').text().trim();
+      
+      // Extraer precio/oferta actual exactamente como en el HTML de ejemplo
+      let price: number | null = null;
+      const bidText = $el.find('.bid-formatted').text().trim();
+      
+      if (bidText) {
+        // Intentar extraer precio con formato "USD $XX,XXX" (formato exacto del ejemplo)
+        const priceMatch = bidText.match(/USD\s+\$(\d{1,3}(,\d{3})*|\d+)/) || 
+                           bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
+        
+        if (priceMatch && priceMatch[1]) {
+          price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+          console.log(`Precio extraído: $${price}`);
+        }
+      }
+      
+      // Extraer tiempo restante exactamente como en el HTML de ejemplo
+      const timeRemaining = $el.find('.countdown-text').text().trim();
+      
+      console.log(`Subasta #${index + 1}:`);
+      console.log(`Título: "${title}"`);
+      console.log(`Enlace: "${link}"`);
+      console.log(`Imagen: "${image}"`);
+      console.log(`Descripción: "${description}"`);
+      console.log(`Oferta actual: "${bidText}" => $${price || 'N/A'}`);
+      console.log(`Tiempo restante: "${timeRemaining}"`);
+      
+      if (title && link) {
+        console.log(`✅ Subasta ACTIVA encontrada: ${title} - ${price ? '$' + price : 'Sin oferta'} - ${timeRemaining}`);
+        listings.push({ 
+          title, 
+          image: image || 'https://i.imgur.com/U45aNlT.jpg', 
+          link, 
+          description,
+          price,
+          timeRemaining
+        });
+      } else {
+        console.log(`❌ Subasta descartada: Sin título o enlace`);
+      }
+      
+      console.log('-----------------------------------');
+    });
+  } else {
+    console.log('❌ No se encontró el div "search-result-listings"');
+    
+    // Lógica de extracción 2: Buscar directamente las tarjetas de listado independientemente del contenedor
+    console.log('Método 2: Buscando directamente tarjetas de listado en la página...');
+    const listingCards = $('a.listing-card').filter(function() {
+      // Solo considerar tarjetas que tengan elementos de subasta activa
+      return $(this).find('.bidding-countdown, .bid-formatted, .countdown-text').length > 0;
+    });
+    
+    console.log(`Encontradas ${listingCards.length} tarjetas de subastas con Método 2`);
+    
+    // Procesar cada tarjeta encontrada
+    listingCards.each((index, element) => {
+      const $el = $(element);
+      
+      // Extraer datos de la misma manera que el método 1
+      const title = $el.find('h3').text().trim();
+      const image = $el.find('.thumbnail img, img').first().attr('src') || '';
+      const link = $el.attr('href') || '';
+      const description = $el.find('.item-excerpt').text().trim();
+      
+      let price: number | null = null;
+      const bidText = $el.find('.bid-formatted, [class*="bid"]').text().trim();
+      
+      if (bidText) {
+        const priceMatch = bidText.match(/USD\s+\$(\d{1,3}(,\d{3})*|\d+)/) || 
+                           bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
+        
+        if (priceMatch && priceMatch[1]) {
+          price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+        }
+      }
+      
+      const timeRemaining = $el.find('.countdown-text, [class*="countdown"]').text().trim();
+      
+      if (title && link) {
+        console.log(`✅ Método 2: Subasta ACTIVA encontrada: ${title}`);
+        listings.push({ 
+          title, 
+          image: image || 'https://i.imgur.com/U45aNlT.jpg', 
+          link, 
+          description,
+          price,
+          timeRemaining
+        });
+      }
+    });
+  }
+
+  // Si no encontramos listados, aplicar método 3: búsqueda de código HTML específico
+  if (listings.length === 0) {
+    console.log('Método 3: Buscando patrones HTML específicos similares al ejemplo...');
+    
+    // Buscar cualquier elemento que tenga la estructura mínima para ser una subasta activa
+    const potentialListingContainers = $('a[href*="/listing/"]').filter(function() {
+      // Verificar que tenga al menos un título o algún indicador de precio/tiempo
+      return $(this).find('h3, h2, .bid-formatted, .countdown-text, [class*="bid"], [class*="countdown"]').length > 0;
+    });
+    
+    console.log(`Encontrados ${potentialListingContainers.length} contenedores potenciales con Método 3`);
+    
+    potentialListingContainers.each((index, element) => {
+      const $el = $(element);
+      
+      // Extraer datos con selectores más flexibles
+      const title = $el.find('h3, h2, .title, [class*="title"]').first().text().trim();
+      const image = $el.find('img').first().attr('src') || '';
+      const link = $el.attr('href') || '';
+      const description = $el.find('.item-excerpt, .description, [class*="excerpt"], [class*="description"]').first().text().trim();
+      
+      let price: number | null = null;
+      const bidText = $el.find('.bid-formatted, [class*="bid"], [class*="price"]').text().trim();
+      
+      if (bidText) {
+        const priceMatch = bidText.match(/USD\s+\$(\d{1,3}(,\d{3})*|\d+)/) || 
+                         bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
+        
+        if (priceMatch && priceMatch[1]) {
+          price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+        }
+      }
+      
+      const timeRemaining = $el.find('.countdown-text, [class*="countdown"], [class*="timer"]').text().trim();
+      
+      if (title && link) {
+        console.log(`✅ Método 3: Posible subasta encontrada: ${title}`);
+        listings.push({ 
+          title, 
+          image: image || 'https://i.imgur.com/U45aNlT.jpg', 
+          link, 
+          description,
+          price,
+          timeRemaining
+        });
+      }
+    });
   }
   
-  console.log('✅ Encontrado el div "search-result-listings"');
-  
-  // Buscar todas las tarjetas de listado dentro de search-result-listings
-  const liveListingsCards = searchResultListings.find('a.listing-card');
-  console.log(`Encontradas ${liveListingsCards.length} tarjetas de subastas ACTIVAS`);
-  
-  // Procesar cada tarjeta de subasta activa
-  liveListingsCards.each((index, element) => {
-    const $el = $(element);
+  // Si todavía no tenemos resultados, intentar un enfoque basado en el HTML de ejemplo
+  if (listings.length === 0) {
+    console.log('Método 4: Utilizando exactamente el formato del HTML proporcionado como ejemplo...');
     
-    // Extraer el título
-    const title = $el.find('h3').text().trim();
+    // Buscar cualquier elemento que contenga una estructura similar a la del ejemplo HTML
+    const htmlExample = `
+      <a class="listing-card bg-white-transparent" href="https://bringatrailer.com/listing/1967-ford-mustang-29-2/">
+        <div class="thumbnail">
+          <img src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang-gt_img_0625-39159.jpg">
+        </div>
+        <div class="content">
+          <div class="content-main">
+            <h3>23-Years-Owned, 417 FE-Powered 1967 Ford Mustang Fastback 5-Speed</h3>
+            <div class="item-excerpt">This 1967 Ford Mustang was built as a 289 fastback...</div>
+          </div>
+          <div class="content-secondary">
+            <div class="item-bidding">
+              <span class="bidding-bid">
+                <span class="bid-formatted bold">USD $25,000</span>
+              </span>
+              <span class="bidding-countdown">
+                <span class="countdown-text">4 days</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </a>
+    `;
     
-    // Extraer la imagen
-    const image = $el.find('.thumbnail img').attr('src') || '';
+    // Crear un objeto cheerio con el HTML de ejemplo para extracción de selectores
+    const $example = cheerio.load(htmlExample);
+    const selectors = {
+      card: 'a.listing-card',
+      title: 'h3',
+      image: '.thumbnail img',
+      excerpt: '.item-excerpt',
+      bidFormatted: '.bid-formatted',
+      countdown: '.countdown-text'
+    };
     
-    // Obtener el enlace completo
-    const link = $el.attr('href') || '';
+    // Usar los selectores del ejemplo para encontrar elementos similares
+    let cardElements = $(selectors.card);
+    if (cardElements.length === 0) {
+      // Si no encontramos tarjetas, buscar cualquier enlace a un listado
+      cardElements = $('a[href*="/listing/"]');
+    }
     
-    // Buscar descripción
-    const description = $el.find('.item-excerpt').text().trim();
+    console.log(`Encontradas ${cardElements.length} tarjetas usando los selectores del ejemplo HTML`);
     
-    // Extraer precio/oferta actual
-    let price: number | null = null;
-    const bidText = $el.find('.bid-formatted').text().trim();
-    
-    if (bidText) {
-      // Intentar extraer precio con formato "USD $XX,XXX"
-      const priceMatch = bidText.match(/USD\s+\$(\d{1,3}(,\d{3})*|\d+)/) || 
-                         bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
+    cardElements.each((index, card) => {
+      const $card = $(card);
+      const title = $card.find(selectors.title).text().trim();
+      const image = $card.find(selectors.image).attr('src') || '';
+      const link = $card.attr('href') || '';
+      const description = $card.find(selectors.excerpt).text().trim();
       
-      if (priceMatch && priceMatch[1]) {
-        price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
-        console.log(`Precio extraído: $${price}`);
+      let price: number | null = null;
+      const bidText = $card.find(selectors.bidFormatted).text().trim();
+      
+      if (bidText) {
+        const priceMatch = bidText.match(/USD\s+\$(\d{1,3}(,\d{3})*|\d+)/) || 
+                         bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
+        
+        if (priceMatch && priceMatch[1]) {
+          price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+        }
       }
-    }
-    
-    // Extraer tiempo restante
-    const timeRemaining = $el.find('.countdown-text').text().trim();
-    
-    console.log(`Subasta #${index + 1}:`);
-    console.log(`Título: "${title}"`);
-    console.log(`Enlace: "${link}"`);
-    console.log(`Imagen: "${image}"`);
-    console.log(`Descripción: "${description}"`);
-    console.log(`Oferta actual: "${bidText}" => $${price || 'N/A'}`);
-    console.log(`Tiempo restante: "${timeRemaining}"`);
-    
-    if (title && link) {
-      console.log(`✅ Subasta ACTIVA encontrada: ${title} - ${price ? '$' + price : 'Sin oferta'} - ${timeRemaining}`);
-      listings.push({ 
-        title, 
-        image: image || 'https://i.imgur.com/U45aNlT.jpg', 
-        link, 
-        description,
-        price,
-        timeRemaining
-      });
-    } else {
-      console.log(`❌ Subasta descartada: Sin título o enlace`);
-    }
-    
-    console.log('-----------------------------------');
-  });
+      
+      const timeRemaining = $card.find(selectors.countdown).text().trim();
+      
+      if (title && link && link.includes('/listing/')) {
+        console.log(`✅ Método 4: Subasta encontrada usando selectores del ejemplo: ${title}`);
+        listings.push({ 
+          title, 
+          image: image || 'https://i.imgur.com/U45aNlT.jpg', 
+          link, 
+          description,
+          price,
+          timeRemaining
+        });
+      }
+    });
+  }
 
+  console.log(`Total de ${listings.length} subastas encontradas con todos los métodos.`);
   return listings;
 }
 
