@@ -11,9 +11,6 @@ import { InsertVehicle } from '../../shared/schema';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Tipos para el HTML de cheerio
-type CheerioElement = cheerio.Element;
-
 /**
  * Extrae las subastas activas de cualquier búsqueda en Bring a Trailer
  */
@@ -83,7 +80,7 @@ export async function scrapeBringATrailerUniversal(make: string, model: string, 
       } else {
         console.log('⚠️ No se encontraron subastas activas en la URL normal');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al obtener HTML de la URL normal:', error.message);
     }
     
@@ -111,7 +108,7 @@ export async function scrapeBringATrailerUniversal(make: string, model: string, 
         } else {
           console.log('❌ Archivo de ejemplo no encontrado');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error al procesar HTML de ejemplo:', error.message);
       }
     }
@@ -119,7 +116,7 @@ export async function scrapeBringATrailerUniversal(make: string, model: string, 
     // Si llegamos aquí, no se encontraron subastas activas
     console.log('⚠️ No se encontraron subastas activas para esta búsqueda con ningún método');
     return [];
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error al extraer subastas activas:', error.message);
     return [];
   }
@@ -133,43 +130,71 @@ function extractActiveVehicles(html: string, make: string, model: string, year?:
     const $ = cheerio.load(html);
     const vehicles: InsertVehicle[] = [];
     
-    console.log('Buscando div "search-result-live-listings"...');
+    console.log('Buscando tarjetas de subastas activas...');
     
-    // Primero, buscamos específicamente en la sección "search-result-live-listings"
-    const liveListingsDiv = $('#search-result-live-listings');
+    // Intentar múltiples métodos para encontrar subastas activas
     
-    if (liveListingsDiv.length > 0) {
-      console.log('✅ Encontrado div "search-result-live-listings"');
-      
-      // Buscar todas las tarjetas de listados dentro de search-result-live-listings
-      // Aquí usamos el selector exacto según el HTML proporcionado
-      const listingCards = liveListingsDiv.find('a.listing-card');
-      console.log(`Encontradas ${listingCards.length} tarjetas en la sección "search-result-live-listings"`);
-      
-      listingCards.each((index, element) => {
-        try {
-          // Extraer datos de cada tarjeta
-          const card = $(element);
+    // Método 1: Buscar directamente tarjetas de subastas activas en todo el documento
+    const allListingCards = $('a.listing-card');
+    console.log(`Encontradas ${allListingCards.length} tarjetas de listado en total`);
+    
+    // Buscar solo las tarjetas que contienen información de pujas (son subastas activas)
+    let activeListingCount = 0;
+    
+    allListingCards.each((index: number, element: any) => {
+      try {
+        const card = $(element);
+        
+        // Verificar si esta tarjeta tiene información de puja (es una subasta activa)
+        const hasBidding = card.find('.item-bidding').length > 0;
+        const hasCountdown = card.find('.countdown-text').length > 0;
+        
+        if (hasBidding && hasCountdown) {
+          activeListingCount++;
+          
+          // Extraer datos básicos
           const href = card.attr('href') || '';
           const title = card.find('h3').text().trim();
           const img = card.find('.thumbnail img').attr('src') || '';
-          const description = card.find('.item-excerpt').text().trim();
           
-          // Extraer información de pujas y tiempo restante
+          // Extraer información de pujas y tiempo
           const bidding = card.find('.item-bidding');
-          const currentBidText = bidding.find('.bid-formatted').text().trim();
-          const currentBid = extractPrice(currentBidText);
+          const bidText = bidding.find('.bid-formatted').text().trim();
+          const bid = extractPrice(bidText);
           const timeRemaining = bidding.find('.countdown-text').text().trim();
           
-          console.log(`Tarjeta #${index + 1} - Título: "${title}", Oferta: "${currentBidText}", Tiempo: "${timeRemaining}"`);
+          console.log(`Subasta activa #${activeListingCount}: "${title}" - Puja: ${bidText} - Tiempo: ${timeRemaining}`);
           
-          // Verificar que tenemos los datos mínimos necesarios
+          // Verificar datos mínimos
           if (title && href) {
-            // Comprobar si este listado es relevante para nuestra búsqueda
-            if (isRelevant(title, make, model, year)) {
-              // Crear objeto de vehículo
+            // Verificar si es relevante para la búsqueda
+            const titleLower = title.toLowerCase();
+            const makeLower = make.toLowerCase();
+            const modelLower = model.toLowerCase();
+            
+            // Criterios más flexibles de relevancia
+            let isRelevantListing = true;
+            
+            // Si la marca es muy específica (como "Ford"), verificar que esté en el título
+            if (makeLower.length > 3 && !titleLower.includes(makeLower)) {
+              isRelevantListing = false;
+            }
+            
+            // Si el modelo es muy específico (como "Mustang"), verificar que esté en el título
+            if (modelLower.length > 3 && !titleLower.includes(modelLower)) {
+              isRelevantListing = false;
+            }
+            
+            // Si se especificó un año, verificar que esté en el título
+            if (year && !titleLower.includes(year)) {
+              isRelevantListing = false;
+            }
+            
+            if (isRelevantListing) {
+              // Extraer año del título
               const extractedYear = extractYear(title) || (year ? parseInt(year) : null);
               
+              // Crear objeto de vehículo
               const vehicle: InsertVehicle = {
                 title,
                 make,
@@ -178,9 +203,9 @@ function extractActiveVehicles(html: string, make: string, model: string, year?:
                 sourceUrl: href,
                 imageUrl: img,
                 year: extractedYear,
-                price: currentBid || 0,
+                price: bid || 0,
                 isAuction: true,
-                currentBid: currentBid || 0,
+                currentBid: bid || 0,
                 endsIn: translateTimeRemaining(timeRemaining),
                 transmission: extractTransmission(title),
                 bodyType: extractBodyType(title),
@@ -201,99 +226,15 @@ function extractActiveVehicles(html: string, make: string, model: string, year?:
           } else {
             console.log(`❌ Listado descartado: Sin título o enlace`);
           }
-        } catch (error) {
-          console.error(`Error al procesar tarjeta #${index + 1}:`, error.message);
         }
-      });
-    } else {
-      console.log('❌ No se encontró la sección "search-result-live-listings"');
-      
-      // Si no encontramos la sección "search-result-live-listings", intentemos buscar listados en toda la página
-      console.log('Buscando en toda la página...');
-      
-      // Buscar todos los div con clase "search-result-listings"
-      const listingsDiv = $('.search-result-listings');
-      
-      if (listingsDiv.length > 0) {
-        console.log(`Encontrados ${listingsDiv.length} div "search-result-listings"`);
-        
-        // Buscar todas las tarjetas de listados
-        const listingCards = listingsDiv.find('a.listing-card');
-        console.log(`Encontradas ${listingCards.length} tarjetas en total`);
-        
-        listingCards.each((index, element) => {
-          try {
-            // Extraer datos de cada tarjeta
-            const card = $(element);
-            const href = card.attr('href') || '';
-            const title = card.find('h3').text().trim();
-            const img = card.find('.thumbnail img').attr('src') || '';
-            const description = card.find('.item-excerpt').text().trim();
-            
-            // Extraer información de pujas y tiempo restante
-            // Verificar primero si es una subasta activa (tiene la sección de pujas)
-            const bidding = card.find('.item-bidding');
-            
-            if (bidding.length > 0) {
-              const currentBidText = bidding.find('.bid-formatted').text().trim();
-              const currentBid = extractPrice(currentBidText);
-              const timeRemaining = bidding.find('.countdown-text').text().trim();
-              
-              console.log(`Tarjeta #${index + 1} - Título: "${title}", Oferta: "${currentBidText}", Tiempo: "${timeRemaining}"`);
-              
-              // Verificar que tenemos los datos mínimos necesarios
-              if (title && href) {
-                // Comprobar si este listado es relevante para nuestra búsqueda
-                if (isRelevant(title, make, model, year)) {
-                  // Crear objeto de vehículo
-                  const extractedYear = extractYear(title) || (year ? parseInt(year) : null);
-                  
-                  const vehicle: InsertVehicle = {
-                    title,
-                    make,
-                    model,
-                    source: 'bringatrailer',
-                    sourceUrl: href,
-                    imageUrl: img,
-                    year: extractedYear,
-                    price: currentBid || 0,
-                    isAuction: true,
-                    currentBid: currentBid || 0,
-                    endsIn: translateTimeRemaining(timeRemaining),
-                    transmission: extractTransmission(title),
-                    bodyType: extractBodyType(title),
-                    location: 'Estados Unidos',
-                    mileage: null,
-                    color: null,
-                    vin: null,
-                    fuelType: null,
-                    dealerName: null,
-                    hasDeals: false
-                  };
-                  
-                  vehicles.push(vehicle);
-                  console.log(`✅ Vehículo relevante añadido: "${title}"`);
-                } else {
-                  console.log(`❌ Listado no relevante para la búsqueda: "${title}"`);
-                }
-              } else {
-                console.log(`❌ Listado descartado: Sin título o enlace`);
-              }
-            } else {
-              console.log(`❌ Listado #${index + 1} descartado: No es una subasta activa (sin sección de pujas)`);
-            }
-          } catch (error) {
-            console.error(`Error al procesar tarjeta #${index + 1}:`, error.message);
-          }
-        });
-      } else {
-        console.log('❌ No se encontraron secciones de listados en la página');
+      } catch (error: any) {
+        console.error(`Error al procesar tarjeta: ${error.message}`);
       }
-    }
+    });
     
     console.log(`Total de vehículos relevantes encontrados: ${vehicles.length}`);
     return vehicles;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error al extraer vehículos activos:', error.message);
     return [];
   }
