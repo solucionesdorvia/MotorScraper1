@@ -159,103 +159,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // NUEVO SCRAPER QUE EXTRAE SOLO SUBASTAS ACTIVAS DEL HTML EXACTO
-            console.log('🔴 SOLUCIÓN DEFINITIVA: Extrayendo SOLO SUBASTAS ACTIVAS con estructura HTML EXACTA...');
-            bringATrailerResults = await scrapeBringATrailerLiveHtml(
+            // SOLO USAMOS LA IMPLEMENTACIÓN ESPECIALIZADA PARA LIVE LISTINGS
+            console.log('🔴 SOLUCIÓN FINAL: Extrayendo SOLO subastas de LIVE LISTINGS...');
+            // 1. Usar SOLO scrapeBringATrailerLiveOnly - especializado para Live Listings
+            bringATrailerResults = await scrapeBringATrailerLiveOnly(
               make, 
               model,
               searchParams.year?.toString()
             );
             
-            // Si el nuevo LiveHtml encuentra resultados, los usamos
-            if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO ABSOLUTO con LiveHtml: ${bringATrailerResults.length} subastas VERDADERAMENTE ACTIVAS`);
-            } else {
-              // Si LiveHtml falla, intentamos con DirectUrl
-              console.log('LiveHtml no encontró resultados, intentando con DirectUrl...');
-              bringATrailerResults = await scrapeBringATrailerDirectUrl(
+            // 2. Si no hay resultados, probar con LiveHtml
+            if (bringATrailerResults.length === 0) {
+              console.log('INTENTANDO CON LIVE HTML - la implementación más precisa...');
+              bringATrailerResults = await scrapeBringATrailerLiveHtml(
                 make, 
                 model,
                 searchParams.year?.toString()
               );
-              
-              // Si DirectUrl encuentra resultados, los usamos
-              if (bringATrailerResults.length > 0) {
-                console.log(`✅ ÉXITO COMPLETO con DirectUrl: ${bringATrailerResults.length} subastas ACTIVAS por URL directa`);
-              } else {
-                // Si DirectUrl falla, intentamos con LiveOnly
-                console.log('DirectUrl no encontró resultados, intentando con LiveOnly...');
-                bringATrailerResults = await scrapeBringATrailerLiveOnly(
-                  make, 
-                  model,
-                  searchParams.year?.toString()
-                );
-                
-                // Si el LiveOnly encuentra resultados, los usamos
-                if (bringATrailerResults.length > 0) {
-                  console.log(`✅ ÉXITO COMPLETO con LiveOnly: ${bringATrailerResults.length} subastas GARANTIZADAS ACTIVAS`);
-                } else {
-                  // Si LiveOnly falla, intentamos con el adaptador Express
-                  console.log('LiveOnly no encontró resultados, intentando con adaptador Express...');
-                  bringATrailerResults = await scrapeBringATrailerAdapter(
-                    make, 
-                    model,
-                    searchParams.year?.toString()
-                  );
-                  
-                  // Si el adaptador encuentra resultados, los usamos
-                  if (bringATrailerResults.length > 0) {
-                    console.log(`✅ ÉXITO con adaptador EXPRESS: ${bringATrailerResults.length} subastas activas encontradas`);
-                  } else {
-                    // Si el adaptador falla, probamos con el scraper de emergencia
-                    console.log('El adaptador no encontró resultados, intentando con scraper de emergencia...');
-                    bringATrailerResults = await emergencyScrapeBringATrailer(
-                      make, 
-                      model,
-                      searchParams.year?.toString()
-                    );
-                    
-                    // Si el scraper de emergencia encuentra resultados, los usamos
-                    if (bringATrailerResults.length > 0) {
-                      console.log(`✅ Éxito con scraper de EMERGENCIA: ${bringATrailerResults.length} subastas activas encontradas`);
-                    } else {
-                      // Si el de emergencia falla, probamos con el enfocado
-                      console.log('El scraper de emergencia no encontró resultados, intentando con scraper enfocado...');
-                      bringATrailerResults = await scrapeBringATrailerFocused(
-                        make, 
-                        model,
-                        searchParams.year?.toString()
-                      );
-                      
-                      // Si el scraper enfocado encuentra resultados, los usamos
-                      if (bringATrailerResults.length > 0) {
-                        console.log(`✅ Éxito con scraper ENFOCADO: ${bringATrailerResults.length} subastas activas encontradas`);
-                      } else {
-                        // Si no hay resultados con el enfocado, intentamos el normal
-                        console.log('El scraper enfocado no encontró resultados, intentando con scraper normal...');
-                        bringATrailerResults = await scrapeBringATrailer(
-                          make, 
-                          model,
-                          searchParams.year?.toString()
-                        );
-                        
-                        // Si el normal tampoco encuentra, usamos OpenAI
-                        if (bringATrailerResults.length === 0) {
-                          console.log('No se encontraron resultados con el scraper normal, intentando con OpenAI...');
-                          bringATrailerResults = await scrapeBringATrailerWithAI(
-                            make, 
-                            model,
-                            searchParams.year?.toString()
-                          );
-                          console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con OpenAI`);
-                        } else {
-                          console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con scraper normal`);
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+            }
+            
+            // 3. Si aún no hay resultados, probar con el scraper de emergencia
+            if (bringATrailerResults.length === 0) {
+              console.log('INTENTANDO CON SCRAPER DE EMERGENCIA - último recurso...');
+              bringATrailerResults = await emergencyScrapeBringATrailer(
+                make, 
+                model,
+                searchParams.year?.toString()
+              );
+            }
+            
+            // Reportar resultados
+            if (bringATrailerResults.length > 0) {
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS`);
+            } else {
+              console.log('⚠️ No se encontraron subastas activas para esta búsqueda');
             }
           } catch (error) {
             console.error('Error al obtener resultados de Bring a Trailer:', error);

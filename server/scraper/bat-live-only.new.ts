@@ -4,10 +4,9 @@
  * Este scraper está diseñado para extraer ÚNICAMENTE los listados de la sección "Live Listings"
  * basándose en la estructura HTML exacta proporcionada por el usuario.
  */
-
 import axios from "axios";
-import * as cheerio from "cheerio";
-import { InsertVehicle } from "../../shared/schema";
+import cheerio from "cheerio";
+import { InsertVehicle } from "@shared/schema";
 
 /**
  * Extrae EXCLUSIVAMENTE las subastas activas (Live Listings) de Bring a Trailer
@@ -15,13 +14,17 @@ import { InsertVehicle } from "../../shared/schema";
 export async function scrapeBringATrailerLiveOnly(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   try {
     console.log(`Buscando SOLO subastas ACTIVAS (Live Listings) para ${make} ${model} ${year || ""}`);
-    
     const url = buildUrl(make, model, year);
     console.log(`URL de búsqueda: ${url}`);
     
     const response = await axios.get(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Cache-Control": "max-age=0"
       }
     });
 
@@ -165,7 +168,7 @@ function extractLiveVehicles(liveListingsHtml: string, make: string, model: stri
         const resultsElement = $(card).find('.item-results[data-bind*="soldText"]');
         // Si tiene style="display: none;" entonces está oculto (lo que queremos)
         const isSoldHidden = resultsElement.length === 0 || 
-                             resultsElement.attr('style')?.includes('display: none');
+                           resultsElement.attr('style')?.includes('display: none');
         
         if (!isSoldHidden) {
           console.log(`❌ CRITERIO 3 fallido - Tiene texto sold visible: "${title}"`);
