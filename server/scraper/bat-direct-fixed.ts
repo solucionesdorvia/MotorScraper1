@@ -5,92 +5,59 @@ import { InsertVehicle } from '@shared/schema';
 /**
  * SCRAPER DIRECTO MEJORADO PARA BRING A TRAILER
  * 
- * - Usa siempre coincidencia directa para buscar subastas activas
- * - Soporta exactamente la estructura HTML observada
+ * - Usa siempre y exclusivamente la URL de subastas activas
  * - Extrae correctamente la información de listados activos
  * - Analiza exhaustivamente el HTML para encontrar cualquier dato relevante
+ * - Garantiza que solo se muestren subastas realmente activas
  */
 export async function scrapeBringATrailerDirectFixed(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
-  console.log(`Buscando subastas activas en BaT con método directo mejorado: ${make} ${model} ${year || ''}`);
+  console.log(`Buscando SOLO subastas activas en BaT con método directo mejorado: ${make} ${model} ${year || ''}`);
   
   // Construir la query de búsqueda
   const searchQuery = [make, model, year].filter(Boolean).join('+');
   
-  // URLs a verificar (en orden de prioridad)
-  const urls = [
-    // URL directa para buscar en subastas activas
-    `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`,
-    
-    // URL general de búsqueda
-    `https://bringatrailer.com/search/?s=${encodeURIComponent(searchQuery)}`,
-    
-    // URL específica de la marca/modelo
-    `https://bringatrailer.com/${make.toLowerCase()}/${model.toLowerCase()}/`
-  ];
+  // URL exclusiva para buscar en subastas activas (tal como especificado por el usuario)
+  const url = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
+  console.log(`Usando URL específica de subastas activas: ${url}`);
   
-  // Variables para almacenar resultados
-  let allVehicles: InsertVehicle[] = [];
-  let errors = 0;
-  
-  // Intentar con cada URL hasta encontrar resultados o agotar opciones
-  for (const url of urls) {
-    console.log(`Intentando con URL: ${url}`);
+  try {
+    // Realizar la petición con un timeout razonable
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+        'Accept': 'text/html',
+        'Cache-Control': 'no-cache'
+      },
+      timeout: 15000 // 15 segundos (ampliado para asegurar que cargue completamente)
+    });
     
-    try {
-      // Realizar la petición con un timeout razonable
-      const response = await axios.get(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
-          'Accept': 'text/html',
-          'Cache-Control': 'no-cache'
-        },
-        timeout: 10000 // 10 segundos
-      });
-      
-      // Verificar si la respuesta es válida
-      if (response.status !== 200 || !response.data) {
-        console.error(`Error: Respuesta inválida (${response.status})`);
-        errors++;
-        continue;
-      }
-      
-      console.log(`✅ HTML obtenido (${response.data.length} bytes) de ${url}`);
-      
-      // Extraer vehículos del HTML
-      const vehicles = extractVehiclesFromHTML(response.data, make, model, year);
-      
-      if (vehicles.length > 0) {
-        console.log(`✅ Encontrados ${vehicles.length} vehículos relevantes en ${url}`);
-        allVehicles = [...allVehicles, ...vehicles];
-        
-        // Si ya encontramos resultados, no necesitamos seguir intentando más URLs
-        break;
-      } else {
-        console.log(`❌ No se encontraron vehículos relevantes en ${url}`);
-      }
-    } catch (error) {
-      errors++;
-      if (error instanceof Error) {
-        console.error(`❌ Error al obtener datos desde ${url}: ${error.message}`);
-      } else {
-        console.error(`❌ Error desconocido al obtener datos desde ${url}`);
-      }
+    // Verificar si la respuesta es válida
+    if (response.status !== 200 || !response.data) {
+      console.error(`Error: Respuesta inválida (${response.status})`);
+      return [];
+    }
+    
+    console.log(`✅ HTML obtenido (${response.data.length} bytes) de subastas activas`);
+    
+    // Extraer vehículos del HTML
+    const vehicles = extractVehiclesFromHTML(response.data, make, model, year);
+    
+    if (vehicles.length > 0) {
+      console.log(`✅ Encontrados ${vehicles.length} subastas activas en Bring a Trailer`);
+      return vehicles;
+    } else {
+      console.log('⚠️ No se encontraron subastas activas para esta búsqueda');
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`❌ Error al obtener datos de subastas activas: ${error.message}`);
+    } else {
+      console.error('❌ Error desconocido al obtener datos de subastas activas');
     }
   }
   
-  // Si obtuvimos vehículos de alguna URL, devolverlos
-  if (allVehicles.length > 0) {
-    console.log(`✅ Total: encontrados ${allVehicles.length} vehículos relevantes`);
-    return allVehicles;
-  }
-  
-  // Si todas las peticiones fallaron, registrar error
-  if (errors === urls.length) {
-    console.error('❌ Todas las peticiones fallaron. No se pudieron obtener datos.');
-  } else {
-    console.log('⚠️ No se encontraron subastas activas en ninguna URL.');
-  }
-  
+  // Si llegamos hasta aquí, no se encontraron resultados
+  console.log('⚠️ No hay subastas activas para estos criterios de búsqueda');
   return [];
 }
 
