@@ -159,33 +159,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // SOLO USAMOS LA IMPLEMENTACIÓN ESPECIALIZADA PARA LIVE LISTINGS
-            console.log('🔴 SOLUCIÓN FINAL: Extrayendo SOLO subastas de LIVE LISTINGS...');
-            // 1. Usar SOLO scrapeBringATrailerLiveOnly - especializado para Live Listings
-            bringATrailerResults = await scrapeBringATrailerLiveOnly(
+            // CASCADA DE SCRAPERS - Del más específico al más general
+            console.log('🔴 INICIANDO CASCADA DE SCRAPERS PARA ENCONTRAR SUBASTAS ACTIVAS:');
+            
+            // 1. Primer intento: Probar con el scraper estándar
+            console.log('1° INTENTO: Usando scraper básico (encuentra más resultados)...');
+            let tempResults = await scrapeBringATrailer(
               make, 
               model,
               searchParams.year?.toString()
             );
             
-            // 2. Si no hay resultados, probar con LiveHtml
-            if (bringATrailerResults.length === 0) {
-              console.log('INTENTANDO CON LIVE HTML - la implementación más precisa...');
-              bringATrailerResults = await scrapeBringATrailerLiveHtml(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-            }
+            // Verificar si los resultados parecen ser activos (básico)
+            let activeResults = tempResults.filter(vehicle => 
+              vehicle.auctionData?.isAuction && 
+              vehicle.auctionData?.endsIn && 
+              vehicle.auctionData.endsIn !== "Finalizada"
+            );
             
-            // 3. Si aún no hay resultados, probar con el scraper de emergencia
-            if (bringATrailerResults.length === 0) {
-              console.log('INTENTANDO CON SCRAPER DE EMERGENCIA - último recurso...');
-              bringATrailerResults = await emergencyScrapeBringATrailer(
+            console.log(`Scraper básico encontró ${tempResults.length} resultados, ${activeResults.length} parecen activos`);
+            
+            // Si encontramos resultados activos, usarlos
+            if (activeResults.length > 0) {
+              console.log('✅ ÉXITO: El scraper básico encontró subastas que parecen activas');
+              bringATrailerResults = activeResults;
+            } else {
+              // 2. Segundo intento: Usar el scraper especializado para Live Listings
+              console.log('2° INTENTO: Usando scraper especializado para Live Listings...');
+              bringATrailerResults = await scrapeBringATrailerLiveOnly(
                 make, 
                 model,
                 searchParams.year?.toString()
               );
+              
+              // 3. Si aún no hay resultados, probar con el scraper de HTML exacto
+              if (bringATrailerResults.length === 0) {
+                console.log('3° INTENTO: Usando scraper de HTML exacto...');
+                bringATrailerResults = await scrapeBringATrailerLiveHtml(
+                  make, 
+                  model,
+                  searchParams.year?.toString()
+                );
+              }
+              
+              // 4. Si todavía no hay resultados, usar el scraper de emergencia
+              if (bringATrailerResults.length === 0) {
+                console.log('4° INTENTO: Usando scraper de emergencia...');
+                bringATrailerResults = await emergencyScrapeBringATrailer(
+                  make, 
+                  model,
+                  searchParams.year?.toString()
+                );
+              }
             }
             
             // Reportar resultados
