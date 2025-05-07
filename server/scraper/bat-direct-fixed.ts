@@ -289,9 +289,157 @@ function processContainer(container: any, $: any, make: string, model: string, y
 }
 
 /**
- * Procesa las tarjetas de listado basado en la estructura exacta proporcionada
+ * Procesa las tarjetas de listado basado en la estructura real de subastas activas
  */
 function processCards(cards: any, $: any, make: string, model: string, year: string | undefined, vehicles: InsertVehicle[]) {
+  // Análisis detallado de la estructura actual de la página
+  console.log(`Análisis de estructura para ${cards.length} tarjeta(s):`);
+  
+  // Si no hay tarjetas en la estructura esperada, intentar localizar la sección de subastas activas
+  if (cards.length === 0 || (cards.length === 1 && !$(cards[0]).attr('href'))) {
+    console.log('Estructura directa no encontrada, analizando página completa...');
+    
+    // Buscar todos los enlaces que van a listados específicos
+    const listingLinks = $('a[href*="/listing/"]');
+    console.log(`Encontrados ${listingLinks.length} enlaces a listados específicos`);
+    
+    if (listingLinks.length > 0) {
+      listingLinks.each(function(index: number, element: any) {
+        if (index < 20) { // Limitar a los primeros 20 para evitar sobrecarga
+          try {
+            const link = $(element);
+            const url = link.attr('href') || '';
+            
+            if (!url) return;
+            
+            // Buscar título y otros elementos relacionados con el listado
+            let linkTitle = '';
+            
+            // Opción 1: Texto del propio enlace si es suficientemente descriptivo
+            const linkText = link.text().trim();
+            if (linkText && linkText.length > 10 && /\d{4}/.test(linkText)) {
+              linkTitle = linkText;
+            }
+            
+            // Opción 2: Buscar hacia arriba en la estructura DOM (5 niveles)
+            if (!linkTitle) {
+              let parent = link.parent();
+              for (let i = 0; i < 5 && !linkTitle && parent.length; i++) {
+                const h3 = parent.find('h3').first();
+                if (h3.length && h3.text().trim()) {
+                  linkTitle = h3.text().trim();
+                  break;
+                }
+                parent = parent.parent();
+              }
+            }
+            
+            // Opción 3: Extraer de la URL si todo lo demás falla
+            if (!linkTitle) {
+              const urlParts = url.split('/');
+              let slug = '';
+              for (let i = urlParts.length - 1; i >= 0; i--) {
+                if (urlParts[i] && urlParts[i] !== 'listing') {
+                  slug = urlParts[i];
+                  break;
+                }
+              }
+              
+              if (slug) {
+                linkTitle = slug
+                  .replace(/-/g, ' ')
+                  .replace(/(\d{4})-/g, '$1 ') // Separar años
+                  .replace(/\b\w/g, c => c.toUpperCase()); // Capitalizar
+              }
+            }
+            
+            // Si aún no hay título, usar uno genérico
+            if (!linkTitle) {
+              linkTitle = `${make} ${model} ${year || ''}`;
+            }
+            
+            console.log(`Enlace de listado #${index + 1}: "${linkTitle}" (${url})`);
+            
+            // Verificar relevancia
+            if (!isRelevant(linkTitle, make, model, year)) {
+              console.log(`  ❌ No relevante para ${make} ${model} ${year || ''}`);
+              return;
+            }
+            
+            // Buscar elementos cercanos para precio y tiempo
+            const container = link.closest('[class*="listing"], [class*="auction"], [class*="card"]');
+            let imageUrl = '';
+            let bidText = '';
+            let timeText = '';
+            
+            if (container.length > 0) {
+              // Extraer imagen
+              const img = container.find('img').first();
+              if (img.length > 0) {
+                imageUrl = img.attr('src') || '';
+              }
+              
+              // Extraer precio (buscando patrones como $XX,XXX)
+              const fullText = container.text();
+              const priceMatch = fullText.match(/\$[\d,]+|\d+,\d+|\d+\s(USD|dollars)/i);
+              if (priceMatch) {
+                bidText = priceMatch[0];
+              }
+              
+              // Extraer tiempo restante
+              const timeMatch = fullText.match(/\d+:\d+|\d+\s(days?|hours?|mins?|minutes?|seconds?)/i);
+              if (timeMatch) {
+                timeText = timeMatch[0];
+              }
+            }
+            
+            // Extraer precio numérico
+            const currentBid = extractPrice(bidText) || 0;
+            
+            // Extraer año
+            const yearFromTitle = extractYear(linkTitle);
+            const finalYear = yearFromTitle || (year ? parseInt(year) : null);
+            
+            console.log(`  💰 Precio: ${currentBid || 'No disponible'}`);
+            console.log(`  ⏱️ Tiempo: ${timeText || 'No disponible'}`);
+            
+            // Crear objeto de vehículo
+            const vehicle: InsertVehicle = {
+              title: linkTitle,
+              make,
+              model,
+              source: 'bringatrailer',
+              sourceUrl: url.startsWith('http') ? url : `https://bringatrailer.com${url}`,
+              imageUrl,
+              year: finalYear,
+              price: currentBid,
+              isAuction: true,
+              currentBid,
+              endsIn: timeText || 'En curso',
+              transmission: extractTransmission(linkTitle),
+              bodyType: extractBodyType(linkTitle),
+              location: 'Estados Unidos',
+              mileage: null,
+              color: null,
+              vin: null,
+              fuelType: null,
+              dealerName: null,
+              hasDeals: false
+            };
+            
+            vehicles.push(vehicle);
+            console.log(`  ✅ Vehículo añadido mediante análisis profundo`);
+          } catch (error) {
+            console.error(`Error procesando enlace #${index + 1}:`, error);
+          }
+        }
+      });
+    }
+    
+    return;
+  }
+  
+  // Procesar tarjetas normales si existen
   cards.each(function(index: number, element: any) {
     try {
       const card = $(element);
@@ -299,79 +447,162 @@ function processCards(cards: any, $: any, make: string, model: string, year: str
       // Extraer URL (href directo del enlace <a>)
       const url = card.attr('href') || '';
       if (!url) {
-        console.log(`⚠️ Tarjeta #${index + 1} sin URL, omitiendo`);
-        return;
-      }
-      
-      // Extraer título (exactamente desde el <h3> como en el ejemplo)
-      const titleElement = card.find('h3');
-      const title = titleElement.length > 0 ? titleElement.text().trim() : '';
-      
-      // Alternativa: buscar el título también en el atributo alt de la imagen
-      const altTitle = card.find('.thumbnail img').attr('alt');
-      const finalTitle = title || altTitle || '';
-      
-      if (!finalTitle) {
-        console.log(`⚠️ Tarjeta #${index + 1} sin título, omitiendo`);
-        return;
-      }
-      
-      console.log(`Procesando listado #${index + 1}: "${finalTitle}" (${url})`);
-      
-      // Extraer imagen (desde el src del img en .thumbnail)
-      const imageUrl = card.find('.thumbnail img').attr('src') || '';
-      
-      // Extraer descripción (si existe)
-      const description = card.find('.item-excerpt').text().trim();
-      
-      // Extraer precio actual (desde el span con clase bid-formatted)
-      // Exactamente como en el ejemplo: <span class="bid-formatted bold">USD $20,500</span>
-      const bidFormatted = card.find('.bid-formatted');
-      const bidText = bidFormatted.length > 0 ? bidFormatted.text().trim() : '';
-      const currentBid = extractPrice(bidText);
-      console.log(`  💰 Puja actual: ${bidText} (${currentBid || 'No disponible'})`);
-      
-      // Extraer tiempo restante (desde el span con clase countdown-text)
-      // Exactamente como en el ejemplo: <span class="countdown-text final-countdown">5:26</span>
-      const countdownText = card.find('.countdown-text');
-      const timeRemaining = countdownText.length > 0 ? countdownText.text().trim() : '';
-      console.log(`  ⏱️ Tiempo restante: ${timeRemaining || 'No disponible'}`);
-      
-      // Verificar si el listado es relevante para la búsqueda del usuario
-      if (isRelevant(finalTitle, make, model, year)) {
-        // Crear objeto de vehículo para el resultado
-        const vehicle: InsertVehicle = {
-          title: finalTitle,
-          make,
-          model,
-          source: 'bringatrailer',
-          sourceUrl: url.startsWith('http') ? url : `https://bringatrailer.com${url}`,
-          imageUrl,
-          year: extractYear(finalTitle) || (year ? parseInt(year) : null),
-          price: currentBid || 0,
-          isAuction: true,
-          currentBid: currentBid || 0,
-          endsIn: timeRemaining || 'En curso',
-          transmission: extractTransmission(finalTitle) || extractTransmission(description),
-          bodyType: extractBodyType(finalTitle) || extractBodyType(description),
-          location: 'Estados Unidos',
-          mileage: null,
-          color: null,
-          vin: null,
-          fuelType: null,
-          dealerName: null,
-          hasDeals: false
-        };
+        const firstLink = card.find('a[href*="/listing/"]').first();
+        if (firstLink.length > 0) {
+          const internalUrl = firstLink.attr('href');
+          if (internalUrl) {
+            processCardWithUrl(index, card, firstLink, internalUrl, $, make, model, year, vehicles);
+            return;
+          }
+        }
         
-        vehicles.push(vehicle);
-        console.log(`  ✅ Vehículo relevante añadido: "${finalTitle}"`);
-      } else {
-        console.log(`  ❌ Vehículo no relevante para ${make} ${model} ${year || ''}`);
+        console.log(`⚠️ Tarjeta #${index + 1} sin URL ni enlaces internos, omitiendo`);
+        return;
       }
+      
+      processCardWithUrl(index, card, card, url, $, make, model, year, vehicles);
     } catch (error) {
       console.error(`Error al procesar tarjeta: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   });
+}
+
+/**
+ * Procesa una tarjeta o contenedor con URL conocida
+ */
+function processCardWithUrl(
+  index: number, 
+  container: any, 
+  element: any, 
+  url: string, 
+  $: any, 
+  make: string, 
+  model: string, 
+  year: string | undefined, 
+  vehicles: InsertVehicle[]
+) {
+  // Extraer título (desde varios lugares posibles)
+  let title = '';
+  
+  // Opción 1: h3 dentro del elemento
+  const h3 = element.find('h3').first();
+  if (h3.length > 0) {
+    title = h3.text().trim();
+  }
+  
+  // Opción 2: Alt de la imagen
+  if (!title) {
+    const img = element.find('img').first();
+    if (img.length > 0) {
+      title = img.attr('alt') || '';
+    }
+  }
+  
+  // Opción 3: Extraer de la URL
+  if (!title) {
+    const urlParts = url.split('/');
+    let slug = '';
+    for (let i = urlParts.length - 1; i >= 0; i--) {
+      if (urlParts[i] && urlParts[i] !== 'listing') {
+        slug = urlParts[i];
+        break;
+      }
+    }
+    
+    if (slug) {
+      title = slug
+        .replace(/-/g, ' ')
+        .replace(/(\d{4})-/g, '$1 ') // Separar años
+        .replace(/\b\w/g, c => c.toUpperCase()); // Capitalizar
+    }
+  }
+  
+  // Si aún no hay título, usar uno genérico
+  if (!title) {
+    title = `${make} ${model} ${year || ''}`;
+  }
+  
+  console.log(`Procesando listado #${index + 1}: "${title}" (${url})`);
+  
+  // Verificar relevancia inmediatamente
+  if (!isRelevant(title, make, model, year)) {
+    console.log(`  ❌ No relevante para ${make} ${model} ${year || ''}`);
+    return;
+  }
+  
+  // Extraer imagen (desde varios lugares posibles)
+  let imageUrl = '';
+  const img = container.find('img').first();
+  if (img.length > 0) {
+    imageUrl = img.attr('src') || '';
+  }
+  
+  // Extraer precio actual y tiempo restante (desde varios lugares posibles)
+  let bidText = '';
+  let timeText = '';
+  let currentBid = 0;
+  
+  // Búsqueda específica para precio
+  const bidFormatted = container.find('.bid-formatted, [class*="price"], [class*="bid"]').first();
+  if (bidFormatted.length > 0) {
+    bidText = bidFormatted.text().trim();
+    currentBid = extractPrice(bidText) || 0;
+  } else {
+    // Búsqueda en el texto completo
+    const fullText = container.text();
+    const priceMatch = fullText.match(/\$[\d,]+|\d+,\d+|\d+\s(USD|dollars)/i);
+    if (priceMatch) {
+      bidText = priceMatch[0];
+      currentBid = extractPrice(bidText) || 0;
+    }
+  }
+  
+  // Búsqueda específica para tiempo
+  const countdownText = container.find('.countdown-text, [class*="time"], [class*="countdown"]').first();
+  if (countdownText.length > 0) {
+    timeText = countdownText.text().trim();
+  } else {
+    // Búsqueda en el texto completo
+    const fullText = container.text();
+    const timeMatch = fullText.match(/\d+:\d+|\d+\s(days?|hours?|mins?|minutes?|seconds?)/i);
+    if (timeMatch) {
+      timeText = timeMatch[0];
+    }
+  }
+  
+  console.log(`  💰 Puja actual: ${bidText} (${currentBid || 'No disponible'})`);
+  console.log(`  ⏱️ Tiempo restante: ${timeText || 'No disponible'}`);
+  
+  // Extraer año
+  const yearFromTitle = extractYear(title);
+  const finalYear = yearFromTitle || (year ? parseInt(year) : null);
+  
+  // Crear objeto de vehículo
+  const vehicle: InsertVehicle = {
+    title,
+    make,
+    model,
+    source: 'bringatrailer',
+    sourceUrl: url.startsWith('http') ? url : `https://bringatrailer.com${url}`,
+    imageUrl,
+    year: finalYear,
+    price: currentBid,
+    isAuction: true,
+    currentBid,
+    endsIn: timeText || 'En curso',
+    transmission: extractTransmission(title),
+    bodyType: extractBodyType(title),
+    location: 'Estados Unidos',
+    mileage: null,
+    color: null,
+    vin: null,
+    fuelType: null,
+    dealerName: null,
+    hasDeals: false
+  };
+  
+  vehicles.push(vehicle);
+  console.log(`  ✅ Vehículo relevante añadido: "${title}"`);
 }
 
 /**
