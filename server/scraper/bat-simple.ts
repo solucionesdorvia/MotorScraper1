@@ -80,16 +80,87 @@ function extractListings(html: string): BaTListing[] {
   const $ = cheerio.load(html);
   const listings: BaTListing[] = [];
 
-  // Usar el selector directo proporcionado por el usuario
-  $('a.listing-card').each((_, el) => {
-    const title = $(el).find('h3').text().trim();
-    const image = $(el).find('img').attr('src') || '';
-    const link = $(el).attr('href') || '';
-    const description = $(el).find('.item-excerpt').text().trim();
-
-    if (title && image && link) {
-      listings.push({ title, image, link, description });
+  // Intentar varios selectores para encontrar tarjetas de listado
+  console.log('Buscando tarjetas de listado con múltiples selectores...');
+  
+  // Selector 1: Buscar directamente tarjetas de listado
+  const listingCards = $('a.listing-card, .search-result-grid-item, a[href*="/listing/"], a[href*="/auctions/"]');
+  console.log(`Encontradas ${listingCards.length} tarjetas con selector principal`);
+  
+  // Selector 2: Buscar cualquier enlace que contenga un título
+  const titleLinks = $('a').filter(function() {
+    return $(this).find('h3').length > 0;
+  });
+  console.log(`Encontrados ${titleLinks.length} enlaces con títulos`);
+  
+  // Combinar resultados de ambos selectores
+  const allListingElements = [...listingCards.toArray(), ...titleLinks.toArray()].filter(
+    (el, index, self) => self.indexOf(el) === index // Eliminar duplicados
+  );
+  console.log(`Total de ${allListingElements.length} elementos de listado encontrados`);
+  
+  // Procesar todos los elementos encontrados
+  allListingElements.forEach((el, index) => {
+    const $el = $(el);
+    
+    // Debug - Mostrar el HTML del elemento
+    console.log(`Elemento ${index + 1}:`);
+    console.log(`HTML: ${$el.html()?.substring(0, 150)}...`);
+    
+    // Intentar extraer el título de varias maneras
+    let title = $el.find('h3').text().trim();
+    if (!title) {
+      console.log(`No se encontró título con h3, buscando con otros selectores...`);
+      title = $el.find('h2').text().trim() || 
+              $el.find('.title').text().trim() ||
+              $el.find('[class*="title"]').text().trim();
     }
+    
+    // Búsqueda más amplia de imágenes
+    const image = $el.find('img').attr('src') || 
+                  $el.find('img').attr('data-src') || 
+                  $el.find('.listing-image img').attr('src') || '';
+    
+    // Asegurarse de obtener el enlace completo
+    let link = '';
+    if ($el.is('a')) {
+      link = $el.attr('href') || '';
+      console.log(`Elemento es un enlace con href: ${link}`);
+    } else {
+      link = $el.find('a').attr('href') || '';
+      console.log(`Elemento no es un enlace, encontrado href interno: ${link}`);
+    }
+    
+    // Buscar descripción en varios lugares
+    const description = $el.find('.item-excerpt, .listing-results, .listing-stats, .listing-bid-status, .bid-price').text().trim();
+
+    console.log(`Título extraído: "${title}"`);
+    console.log(`Enlace extraído: "${link}"`);
+    console.log(`Imagen extraída: "${image}"`);
+    console.log(`Descripción extraída: "${description}"`);
+    
+    // Si no tenemos título pero tenemos enlace, intentar extraer título del enlace
+    if (!title && link) {
+      const titleFromLink = link.split('/').filter(part => part.trim() !== '').pop() || '';
+      if (titleFromLink) {
+        title = titleFromLink.replace(/-/g, ' ').trim();
+        console.log(`Título extraído del enlace: "${title}"`);
+      }
+    }
+
+    if (title && link) {
+      console.log(`✅ Tarjeta válida encontrada: ${title} - ${link}`);
+      listings.push({ 
+        title, 
+        image: image || 'https://bringatrailer.com/wp-content/themes/bringatrailer/images/bat-logo.png', 
+        link, 
+        description 
+      });
+    } else {
+      console.log(`❌ Tarjeta descartada: Título=${!!title}, Link=${!!link}`);
+    }
+    
+    console.log('-----------------------------------');
   });
 
   return listings;
