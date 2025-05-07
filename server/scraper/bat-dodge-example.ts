@@ -219,21 +219,9 @@ export async function scrapeBringATrailerDodge(make: string, model: string, year
       }
     }
     
-    // Si no pudimos obtener resultados de la web o hubo errores, usar el ejemplo HTML
-    console.log('🔄 Usando ejemplo HTML de Dodge Challenger proporcionado por el usuario');
-    
-    // Primero verificamos si el HTML contiene lo que buscamos
-    const $ = load(DODGE_CHALLENGER_HTML);
-    const containerCheck = $('.listings-container.auctions-grid');
-    
-    if (containerCheck.length > 0) {
-      console.log(`✅ Contenedor encontrado correctamente en HTML de ejemplo`);
-    } else {
-      console.error('❌ ERROR: Contenedor de listings no encontrado en HTML de ejemplo');
-    }
-    
-    // Extraer vehículos del HTML de ejemplo
-    return extractVehiclesFromHTML(DODGE_CHALLENGER_HTML, make, model, year);
+    // Si no pudimos obtener resultados o hubo errores, devolvemos array vacío
+    console.log('❌ No se pudieron obtener datos reales de Bring a Trailer');
+    return [];
     
   } catch (error) {
     if (error instanceof Error) {
@@ -284,7 +272,7 @@ function extractVehiclesFromHTML(html: string, make: string, model: string, year
   console.log(`Encontradas ${cards.length} tarjetas de listado en total`);
   
   // Procesar cada tarjeta
-  cards.each((index: number, element: cheerio.Element) => {
+  cards.each((index: number, element: any) => {
     try {
       const card = $(element);
       
