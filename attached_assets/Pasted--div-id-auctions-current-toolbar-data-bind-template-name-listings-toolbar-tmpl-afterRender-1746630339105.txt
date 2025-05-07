@@ -1,0 +1,883 @@
+<div id="auctions-current-toolbar" data-bind="template: { name: 'listings-toolbar-tmpl', afterRender: afterRender }">
+<div class="listings-toolbar" data-bind="afterRender: afterRender">
+	<div class="toolbar-main">
+		<div class="listings-view-toogle grid-view" data-bind="class: listingsView() + &quot;-view&quot;">
+			<div class="btn-grid-view" data-bind="click: function () { listingsView(&quot;grid&quot;); }"></div>
+			<div class="btn-list-view" data-bind="click: function () { listingsView(&quot;list&quot;); }"></div>
+		</div>
+
+		<div class="toolbar-mobile-filter-toggle desktop-hide">
+			<span class="title-w-icon" data-bind="visible: !selectedOptionsNumber()">Filters</span>
+			<span class="title-w-icon" data-bind="visible: selectedOptionsNumber()" style="display: none;">Filters Applied:</span>
+			<span class="selected-number" data-bind="text: selectedOptionsNumber(), visible: selectedOptionsNumber()" style="display: none;">0</span></div>
+
+		<div class="term-search-bar">
+			<input type="text" name="s" autocomplete="off" maxlength="64" placeholder="Search for Make, Model, etc." data-bind="textInput: filterTerm" aria-label="Search Input for Make, Model, etc.">
+
+			<button type="submit" class="btn-search-submit" aria-label="Search Button for Make, Model, etc.">
+				<i class="fa fa-search"></i>
+			</button>
+		</div>
+
+		<div class="toolbar-dropdown sort-dropdown mobile-hide">
+			<div tabindex="0" class="dropdown-title">
+				<span class="value-prefix">Sort by:</span>
+				<span class="value-text" data-bind="html: sortByDisplay">Ending Soonest</span>
+			</div>
+			<div class="dropdown-options" data-bind="foreach: { data: sortingOptions, as: 'option' }">
+				<div tabindex="0" class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }, event: { keypress: function(data, event){ $parent.onKeypressSortBy(event, option.key) } }">Ending Soonest</div>
+			
+				<div tabindex="0" class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }, event: { keypress: function(data, event){ $parent.onKeypressSortBy(event, option.key) } }">Ending Latest</div>
+			
+				<div tabindex="0" class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }, event: { keypress: function(data, event){ $parent.onKeypressSortBy(event, option.key) } }">Bid: Lowest First</div>
+			
+				<div tabindex="0" class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }, event: { keypress: function(data, event){ $parent.onKeypressSortBy(event, option.key) } }">Bid: Highest First</div>
+			
+				<div tabindex="0" class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }, event: { keypress: function(data, event){ $parent.onKeypressSortBy(event, option.key) } }">Closest to postal code...</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="toolbar-filters-desktop scroll-box mobile-hide">
+		<div class="overflow-arrow-left" style="display: none;"><span></span></div>
+		<div class="overflow-arrow-right" style=""><span></span></div>
+		<div class="toolbar-filters-container scroll-container" style="left: 0px;">
+			<!-- ko if: userLoggedIn -->
+			<div tabindex="0" class="filter-button filter-watched" data-bind="css: { &quot;active&quot; : filterWatched }, click: toggleFilterWatch, event: { keypress: onKeypressWatched }"><span class="title">Watched</span></div>
+			<div tabindex="0" class="filter-button filter-subscribed" data-bind="css: { &quot;active&quot; : filterSubscribed}, click: toggleFilterSubscribed, event: {  keypress: onKeypressSubscribed }"><span class="title">Following</span></div>
+			<!-- /ko -->
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Location</span>
+					<span class="selected-number" data-bind="text: filterLocationsSelectedNumber, visible: filterLocationsSelectedNumber" style="display: none;">0</span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterLocationsOptions, as: 'option' }">
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value()}, click: function () {$parent.toggleFilterLocation(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterLocation(event, option.key); } }">North America</div>
+					<div class="options-grouped-multi-column-4-3" data-bind="foreach: { data: option.suboptions, as: 'suboption' }">
+						<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }, event: {  keypress: function (data, event) { $root.onKeypressFliterLocation(event, suboption.key); } }">Canada</div>
+					
+						<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }, event: {  keypress: function (data, event) { $root.onKeypressFliterLocation(event, suboption.key); } }">United States</div>
+					</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value()}, click: function () {$parent.toggleFilterLocation(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterLocation(event, option.key); } }">Europe</div>
+					<div class="options-grouped-multi-column-4-3" data-bind="foreach: { data: option.suboptions, as: 'suboption' }">
+						<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }, event: {  keypress: function (data, event) { $root.onKeypressFliterLocation(event, suboption.key); } }">Belgium</div>
+					
+						<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }, event: {  keypress: function (data, event) { $root.onKeypressFliterLocation(event, suboption.key); } }">Croatia</div>
+					
+						<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }, event: {  keypress: function (data, event) { $root.onKeypressFliterLocation(event, suboption.key); } }">Germany</div>
+					
+						<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }, event: {  keypress: function (data, event) { $root.onKeypressFliterLocation(event, suboption.key); } }">Italy</div>
+					
+						<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }, event: {  keypress: function (data, event) { $root.onKeypressFliterLocation(event, suboption.key); } }">Poland</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Listing Type&nbsp;</span>
+					<span class="selected-number" data-bind="text: filterTypeSelectedNumber, visible: filterTypeSelectedNumber" style="display: none;">0</span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterTypeOptions, as: 'option' }">
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, visible: option.visible, click: function () { $parent.toggleFilterType(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterType(event, option.key); } }">No Reserve</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, visible: option.visible, click: function () { $parent.toggleFilterType(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterType(event, option.key); } }">Premium</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, visible: option.visible, click: function () { $parent.toggleFilterType(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterType(event, option.key); } }">BaT Alumni</div>
+				</div>
+			</div>
+
+			<!-- ko if: filterAdminEnabled --><!-- /ko -->
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Category</span>
+					<span class="selected-number" data-bind="text: filterCategoriesSelectedNumber, visible: filterCategoriesSelectedNumber" style="display: none;">0</span>
+				</div>
+				<div class="dropdown-options options-multi-column" data-bind="foreach: { data: filterCategoriesOptions, as: 'option' }">
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Aircraft</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">All-Terrain Vehicles</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Boats</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Charity Auctions</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Convertibles</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Electric Vehicles</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Go-Karts</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Hot Rods</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Military Vehicles</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Minibikes &amp; Scooters</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Motorcycles</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Parts</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Prewar</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Projects</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Race Cars</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">RVs &amp; Campers</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Service Vehicles</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Station Wagons</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Tractors</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Trains</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Truck &amp; 4x4</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Vans</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCategory(event, option.key); } }">Wheels</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Era</span>
+					<span class="selected-number" data-bind="text: filterErasSelectedNumber, visible: filterErasSelectedNumber" style="display: none;">0</span>
+				</div>
+				<div class="dropdown-options options-multi-column" data-bind="foreach: { data: filterErasOptions, as: 'option' }">
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">2020s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">2010s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">2000s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1990s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1980s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1970s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1960s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1950s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1940s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1930s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1920s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1910s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">1900s</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEra(event, option.key); } }">Pre-1900</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Origin</span>
+					<span class="selected-number" data-bind="text: filterOriginsSelectedNumber, visible: filterOriginsSelectedNumber" style="display: none;">0</span>
+				</div>
+				<div class="dropdown-options options-multi-column" data-bind="foreach: { data: filterOriginsOptions, as: 'option' }">
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">American</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Brazilian</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">British</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Canadian</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Czech</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Dutch</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">French</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">German</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Italian</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Japanese</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Korean</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Spanish</div>
+				
+					<div tabindex="0" class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterOrigin(event, option.key); } }">Swedish</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Year Range</span><span class="title" data-bind="visible: filterYearRangeText" style="display: none;">:</span>
+					<span class="title" data-bind="text: filterYearRangeText"></span>
+				</div>
+				<div class="dropdown-options">
+					<div class="option-years-range">
+						<input type="number" autocomplete="off" min="1800" max="2025" maxlength="4" step="1" placeholder="1800" data-bind="textInput: filterYearRangeBeg" tabindex="-1">
+						<span>to</span>
+						<input type="number" autocomplete="off" min="1800" max="2025" maxlength="4" step="1" placeholder="2025" data-bind="textInput: filterYearRangeEnd" tabindex="-1">
+					</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Ending within</span><span class="title" data-bind="visible: filterEndingWithinText" style="display: none;">:</span>
+					<span class="title" data-bind="text: filterEndingWithinText"></span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterEndingWithinOptions, as: 'option' }">
+					<div tabindex="0" class="dropdown-option option-radio checked" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEndingWithin(event, option.key); } }">Any</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEndingWithin(event, option.key); } }">1 hour</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEndingWithin(event, option.key); } }">4 hours</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEndingWithin(event, option.key); } }">1 day</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEndingWithin(event, option.key); } }">5 days</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterEndingWithin(event, option.key); } }">7 days</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title">Current Bid</span><span class="title" data-bind="visible: filterCurrentBidText" style="display: none;">:</span>
+					<span class="title" data-bind="text: filterCurrentBidText"></span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterCurrentBidOptions, as: 'option' }">
+					<div tabindex="0" class="dropdown-option option-radio checked" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCurrentBid(event, option.key); } }">Any</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCurrentBid(event, option.key); } }">Less than $10k</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCurrentBid(event, option.key); } }">Less than $25k</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCurrentBid(event, option.key); } }">Less than $50k</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCurrentBid(event, option.key); } }">Less than $100k</div>
+				
+					<div tabindex="0" class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }, event: {  keypress: function (data, event) { $parent.onKeypressFliterCurrentBid(event, option.key); } }">Less than $250k</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div tabindex="0" class="dropdown-title">
+					<span class="title-act">Words, models, or tags to exclude</span>
+					<span class="title">Exclude</span>
+				</div>
+				<div class="dropdown-options">
+					<div class="option-term-exclude">
+						<input type="text" autocomplete="off" maxlength="48" placeholder="E.g. Modified, Targa, etc." data-bind="textInput: filterTermExclude" tabindex="-1">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+
+	<div class="toolbar-filters-applied">
+		<div class="listings-number">
+			<span data-bind="text: filteredNumberText()">4</span> <span data-bind="text: listingsTypeCaption">Live Auctions</span>
+		</div>
+
+		<div class="filters-applied scroll-box" data-bind="visible: selectedOptionsNumber()" style="display: none;">
+			<div class="overflow-arrow-left" style="display: none;"><span></span></div>
+			<div class="overflow-arrow-right" style="display: none;"><span></span></div>
+			<div class="filters-applied-container scroll-container" style="left: 0px;">
+
+				<div class="filter-applied" data-bind="visible: filterWatched, click: function () { filterWatched(false); }" style="display: none;">
+					Watched					<i class="fa fa-remove"></i>
+				</div>
+
+				<div class="filter-applied" data-bind="visible: filterSubscribed, click: function () { filterSubscribed(false); }" style="display: none;">
+					Following					<i class="fa fa-remove"></i>
+				</div>
+
+				<!-- ko foreach: { data: filterLocationsOptionsUngrouped, as: 'filterLocationsOption' } --><!-- /ko -->
+
+				<!-- ko foreach: { data: filterTypeOptions, as: 'filterTypeOption' } -->
+				<div class="filter-applied" data-bind="visible: filterTypeOption.value(), click: function () { $parent.toggleFilterType(filterTypeOption.key); }" style="display: none;">
+					<span data-bind="text: filterTypeOption.caption">No Reserve</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterTypeOption.value(), click: function () { $parent.toggleFilterType(filterTypeOption.key); }" style="display: none;">
+					<span data-bind="text: filterTypeOption.caption">Premium</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterTypeOption.value(), click: function () { $parent.toggleFilterType(filterTypeOption.key); }" style="display: none;">
+					<span data-bind="text: filterTypeOption.caption">BaT Alumni</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				<!-- /ko -->
+
+				<!-- ko if: filterAdminEnabled --><!-- /ko -->
+
+				<!-- ko foreach: { data: filterCategoriesOptions, as: 'filterCategoriesOption' } -->
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Aircraft</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">All-Terrain Vehicles</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Boats</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Charity Auctions</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Convertibles</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Electric Vehicles</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Go-Karts</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Hot Rods</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Military Vehicles</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Minibikes &amp; Scooters</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Motorcycles</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Parts</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Prewar</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Projects</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Race Cars</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">RVs &amp; Campers</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Service Vehicles</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Station Wagons</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Tractors</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Trains</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Truck &amp; 4x4</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Vans</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterCategoriesOption.value(), click: function () { $parent.toggleFilterCategory(filterCategoriesOption.key); }" style="display: none;">
+					<span data-bind="html: filterCategoriesOption.caption">Wheels</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				<!-- /ko -->
+
+				<!-- ko foreach: { data: filterErasOptions, as: 'filterErasOption' } -->
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">2020s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">2010s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">2000s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1990s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1980s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1970s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1960s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1950s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1940s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1930s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1920s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1910s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">1900s</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterErasOption.value(), click: function () { $parent.toggleFilterEra(filterErasOption.key); }" style="display: none;">
+					<span data-bind="text: filterErasOption.caption">Pre-1900</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				<!-- /ko -->
+
+				<!-- ko foreach: { data: filterOriginsOptions, as: 'filterOriginsOption' } -->
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">American</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Brazilian</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">British</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Canadian</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Czech</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Dutch</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">French</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">German</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Italian</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Japanese</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Korean</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Spanish</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				
+				<div class="filter-applied" data-bind="visible: filterOriginsOption.value(), click: function () { $parent.toggleFilterOrigin(filterOriginsOption.key); }" style="display: none;">
+					<span data-bind="text: filterOriginsOption.caption">Swedish</span>
+					<i class="fa fa-remove"></i>
+				</div>
+				<!-- /ko -->
+
+				<div class="filter-applied" data-bind="visible: filterYearRangeText, click: function () { filterYearRangeBeg(''); filterYearRangeEnd(''); }" style="display: none;">
+					<span data-bind="text: filterYearRangeText"></span>
+					<i class="fa fa-remove"></i>
+				</div>
+
+				<div class="filter-applied" data-bind="visible: filterEndingWithinText, click: function () { toggleFilterEndingWithin(0); }" style="display: none;">
+					Ending within: 					<span data-bind="text: filterEndingWithinText"></span>
+					<i class="fa fa-remove"></i>
+				</div>
+
+				<div class="filter-applied" data-bind="visible: filterCurrentBidText, click: function () { toggleFilterCurrentBid(0); }" style="display: none;">
+					Current Bid: 					<span data-bind="text: filterCurrentBidText"></span>
+					<i class="fa fa-remove"></i>
+				</div>
+
+				<div class="filter-applied" data-bind="visible: filterTermExclude, click: function () { filterTermExclude(''); }" style="display: none;">
+					<s data-bind="text: filterTermExclude"></s>
+					<i class="fa fa-remove"></i>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="filters-reset" data-bind="visible: filtersApplied()" style="">
+			<span tabindex="0" data-bind="click: resetFilters, event: {  keypress: function(data, event) { onKeyPressResetFilters(event) } }">Reset all filters</span>
+		</div>
+	</div>
+
+	<div class="toolbar-mobile-block desktop-hide">
+		<div class="toolbar-dropdown sort-dropdown clickoutside-off">
+			<div class="dropdown-title">
+				<span class="value-prefix">Sort by:</span>
+				<span class="value-text" data-bind="html: sortByDisplay" "="">Ending Soonest</span>
+			</div>
+			<div class="dropdown-options" data-bind="foreach: { data: sortingOptions, as: 'option' }">
+				<div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Ending Soonest</div>
+			
+				<div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Ending Latest</div>
+			
+				<div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Bid: Lowest First</div>
+			
+				<div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Bid: Highest First</div>
+			
+				<div class="dropdown-option" data-bind="html: option.caption, click: function () { $parent.setSortBy(option.key); }">Closest to postal code...</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="toolbar-filters-mobile" style="display: none;">
+		<div class="mobile-filters-header">
+			Filters			<span class="btn-close-form"></span>
+		</div>
+
+		<div class="toolbar-filters-container">
+			<!-- ko if: userLoggedIn -->
+			<div>
+				<div class="section-title">My Interests</div>
+				<div class="list-options">
+					<div class="list-option option-checkbox filter-watched" data-bind="css: { &quot;checked&quot; : filterWatched }, click: toggleFilterWatch" "=""><span class="title">Watched</span></div>
+					<div class="list-option option-checkbox filter-subscribed" data-bind="css: { &quot;checked&quot; : filterSubscribed}, click: toggleFilterSubscribed" "=""><span class="title">Following</span></div>
+				</div>
+			</div>
+			<!-- /ko -->
+
+			<div>
+				<div class="section-title">Listing Type</div>
+				<div class="list-options" data-bind="foreach: { data: filterTypeOptions, as: 'option' }">
+					<div class="list-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, visible: option.visible, click: function () { $parent.toggleFilterType(option.key); }">No Reserve</div>
+				
+					<div class="list-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, visible: option.visible, click: function () { $parent.toggleFilterType(option.key); }">Premium</div>
+				
+					<div class="list-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, visible: option.visible, click: function () { $parent.toggleFilterType(option.key); }">BaT Alumni</div>
+				</div>
+			</div>
+
+			<div>
+				<div class="section-title">Year Range</div>
+				<div class="option-years-range">
+					<input type="number" autocomplete="off" min="1800" max="2025" maxlength="4" step="1" placeholder="1800" data-bind="textInput: filterYearRangeBeg">
+					<span>to</span>
+					<input type="number" autocomplete="off" min="1800" max="2025" maxlength="4" step="1" placeholder="2025" data-bind="textInput: filterYearRangeEnd">
+				</div>
+			</div>
+
+			<!-- ko if: filterAdminEnabled --><!-- /ko -->
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div class="dropdown-title">
+					<span class="title">Location</span><span class="title" data-bind="visible: filterLocationsSelectedNumber" style="display: none;">:</span>
+					<span class="selected-number" data-bind="text: filterLocationsSelectedNumber, visible: filterLocationsSelectedNumber" style="display: none;">0</span>
+					<span class="title-ext" data-bind="html: filterLocationsSelectedText"></span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterLocationsOptions, as: 'option' }">
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value()}, click: function () {$parent.toggleFilterLocation(option.key); }">North America</div>
+					<div class="options-grouped-multi-column" data-bind="foreach: { data: option.suboptions, as: 'suboption' }">
+						<div class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }">Canada</div>
+					
+						<div class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }">United States</div>
+					</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value()}, click: function () {$parent.toggleFilterLocation(option.key); }">Europe</div>
+					<div class="options-grouped-multi-column" data-bind="foreach: { data: option.suboptions, as: 'suboption' }">
+						<div class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }">Belgium</div>
+					
+						<div class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }">Croatia</div>
+					
+						<div class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }">Germany</div>
+					
+						<div class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }">Italy</div>
+					
+						<div class="dropdown-option option-checkbox" data-bind="html: suboption.caption, css: {checked: suboption.value()}, click: function () { $root.toggleFilterLocation(suboption.key); }">Poland</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div class="dropdown-title">
+					<span class="title">Categories</span><span class="title" data-bind="visible: filterCategoriesSelectedNumber" style="display: none;">:</span>
+					<span class="selected-number" data-bind="text: filterCategoriesSelectedNumber, visible: filterCategoriesSelectedNumber" style="display: none;">0</span>
+					<span class="title-ext" data-bind="html: filterCategoriesSelectedText"></span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterCategoriesOptions, as: 'option' }">
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Aircraft</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">All-Terrain Vehicles</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Boats</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Charity Auctions</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Convertibles</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Electric Vehicles</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Go-Karts</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Hot Rods</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Military Vehicles</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Minibikes &amp; Scooters</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Motorcycles</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Parts</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Prewar</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Projects</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Race Cars</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">RVs &amp; Campers</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Service Vehicles</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Station Wagons</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Tractors</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Trains</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Truck &amp; 4x4</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Vans</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCategory(option.key); }">Wheels</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div class="dropdown-title">
+					<span class="title">Eras</span><span class="title" data-bind="visible: filterErasSelectedNumber" style="display: none;">:</span>
+					<span class="selected-number" data-bind="text: filterErasSelectedNumber, visible: filterErasSelectedNumber" style="display: none;">0</span>
+					<span class="title-ext" data-bind="text: filterErasSelectedText"></span>
+				</div>
+				<div class="dropdown-options options-multi-column" data-bind="foreach: { data: filterErasOptions, as: 'option' }">
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">2020s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">2010s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">2000s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1990s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1980s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1970s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1960s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1950s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1940s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1930s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1920s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1910s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">1900s</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEra(option.key); }">Pre-1900</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div class="dropdown-title">
+					<span class="title">Origin</span><span class="title" data-bind="visible: filterOriginsSelectedNumber" style="display: none;">:</span>
+					<span class="selected-number" data-bind="text: filterOriginsSelectedNumber, visible: filterOriginsSelectedNumber" style="display: none;">0</span>
+					<span class="title-ext" data-bind="text: filterOriginsSelectedText"></span>
+				</div>
+				<div class="dropdown-options options-multi-column" data-bind="foreach: { data: filterOriginsOptions, as: 'option' }">
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">American</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Brazilian</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">British</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Canadian</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Czech</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Dutch</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">French</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">German</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Italian</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Japanese</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Korean</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Spanish</div>
+				
+					<div class="dropdown-option option-checkbox" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterOrigin(option.key); }">Swedish</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div class="dropdown-title">
+					<span class="title">Ending within</span><span class="title" data-bind="visible: filterEndingWithinText" style="display: none;">:</span>
+					<span class="title-ext" data-bind="text: filterEndingWithinText"></span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterEndingWithinOptions, as: 'option' }">
+					<div class="dropdown-option option-radio checked" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }">Any</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }">1 hour</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }">4 hours</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }">1 day</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }">5 days</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterEndingWithin(option.key); }">7 days</div>
+				</div>
+			</div>
+
+			<div class="toolbar-dropdown filter-dropdown">
+				<div class="dropdown-title">
+					<span class="title">Current Bid</span><span class="title" data-bind="visible: filterCurrentBidText" style="display: none;">:</span>
+					<span class="title-ext" data-bind="text: filterCurrentBidText"></span>
+				</div>
+				<div class="dropdown-options" data-bind="foreach: { data: filterCurrentBidOptions, as: 'option' }">
+					<div class="dropdown-option option-radio checked" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }">Any</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }">Less than $10k</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }">Less than $25k</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }">Less than $50k</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }">Less than $100k</div>
+				
+					<div class="dropdown-option option-radio" data-bind="html: option.caption, css: {checked: option.value}, click: function () { $parent.toggleFilterCurrentBid(option.key); }">Less than $250k</div>
+				</div>
+			</div>
+
+			<div>
+				<div class="section-title">Words, models, or tags to exclude</div>
+				<div class="option-term-exclude">
+					<input type="text" autocomplete="off" maxlength="48" placeholder="E.g. Modified, Targa, etc." data-bind="textInput: filterTermExclude">
+				</div>
+			</div>
+		</div>
+
+		<div class="floating-panel">
+			<div class="toolbar-mobile-filter-toggle desktop-hide">
+				<span class="title">View Listings</span>
+				<span class="selected-number" data-bind="text: filteredNumber()">4</span></div>
+
+			<div tabindex="0" class="filters-reset" data-bind="click: resetFilters, visible: filtersApplied(), event: {  keypress: function(data, event) { onKeyPressResetFilters(event) } }" style="">
+				Reset all filters			</div>
+		</div>
+	</div>
+</div>
+</div>
