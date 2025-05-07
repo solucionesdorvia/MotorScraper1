@@ -51,20 +51,78 @@ function extractAuctionsFromHtml(html: string, make: string, model: string, year
   const vehicles: InsertVehicle[] = [];
   const $ = cheerio.load(html);
   
-  console.log('Analizando HTML para buscar auctions-grid...');
+  console.log('Analizando HTML para buscar subastas...');
   
-  // Buscar el contenedor de subastas
-  const container = $('.listings-container.auctions-grid');
-  console.log(`Encontrado contenedor de subastas: ${container.length > 0 ? 'Sí' : 'No'}`);
+  // Imprimir información sobre las etiquetas principales
+  console.log('Etiquetas principales en el documento:');
+  console.log(`- <html>: ${$('html').length}`);
+  console.log(`- <body>: ${$('body').length}`);
+  console.log(`- <div>: ${$('div').length}`);
+  console.log(`- <a>: ${$('a').length}`);
   
-  if (container.length === 0) {
-    console.warn('No se encontró el contenedor principal de subastas.');
-    return [];
+  // Buscar cualquier contenedor de clase listings-container
+  const anyContainer = $('.listings-container');
+  console.log(`Contenedores generales encontrados: ${anyContainer.length}`);
+  
+  // Buscar específicamente el contenedor de auctions
+  const auctionsContainer = $('.listings-container.auctions-grid');
+  console.log(`Contenedor específico de auctions encontrado: ${auctionsContainer.length > 0 ? 'Sí' : 'No'}`);
+  
+  // Intentar encontrar el contenedor por ID
+  const containerById = $('#auctions-current-container');
+  console.log(`Contenedor por ID encontrado: ${containerById.length > 0 ? 'Sí' : 'No'}`);
+  
+  // Buscar otros contenedores relevantes
+  console.log('Buscando otros contenedores relevantes:');
+  console.log(`- .listings-outer: ${$('.listings-outer').length}`);
+  console.log(`- #listings: ${$('#listings').length}`);
+  console.log(`- .search-result-live-listings: ${$('.search-result-live-listings').length}`);
+  
+  // Examinar los primeros 50 enlaces del documento
+  console.log('\nRevisando los primeros enlaces del documento:');
+  $('a').slice(0, 5).each((i, link) => {
+    const linkEl = $(link);
+    console.log(`Link #${i+1}:`);
+    console.log(`- href: ${linkEl.attr('href') || 'ninguno'}`);
+    console.log(`- class: ${linkEl.attr('class') || 'ninguno'}`);
+    console.log(`- text: ${linkEl.text().trim().substring(0, 50)}`);
+  });
+  
+  // Usar cualquier contenedor disponible, en orden de preferencia
+  const container = auctionsContainer.length > 0 ? auctionsContainer : 
+                    containerById.length > 0 ? containerById : 
+                    anyContainer.length > 0 ? anyContainer : $('body');
+  
+  // Imprimir alguna información sobre el contenedor
+  if (container.length > 0) {
+    console.log(`Usando contenedor con id="${container.attr('id') || 'ninguno'}" y clase="${container.attr('class') || 'ninguna'}"`);
+  } else {
+    console.warn('No se encontró ningún contenedor adecuado, usando body como fallback');
   }
   
-  // Buscar todas las tarjetas de listado
-  const listingCards = container.find('a.listing-card');
+  // Buscar todas las tarjetas de listado, primero dentro del contenedor
+  let listingCards = container.find('a.listing-card');
+  
+  // Si no se encontraron dentro del contenedor, intentar buscar en todo el documento
+  if (listingCards.length === 0) {
+    console.log('No se encontraron tarjetas dentro del contenedor, buscando en todo el documento...');
+    listingCards = $('a.listing-card');
+  }
+  
   console.log(`Encontradas ${listingCards.length} tarjetas de listado`);
+  
+  // Intentar extraer información básica sobre las tarjetas para diagnosticar problemas
+  if (listingCards.length > 0) {
+    console.log('Información de debug de las primeras 2 tarjetas:');
+    listingCards.slice(0, 2).each((i, el) => {
+      const cardEl = $(el);
+      console.log(`  Tarjeta #${i+1}:`);
+      console.log(`    - href: ${cardEl.attr('href') || 'no encontrado'}`);
+      console.log(`    - class: ${cardEl.attr('class') || 'no encontrado'}`);
+      console.log(`    - tiene h3?: ${cardEl.find('h3').length > 0 ? 'Sí' : 'No'}`);
+      console.log(`    - tiene thumbnail?: ${cardEl.find('.thumbnail').length > 0 ? 'Sí' : 'No'}`);
+    });
+  }
   
   // Procesar cada tarjeta de listado
   listingCards.each((index, element) => {
