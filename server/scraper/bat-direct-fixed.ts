@@ -8,7 +8,7 @@ import { InsertVehicle } from '@shared/schema';
  * - Usa siempre coincidencia directa para buscar subastas activas
  * - Soporta exactamente la estructura HTML observada
  * - Extrae correctamente la información de listados activos
- * - Tiene ejemplos reales de respaldo para modelos populares
+ * - Analiza exhaustivamente el HTML para encontrar cualquier dato relevante
  */
 export async function scrapeBringATrailerDirectFixed(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   console.log(`Buscando subastas activas en BaT con método directo mejorado: ${make} ${model} ${year || ''}`);
@@ -16,255 +16,82 @@ export async function scrapeBringATrailerDirectFixed(make: string, model: string
   // Construir la query de búsqueda
   const searchQuery = [make, model, year].filter(Boolean).join('+');
   
-  // URL directa para buscar en subastas activas
-  const url = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
-  console.log(`URL de búsqueda: ${url}`);
-  
-  try {
-    // Realizar la petición con un timeout razonable
-    const response = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
-        'Accept': 'text/html',
-        'Cache-Control': 'no-cache'
-      },
-      timeout: 10000 // 10 segundos
-    });
+  // URLs a verificar (en orden de prioridad)
+  const urls = [
+    // URL directa para buscar en subastas activas
+    `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`,
     
-    // Verificar si la respuesta es válida
-    if (response.status !== 200 || !response.data) {
-      console.error(`Error: Respuesta inválida (${response.status})`);
-      return [];
+    // URL general de búsqueda
+    `https://bringatrailer.com/search/?s=${encodeURIComponent(searchQuery)}`,
+    
+    // URL específica de la marca/modelo
+    `https://bringatrailer.com/${make.toLowerCase()}/${model.toLowerCase()}/`
+  ];
+  
+  // Variables para almacenar resultados
+  let allVehicles: InsertVehicle[] = [];
+  let errors = 0;
+  
+  // Intentar con cada URL hasta encontrar resultados o agotar opciones
+  for (const url of urls) {
+    console.log(`Intentando con URL: ${url}`);
+    
+    try {
+      // Realizar la petición con un timeout razonable
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+          'Accept': 'text/html',
+          'Cache-Control': 'no-cache'
+        },
+        timeout: 10000 // 10 segundos
+      });
+      
+      // Verificar si la respuesta es válida
+      if (response.status !== 200 || !response.data) {
+        console.error(`Error: Respuesta inválida (${response.status})`);
+        errors++;
+        continue;
+      }
+      
+      console.log(`✅ HTML obtenido (${response.data.length} bytes) de ${url}`);
+      
+      // Extraer vehículos del HTML
+      const vehicles = extractVehiclesFromHTML(response.data, make, model, year);
+      
+      if (vehicles.length > 0) {
+        console.log(`✅ Encontrados ${vehicles.length} vehículos relevantes en ${url}`);
+        allVehicles = [...allVehicles, ...vehicles];
+        
+        // Si ya encontramos resultados, no necesitamos seguir intentando más URLs
+        break;
+      } else {
+        console.log(`❌ No se encontraron vehículos relevantes en ${url}`);
+      }
+    } catch (error) {
+      errors++;
+      if (error instanceof Error) {
+        console.error(`❌ Error al obtener datos desde ${url}: ${error.message}`);
+      } else {
+        console.error(`❌ Error desconocido al obtener datos desde ${url}`);
+      }
     }
-    
-    console.log(`✅ HTML obtenido (${response.data.length} bytes)`);
-    
-    // Extraer vehículos del HTML
-    let vehicles = extractVehiclesFromHTML(response.data, make, model, year);
-    
-    if (vehicles.length > 0) {
-      console.log(`✅ Encontrados ${vehicles.length} vehículos relevantes`);
-    } else {
-      console.log('⚠️ No se encontraron vehículos relevantes en el HTML real');
-      
-      // Intentar con los ejemplos específicos para modelos populares
-      vehicles = trySpecificExamples(make, model, year);
-    }
-    
-    return vehicles;
-  } catch (error) {
-    // Manejar errores
-    if (error instanceof Error) {
-      console.error(`❌ Error al obtener datos: ${error.message}`);
-      
-      // En caso de error, intentar con ejemplos específicos
-      return trySpecificExamples(make, model, year);
-    } else {
-      console.error('❌ Error desconocido al obtener datos');
-    }
-    return [];
-  }
-}
-
-/**
- * Intenta cargar ejemplos específicos para modelos populares
- * Todos estos ejemplos provienen de subastas reales en BaT
- */
-function trySpecificExamples(make: string, model: string, year?: string): InsertVehicle[] {
-  const makeLower = make.toLowerCase();
-  const modelLower = model.toLowerCase();
-  
-  // Casos especiales para Ford Ranchero 1971
-  if (makeLower === 'ford' && modelLower === 'ranchero' && year === '1971') {
-    console.log('🔍 Verificando ejemplo específico para Ford Ranchero 1971');
-    return loadSpecificExample('ranchero1971', make, model, year);
   }
   
-  // Casos especiales para Ford Mustang (cualquier año)
-  if (makeLower === 'ford' && modelLower === 'mustang') {
-    console.log('🔍 Verificando ejemplo específico para Ford Mustang');
-    return loadSpecificExample('mustang', make, model, year);
+  // Si obtuvimos vehículos de alguna URL, devolverlos
+  if (allVehicles.length > 0) {
+    console.log(`✅ Total: encontrados ${allVehicles.length} vehículos relevantes`);
+    return allVehicles;
   }
   
-  // Casos especiales para Dodge Challenger (cualquier año)
-  if (makeLower === 'dodge' && modelLower === 'challenger') {
-    console.log('🔍 Verificando ejemplo específico para Dodge Challenger');
-    return loadSpecificExample('challenger', make, model, year);
-  }
-  
-  // Casos especiales para Chevrolet Corvette (cualquier año)
-  if (makeLower === 'chevrolet' && modelLower === 'corvette') {
-    console.log('🔍 Verificando ejemplo específico para Chevrolet Corvette');
-    return loadSpecificExample('corvette', make, model, year);
-  }
-  
-  // Si no hay caso específico, devolver array vacío
-  return [];
-}
-
-/**
- * Carga un ejemplo específico basado en el identificador
- */
-function loadSpecificExample(exampleId: string, make: string, model: string, year?: string): InsertVehicle[] {
-  console.log(`🔄 Cargando ejemplo de HTML para ${make} ${model} ${year || ''}`);
-  
-  let exampleHTML: string;
-  
-  switch (exampleId) {
-    case 'ranchero1971':
-      // Ejemplo real de Ford Ranchero 1971
-      exampleHTML = `
-      <div class="listings-container auctions-grid" id="auctions-current-container">
-        <a class="listing-card bg-white-transparent" href="https://bringatrailer.com/listing/1971-ford-ranchero-13/" data-pusher="post;list;91810701">
-          <div class="thumbnail">
-            <img src="https://bringatrailer.com/wp-content/uploads/2025/03/1971_ford_ranchero_20191008_191837-25778.jpg?resize=470%2C318" alt="351-Powered 1971 Ford Ranchero">
-            <div class="image-overlay"></div>
-            <div class="icon-item-watch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91810701"></div>
-            <progress max="120" value="326"></progress>
-          </div>
-          <div class="content">
-            <div class="content-main">
-              <h3>351-Powered 1971 Ford Ranchero</h3>
-              <div class="item-tags">
-                <div class="item-tag item-tag-currency">
-                  <span class="show-country-flag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
-                </div>
-              </div>
-            </div>
-            <div class="item-bidding">
-              <div class="item-bidding-container">
-                <div class="bidding-wrapper">
-                  <span class="bid-formatted bold">USD $20,500</span>
-                </div>
-                <div class="countdown-wrapper">
-                  <span class="countdown-text final-countdown">5:26</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>`;
-      break;
-      
-    case 'mustang':
-      // Ejemplo real de Ford Mustang
-      exampleHTML = `
-      <div class="listings-container auctions-grid" id="auctions-current-container">
-        <a class="listing-card bg-white-transparent" href="https://bringatrailer.com/listing/1967-ford-mustang-29-2/" data-pusher="post;list;91801453">
-          <div class="thumbnail">
-            <img src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_16867699346732c5c0ff9fDSC_1325-23321.jpg?resize=470%2C318" alt="23-Years-Owned, 417 FE-Powered 1967 Ford Mustang Fastback 5-Speed">
-            <div class="image-overlay"></div>
-            <div class="icon-item-watch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91801453"></div>
-            <progress max="120" value="1102"></progress>
-          </div>
-          <div class="content">
-            <div class="content-main">
-              <h3>23-Years-Owned, 417 FE-Powered 1967 Ford Mustang Fastback 5-Speed</h3>
-              <div class="item-tags">
-                <div class="item-tag item-tag-currency">
-                  <span class="show-country-flag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
-                </div>
-              </div>
-            </div>
-            <div class="item-bidding">
-              <div class="item-bidding-container">
-                <div class="bidding-wrapper">
-                  <span class="bid-formatted bold">USD $25,000</span>
-                </div>
-                <div class="countdown-wrapper">
-                  <span class="countdown-text">4 days</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>`;
-      break;
-      
-    case 'challenger':
-      // Ejemplo real de Dodge Challenger
-      exampleHTML = `
-      <div class="listings-container auctions-grid" id="auctions-current-container">
-        <a class="listing-card bg-white-transparent" href="https://bringatrailer.com/listing/1970-dodge-challenger-rt-se-40/" data-pusher="post;list;91799382">
-          <div class="thumbnail">
-            <img src="https://bringatrailer.com/wp-content/uploads/2025/04/1970_dodge_challenger_rt_se_1682619528ec6a93f9d2aIMG_0144-1-scaled-13521.jpg?resize=470%2C318" alt="1970 Dodge Challenger R/T SE 440 Six Pack 4-Speed">
-            <div class="image-overlay"></div>
-            <div class="icon-item-watch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91799382"></div>
-            <progress max="120" value="1025"></progress>
-          </div>
-          <div class="content">
-            <div class="content-main">
-              <h3>1970 Dodge Challenger R/T SE 440 Six Pack 4-Speed</h3>
-              <div class="item-tags">
-                <div class="item-tag item-tag-currency">
-                  <span class="show-country-flag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
-                </div>
-              </div>
-            </div>
-            <div class="item-bidding">
-              <div class="item-bidding-container">
-                <div class="bidding-wrapper">
-                  <span class="bid-formatted bold">USD $95,000</span>
-                </div>
-                <div class="countdown-wrapper">
-                  <span class="countdown-text">3 days</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>`;
-      break;
-      
-    case 'corvette':
-      // Ejemplo real de Chevrolet Corvette
-      exampleHTML = `
-      <div class="listings-container auctions-grid" id="auctions-current-container">
-        <a class="listing-card bg-white-transparent" href="https://bringatrailer.com/listing/1967-chevrolet-corvette-convertible-35/" data-pusher="post;list;91823551">
-          <div class="thumbnail">
-            <img src="https://bringatrailer.com/wp-content/uploads/2025/03/1967_chevrolet_corvette_convertible_16874812387d6e0d1f99c67IMG_9401-28112.jpg?resize=470%2C318" alt="327/350 4-Speed 1967 Chevrolet Corvette Convertible">
-            <div class="image-overlay"></div>
-            <div class="icon-item-watch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91823551"></div>
-            <progress max="120" value="948"></progress>
-          </div>
-          <div class="content">
-            <div class="content-main">
-              <h3>327/350 4-Speed 1967 Chevrolet Corvette Convertible</h3>
-              <div class="item-tags">
-                <div class="item-tag item-tag-currency">
-                  <span class="show-country-flag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
-                </div>
-              </div>
-            </div>
-            <div class="item-bidding">
-              <div class="item-bidding-container">
-                <div class="bidding-wrapper">
-                  <span class="bid-formatted bold">USD $65,000</span>
-                </div>
-                <div class="countdown-wrapper">
-                  <span class="countdown-text">2 days</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>`;
-      break;
-      
-    default:
-      return [];
-  }
-  
-  // Procesar el ejemplo como si fuera una respuesta real
-  const vehicles = extractVehiclesFromHTML(exampleHTML, make, model, year);
-  
-  if (vehicles.length > 0) {
-    console.log(`✅ Encontrado ${vehicles.length} vehículo relevante en el ejemplo`);
+  // Si todas las peticiones fallaron, registrar error
+  if (errors === urls.length) {
+    console.error('❌ Todas las peticiones fallaron. No se pudieron obtener datos.');
   } else {
-    console.log('⚠️ No se encontraron vehículos relevantes en el ejemplo');
+    console.log('⚠️ No se encontraron subastas activas en ninguna URL.');
   }
   
-  return vehicles;
+  return [];
 }
 
 /**
