@@ -59,13 +59,15 @@ function extractVehiclesFromAuctionsPage(html: string, make: string, model: stri
     console.log('Analizando página de subastas activas de Bring a Trailer...');
     
     // Buscar el contenedor principal de listings
-    const auctionsContainer = $('#auctions-current-container');
+    const auctionsContainer = $('.listings-container.auctions-grid');
     if (!auctionsContainer.length) {
-      console.warn('No se encontró el contenedor de subastas activas (#auctions-current-container)');
+      console.warn('No se encontró el contenedor de subastas activas (.listings-container.auctions-grid)');
+    } else {
+      console.log(`Encontrado contenedor de subastas: ${auctionsContainer.attr('id') || '[sin id]'}`);
     }
     
     // Contar el número de tarjetas de listado
-    const listingCards = $('.listing-card');
+    const listingCards = $('a.listing-card');
     console.log(`Encontradas ${listingCards.length} tarjetas de listado`);
     
     // Analizar cada tarjeta de listado
@@ -74,15 +76,48 @@ function extractVehiclesFromAuctionsPage(html: string, make: string, model: stri
         const card = $(element);
         const href = card.attr('href') || '';
         
-        // Extraer título
+        // Extraer título - intentar con diferentes selectores
+        let title = '';
+        
+        // Primero intentamos con h3 directo
         const titleElement = card.find('h3');
-        const title = titleElement.text().trim();
-        console.log(`Listado #${index + 1}: ${title || '[Sin título]'}`);
+        if (titleElement.length) {
+          title = titleElement.text().trim();
+        }
+        
+        // Si no encontramos título, intentamos con otros métodos
+        if (!title) {
+          // Intentar obtener alt de la imagen
+          const imgAlt = card.find('.thumbnail img').attr('alt');
+          if (imgAlt) {
+            title = imgAlt.trim();
+          }
+        }
+        
+        // Incluso podemos intentar obtenerlo del URL
+        if (!title && href) {
+          const urlMatch = href.match(/\/listing\/([^/]+)\/?$/);
+          if (urlMatch && urlMatch[1]) {
+            // Convertir slug a título (e.g., "1967-ford-mustang" -> "1967 Ford Mustang")
+            const slug = urlMatch[1];
+            title = slug.replace(/-/g, ' ').replace(/(\d{4})/, '$1 ').trim();
+            // Capitalizar cada palabra
+            title = title.split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+          }
+        }
+        
+        console.log(`Listado #${index + 1}: ${title || '[Sin título]'} - URL: ${href}`);
         
         // Extraer información de puja
         const bidElement = card.find('.bid-formatted');
         const bidText = bidElement.text().trim();
         const price = extractPrice(bidText);
+        
+        if (bidText) {
+          console.log(`  Puja: ${bidText}`);
+        }
         
         // Extraer tiempo restante
         const timeElement = card.find('.countdown-text');

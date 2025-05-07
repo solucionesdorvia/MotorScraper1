@@ -12,6 +12,7 @@ import { scrapeBringATrailerUniversal } from "./scraper/bat-universal";
 import { scrapeBringATrailerAuctions } from "./scraper/bat-auctions";
 import { scrapeBringATrailerAuctionsV2 } from "./scraper/bat-auctions-v2";
 import { scrapeBringATrailerDirectAuctions } from "./scraper/bat-direct-auctions";
+import { scrapeBringATrailerDirectOptimized } from "./scraper/bat-direct-optimized";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -157,44 +158,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // NUEVO MÉTODO: Primero intentamos con el scraper directo de auctions
-            console.log('Intentando nuevo scraper directo de auctions...');
-            bringATrailerResults = await scrapeBringATrailerDirectAuctions(
+            // MÉTODO OPTIMIZADO: Primero intentamos con el scraper optimizado para auctions
+            console.log('Intentando nuevo scraper optimizado para auctions...');
+            bringATrailerResults = await scrapeBringATrailerDirectOptimized(
               make, 
               model,
               searchParams.year?.toString()
             );
             
             if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el nuevo scraper directo`);
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper optimizado`);
             } else {
-              console.log('⚠️ No se encontraron subastas activas con el nuevo scraper directo');
+              console.log('⚠️ No se encontraron subastas activas con el scraper optimizado');
               
-              // Intentamos con el scraper ejemplo que usa HTML ya renderizado (respaldo)
-              console.log('Intentando scraper con HTML ejemplo ya renderizado (respaldo)...');
-              bringATrailerResults = await scrapeBringATrailerFromExample(
+              // Intentamos con el primer scraper directo como respaldo
+              console.log('Intentando el scraper directo anterior (respaldo 1)...');
+              bringATrailerResults = await scrapeBringATrailerDirectAuctions(
                 make, 
                 model,
                 searchParams.year?.toString()
               );
               
               if (bringATrailerResults.length > 0) {
-                console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper de HTML ejemplo`);
+                console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el primer scraper directo`);
               } else {
-                console.log('⚠️ No se encontraron subastas activas con el scraper de HTML ejemplo');
+                console.log('⚠️ No se encontraron subastas activas con el primer scraper directo');
                 
-                // Como último recurso, usamos el scraper universal
-                console.log('Usando scraper universal como respaldo final...');
-                bringATrailerResults = await scrapeBringATrailerUniversal(
+                // Luego probamos con el scraper de HTML ejemplo como respaldo
+                console.log('Intentando scraper con HTML ejemplo ya renderizado (respaldo 2)...');
+                bringATrailerResults = await scrapeBringATrailerFromExample(
                   make, 
                   model,
                   searchParams.year?.toString()
                 );
                 
                 if (bringATrailerResults.length > 0) {
-                  console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper universal`);
+                  console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper de HTML ejemplo`);
                 } else {
-                  console.log('⚠️ No se encontraron subastas activas con el scraper universal');
+                  console.log('⚠️ No se encontraron subastas activas con el scraper de HTML ejemplo');
+                  
+                  // Como último recurso, usamos el scraper universal
+                  console.log('Usando scraper universal como respaldo final...');
+                  bringATrailerResults = await scrapeBringATrailerUniversal(
+                    make, 
+                    model,
+                    searchParams.year?.toString()
+                  );
+                  
+                  if (bringATrailerResults.length > 0) {
+                    console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper universal`);
+                  } else {
+                    console.log('⚠️ No se encontraron subastas activas con el scraper universal');
+                  }
                 }
               }
             }
@@ -327,6 +342,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         error: 'Error al procesar página de auctions',
+        message: error.message
+      });
+    }
+  });
+  
+  // Endpoint para probar el scraper optimizado de subastas
+  app.get("/api/bat/optimized", async (req: Request, res: Response) => {
+    try {
+      // Obtener parámetros de búsqueda
+      const make = req.query.make as string || 'Ford';
+      const model = req.query.model as string || 'Mustang';
+      const year = req.query.year as string;
+      
+      console.log(`Probando scraper optimizado para: ${make} ${model} ${year || ''}`);
+      
+      // Llamar al scraper optimizado
+      const results = await scrapeBringATrailerDirectOptimized(make, model, year);
+      
+      console.log(`Resultados encontrados: ${results.length}`);
+      
+      // Devolver resultados
+      res.json({
+        success: true,
+        count: results.length,
+        results
+      });
+    } catch (error: any) {
+      console.error('Error al procesar con scraper optimizado:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error al procesar con scraper optimizado',
         message: error.message
       });
     }
