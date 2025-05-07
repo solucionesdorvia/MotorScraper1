@@ -61,30 +61,54 @@ export async function scrapeBringATrailerDirectFixed(make: string, model: string
 
 /**
  * Extrae vehículos del HTML de Bring a Trailer
+ * 
+ * Utilizando la estructura HTML exacta proporcionada:
+ * <div class="listings-container auctions-grid" id="auctions-current-container">
+ *   <a class="listing-card bg-white-transparent" href="...">
+ *     <div class="thumbnail">...</div>
+ *     <div class="content">
+ *       <div class="content-main">
+ *         <h3>Título del vehículo</h3>
+ *         ...
+ *       </div>
+ *       <div class="item-bidding">
+ *         <span class="bid-formatted bold">USD $20,500</span>
+ *         ...
+ *         <span class="countdown-text final-countdown">5:26</span>
+ *       </div>
+ *     </div>
+ *   </a>
+ * </div>
  */
 function extractVehiclesFromHTML(html: string, make: string, model: string, year?: string): InsertVehicle[] {
   const vehicles: InsertVehicle[] = [];
   const $ = load(html);
   
   // Buscar el contenedor principal de listados (estructura exacta proporcionada)
-  console.log('Buscando contenedor de listados #auctions-current-container.listings-container.auctions-grid');
-  const container = $('.listings-container.auctions-grid#auctions-current-container');
+  console.log('Buscando contenedor de listados con id="auctions-current-container"');
+  const container = $('#auctions-current-container');
   
   if (container.length === 0) {
-    console.log('❌ No se encontró el contenedor principal con el selector exacto');
+    console.log('❌ No se encontró el contenedor principal con id="auctions-current-container"');
     
-    // Intentar con un selector más permisivo
-    const altContainer = $('.listings-container, #auctions-current-container, .auctions-grid').first();
+    // Intentar con un selector alternativo
+    const altContainer = $('.listings-container, .auctions-grid').first();
     if (altContainer.length > 0) {
       console.log('✅ Encontrado contenedor alternativo');
       processContainer(altContainer, $, make, model, year, vehicles);
     } else {
       console.log('❌ No se encontró ningún contenedor de listados conocido');
       // Buscar directamente las tarjetas en toda la página
-      processCards($('a.listing-card'), $, make, model, year, vehicles);
+      const allCards = $('a.listing-card');
+      if (allCards.length > 0) {
+        console.log(`Encontradas ${allCards.length} tarjetas directamente en la página`);
+        processCards(allCards, $, make, model, year, vehicles);
+      } else {
+        console.log('⚠️ No se encontraron tarjetas de listado en la página');
+      }
     }
   } else {
-    console.log(`✅ Encontrado contenedor principal con ${container.find('a.listing-card').length} tarjetas`);
+    console.log(`✅ Encontrado contenedor principal con id="auctions-current-container"`);
     processContainer(container, $, make, model, year, vehicles);
   }
   
