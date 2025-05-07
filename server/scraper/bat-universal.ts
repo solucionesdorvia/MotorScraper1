@@ -235,21 +235,24 @@ function extractActiveVehicles(html: string, make: string, model: string, year?:
                   imageUrl = imgElement.attr('src') || '';
                 }
                 
+                // Limpiar el título
+                const cleanTitle = cleanTitleText(title);
+                
                 // Añadir el vehículo
                 const vehicle: InsertVehicle = {
-                  title,
+                  title: cleanTitle,
                   make,
                   model,
                   source: 'bringatrailer',
                   sourceUrl: href,
                   imageUrl,
-                  year: extractYear(title) || (year ? parseInt(year) : null),
+                  year: extractYear(cleanTitle) || (year ? parseInt(year) : null),
                   price,
                   isAuction: true,
                   currentBid: price,
                   endsIn: translateTimeRemaining(timeRemaining),
-                  transmission: extractTransmission(title),
-                  bodyType: extractBodyType(title),
+                  transmission: extractTransmission(cleanTitle),
+                  bodyType: extractBodyType(cleanTitle),
                   location: 'Estados Unidos',
                   mileage: null,
                   color: null,
@@ -305,21 +308,24 @@ function extractActiveVehicles(html: string, make: string, model: string, year?:
             
             // Verificar datos mínimos y relevancia
             if (title && href && isRelevant(title, make, model, year)) {
+              // Limpiar el título
+              const cleanTitle = cleanTitleText(title);
+              
               // Crear objeto de vehículo
               const vehicle: InsertVehicle = {
-                title,
+                title: cleanTitle,
                 make,
                 model,
                 source: 'bringatrailer',
                 sourceUrl: href,
                 imageUrl: img,
-                year: extractYear(title) || (year ? parseInt(year) : null),
+                year: extractYear(cleanTitle) || (year ? parseInt(year) : null),
                 price: bid || 0,
                 isAuction: true,
                 currentBid: bid || 0,
                 endsIn: translateTimeRemaining(timeRemaining),
-                transmission: extractTransmission(title),
-                bodyType: extractBodyType(title),
+                transmission: extractTransmission(cleanTitle),
+                bodyType: extractBodyType(cleanTitle),
                 location: 'Estados Unidos',
                 mileage: null,
                 color: null,
@@ -468,6 +474,21 @@ function extractBodyType(text: string): string | null {
   }
   
   return null;
+}
+
+/**
+ * Limpia el texto del título eliminando líneas innecesarias y texto adicional
+ */
+function cleanTitleText(title: string): string {
+  if (!title) return '';
+  
+  // Extraer solo la primera línea del título que contiene la información principal
+  const lines = title.split('\n');
+  if (lines.length > 0) {
+    return lines[0].trim();
+  }
+  
+  return title.trim();
 }
 
 /**
