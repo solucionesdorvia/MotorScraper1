@@ -6,6 +6,7 @@ import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
 import { scrapeBringATrailerSimple } from "./scraper/bat-simple";
+import { scrapeBringATrailerFromExample } from "./scraper/bat-html-example";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -151,19 +152,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // Usando el scraper simplificado proporcionado por el usuario
-            console.log('Usando scraper simplificado para encontrar subastas activas...');
+            // Intento 1: Usar el scraper simplificado para obtener resultados en vivo
+            console.log('Intento 1: Usando scraper simplificado para encontrar subastas activas...');
             bringATrailerResults = await scrapeBringATrailerSimple(
               make, 
               model,
               searchParams.year?.toString()
             );
             
-            // Reportar resultados
-            if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper simplificado`);
+            // Si no se encontraron resultados con el scraper simple, intentar con el basado en HTML de ejemplo
+            if (bringATrailerResults.length === 0) {
+              console.log('Intento 2: No se encontraron resultados con el scraper simple, usando scraper basado en HTML de ejemplo...');
+              bringATrailerResults = await scrapeBringATrailerFromExample(
+                make,
+                model,
+                searchParams.year?.toString()
+              );
+              
+              if (bringATrailerResults.length > 0) {
+                console.log(`✅ ÉXITO con el scraper de HTML de ejemplo: Encontradas ${bringATrailerResults.length} subastas ACTIVAS`);
+              } else {
+                console.log('⚠️ No se encontraron subastas activas tampoco con el HTML de ejemplo');
+              }
             } else {
-              console.log('⚠️ No se encontraron subastas activas para esta búsqueda');
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper simplificado`);
             }
           } catch (error) {
             console.error('Error al obtener resultados de Bring a Trailer:', error);
