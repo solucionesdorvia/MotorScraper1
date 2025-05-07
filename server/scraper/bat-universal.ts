@@ -368,8 +368,19 @@ function isRelevant(title: string, make: string, model: string, year?: string): 
   const makeLower = make.toLowerCase();
   const modelLower = model.toLowerCase();
   
+  // Caso especial para "Chevrolet" que puede aparecer como "Chevy"
+  let makePresent = titleLower.includes(makeLower);
+  if (makeLower === "chevrolet" && titleLower.includes("chevy")) {
+    makePresent = true;
+  }
+  
+  // Caso especial para "Volkswagen" que puede aparecer como "VW"
+  if (makeLower === "volkswagen" && titleLower.includes("vw")) {
+    makePresent = true;
+  }
+  
   // Si el título no contiene la marca, no es relevante
-  if (!titleLower.includes(makeLower)) {
+  if (!makePresent) {
     return false;
   }
   
