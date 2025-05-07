@@ -54,7 +54,9 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
       return [];
     }
     
-    console.log('✅ Contenedor de subastas encontrado');
+    console.log(`✅ Contenedor de subastas encontrado: ${auctionsContainer.length} elementos`);
+    // Depurar la estructura del HTML
+    console.log('Estructura del contenedor:', auctionsContainer.html().substring(0, 200) + '...');
     
     // Array para almacenar los vehículos encontrados
     const vehicles: InsertVehicle[] = [];
@@ -66,43 +68,75 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
     const listingCards = auctionsContainer.find('.listing-card');
     console.log(`Encontradas ${listingCards.length} tarjetas de listado`);
     
+    // Imprimir el HTML para analizar la estructura
+    if (listingCards.length > 0) {
+      console.log('HTML de la primera tarjeta:', $(listingCards[0]).html().substring(0, 200) + '...');
+    } else {
+      console.log('No se encontraron tarjetas de listado');
+    }
+    
     // Iterar sobre cada tarjeta para extraer la información
-    listingCards.each((_, card) => {
+    listingCards.each((i, card) => {
+      console.log(`Procesando tarjeta #${i+1}:`);
       try {
-        // Extraer URL del anuncio
+        console.log('Procesando HTML de la tarjeta:', $(card).html().substring(0, 100));
+      
+        // La tarjeta es un enlace <a>, así que el href es el atributo del elemento actual
         const url = $(card).attr('href');
-        if (!url) return; // Saltar si no hay URL
+        console.log('URL extraída:', url);
+        if (!url) {
+          console.log('Sin URL, saltando');
+          return; // Saltar si no hay URL
+        }
         
         // Extraer título del vehículo
         const title = $(card).find('h3').text().trim();
-        if (!title) return; // Saltar si no hay título
+        console.log('Título extraído:', title);
+        if (!title) {
+          console.log('Sin título, saltando');
+          return; // Saltar si no hay título
+        }
         
         // Extraer precio actual (puja)
-        const bidText = $(card).find('.bid-formatted').text().trim();
+        const bidElement = $(card).find('.bid-formatted');
+        console.log('Elemento de puja encontrado:', bidElement.length);
+        const bidText = bidElement.text().trim();
+        console.log('Texto de puja extraído:', bidText);
+        
         let currentBid: number | null = null;
         if (bidText) {
           // Extraer el número del texto del precio (ej: "USD $25,000" -> 25000)
           const priceMatch = bidText.match(/\$\s*([\d,]+)/);
           if (priceMatch && priceMatch[1]) {
             currentBid = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+            console.log('Puja actual (número):', currentBid);
           }
         }
         
         // Extraer tiempo restante
-        const timeText = $(card).find('.countdown-text').text().trim();
+        const countdownElement = $(card).find('.countdown-text');
+        console.log('Elemento de cuenta regresiva encontrado:', countdownElement.length);
+        const timeText = countdownElement.text().trim();
+        console.log('Texto de tiempo restante:', timeText);
+        
         let endsIn: string | null = null;
         if (timeText) {
           endsIn = timeText;
         }
         
         // Extraer imagen del vehículo
-        const imageUrl = $(card).find('.thumbnail img').attr('src') || null;
+        const imgElement = $(card).find('.thumbnail img');
+        console.log('Elemento de imagen encontrado:', imgElement.length);
+        const imageUrl = imgElement.attr('src') || null;
+        console.log('URL de imagen:', imageUrl);
         
         // Extraer ubicación (siempre es Estados Unidos para BaT)
         const location = "Estados Unidos";
         
         // Determinar si es No Reserve
-        const isNoReserve = $(card).find('.item-tag-noreserve').length > 0;
+        const noReserveElement = $(card).find('.item-tag-noreserve');
+        console.log('Elemento No Reserve encontrado:', noReserveElement.length);
+        const isNoReserve = noReserveElement.length > 0;
         
         // Extraer la descripción
         const excerpt = $(card).find('.item-excerpt').text().trim();
