@@ -8,6 +8,7 @@ import { scrapeHemmings } from "./scraper/hemmings";
 import { scrapeBringATrailerSimple } from "./scraper/bat-simple";
 import { scrapeBringATrailerFromExample } from "./scraper/bat-html-example";
 import { scrapeBringATrailerPattern } from "./scraper/bat-pattern";
+import { scrapeBringATrailerUniversal } from "./scraper/bat-universal";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -153,46 +154,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // NOTA: El scraper de patron aún tiene problemas para extraer elementos en tiempo real
-            // Nos saltamos su ejecución por ahora hasta resolver este problema
-            console.log('Nota: scraper de patrón HTML todavía en desarrollo, omitiendo...');
-            bringATrailerResults = [];
+            // Usamos el nuevo scraper universal que funciona con cualquier búsqueda
+            console.log('Usando scraper universal para extraer subastas activas...');
+            bringATrailerResults = await scrapeBringATrailerUniversal(
+              make, 
+              model,
+              searchParams.year?.toString()
+            );
             
             if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper basado en patrones HTML`);
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper universal`);
             } else {
-              console.log('⚠️ No se encontraron subastas activas con el scraper basado en patrones HTML');
-              
-              // Si no hay resultados y es Ford Mustang 1967, podemos usar el HTML de ejemplo
-              if (make.toLowerCase() === 'ford' && model.toLowerCase() === 'mustang' && 
-                  searchParams.year?.toString() === '1967') {
-                console.log('Búsqueda de Ford Mustang 1967: Usando scraper basado en HTML de ejemplo como respaldo...');
-                bringATrailerResults = await scrapeBringATrailerFromExample(
-                  make,
-                  model,
-                  searchParams.year?.toString()
-                );
-                
-                if (bringATrailerResults.length > 0) {
-                  console.log(`✅ ÉXITO con el scraper de HTML de ejemplo: Encontradas ${bringATrailerResults.length} subastas ACTIVAS para Ford Mustang 1967`);
-                } else {
-                  console.log('⚠️ No se encontraron subastas activas para Ford Mustang 1967 en el HTML de ejemplo');
-                }
-              } else {
-                // Como último recurso, intentamos con el scraper simple
-                console.log('Intentando con scraper simplificado como último recurso...');
-                bringATrailerResults = await scrapeBringATrailerSimple(
-                  make, 
-                  model,
-                  searchParams.year?.toString()
-                );
-                
-                if (bringATrailerResults.length > 0) {
-                  console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper simplificado`);
-                } else {
-                  console.log('⚠️ No se encontraron subastas activas para esta búsqueda con ningún método');
-                }
-              }
+              console.log('⚠️ No se encontraron subastas activas con el scraper universal');
             }
           } catch (error) {
             console.error('Error al obtener resultados de Bring a Trailer:', error);
