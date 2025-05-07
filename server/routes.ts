@@ -222,9 +222,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
               );
             }
             
-            // 7. Como último recurso, usamos el scraper universal
+            // 7. Intentamos con el nuevo scraper de resultados de búsqueda general
             if (bringATrailerResults.length === 0) {
-              console.log('7. Intentando scraper universal (último recurso)...');
+              console.log('7. Intentando scraper de resultados de búsqueda general...');
+              bringATrailerResults = await scrapeBringATrailerSearchResults(
+                make, 
+                model,
+                searchParams.year?.toString()
+              );
+            }
+            
+            // 8. Como último recurso, usamos el scraper universal
+            if (bringATrailerResults.length === 0) {
+              console.log('8. Intentando scraper universal (último recurso)...');
               bringATrailerResults = await scrapeBringATrailerUniversal(
                 make, 
                 model,
