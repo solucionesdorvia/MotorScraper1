@@ -5,18 +5,7 @@ import { scrapeEbay } from "./scraper/ebay";
 import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
-import { scrapeBringATrailerSimple } from "./scraper/bat-simple";
-import { scrapeBringATrailerFromExample } from "./scraper/bat-html-example";
-import { scrapeBringATrailerPattern } from "./scraper/bat-pattern";
-import { scrapeBringATrailerUniversal } from "./scraper/bat-universal";
-import { scrapeBringATrailerAuctions } from "./scraper/bat-auctions";
-import { scrapeBringATrailerAuctionsV2 } from "./scraper/bat-auctions-v2";
-import { scrapeBringATrailerDirectAuctions } from "./scraper/bat-direct-auctions";
-import { scrapeBringATrailerDirectOptimized } from "./scraper/bat-direct-optimized";
-import { scrapeBringATrailerDirectMatch } from "./scraper/bat-direct-match";
-import { scrapeBringATrailerDodge } from "./scraper/bat-dodge-improved";
-import { scrapeBringATrailerDirectFixed } from "./scraper/bat-direct-fixed";
-import { scrapeBringATrailerSearchResults } from "./scraper/bat-search-results";
+import { scrapeBringATrailer } from "./scraper/bringatrailer";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -162,91 +151,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // Utilizamos un sistema de cascada de scrapers, probando en orden hasta obtener resultados
-            
-            // 1. Comenzamos con el nuevo scraper mejorado (coincidencia directa y mejor extracción)
-            console.log('1. Intentando scraper directo mejorado...');
-            bringATrailerResults = await scrapeBringATrailerDirectFixed(
+            // Usando el nuevo y único scraper de BaT
+            console.log('Ejecutando nuevo scraper unificado de Bring a Trailer...');
+            bringATrailerResults = await scrapeBringATrailer(
               make, 
               model,
               searchParams.year?.toString()
             );
-            
-            // 2. Si no hay resultados, intentamos con el scraper de coincidencia directa anterior
-            if (bringATrailerResults.length === 0) {
-              console.log('2. Intentando scraper de coincidencia directa...');
-              bringATrailerResults = await scrapeBringATrailerDirectMatch(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-            }
-            
-            // 3. Si todavía no hay resultados, probamos con el scraper optimizado
-            if (bringATrailerResults.length === 0) {
-              console.log('3. Intentando scraper optimizado...');
-              bringATrailerResults = await scrapeBringATrailerDirectOptimized(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-            }
-            
-            // 4. Si sigue sin haber resultados, probamos con el scraper directo
-            if (bringATrailerResults.length === 0) {
-              console.log('4. Intentando scraper directo de auctions...');
-              bringATrailerResults = await scrapeBringATrailerDirectAuctions(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-            }
-            
-            // 5. Para modelos Dodge, probamos con el scraper especializado para Dodge
-            if (bringATrailerResults.length === 0 && make.toLowerCase() === 'dodge') {
-              console.log('5. Detectada búsqueda de Dodge, usando scraper especializado...');
-              bringATrailerResults = await scrapeBringATrailerDodge(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-            }
-            
-            // 6. Si todavía no hay resultados, probamos con el scraper de HTML de ejemplo
-            if (bringATrailerResults.length === 0) {
-              console.log('6. Intentando scraper basado en HTML ejemplo...');
-              bringATrailerResults = await scrapeBringATrailerFromExample(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-            }
-            
-            // 7. Intentamos con el nuevo scraper de resultados de búsqueda general
-            // IMPORTANTE: Primero probar este scraper para resultados más completos
-            console.log('7. Intentando scraper de resultados de búsqueda general...');
-            const searchResultsVehicles = await scrapeBringATrailerSearchResults(
-              make, 
-              model,
-              searchParams.year?.toString()
-            );
-            
-            if (searchResultsVehicles.length > 0) {
-              console.log(`✅ Encontradas ${searchResultsVehicles.length} subastas en la página general de búsqueda`);
-              bringATrailerResults = [...bringATrailerResults, ...searchResultsVehicles];
-            } else {
-              console.log('⚠️ No se encontraron subastas en la página general de búsqueda');
-            }
-            
-            // 8. Como último recurso, usamos el scraper universal
-            if (bringATrailerResults.length === 0) {
-              console.log('8. Intentando scraper universal (último recurso)...');
-              bringATrailerResults = await scrapeBringATrailerUniversal(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-            }
             
             // Informar sobre los resultados
             if (bringATrailerResults.length > 0) {
@@ -327,49 +238,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "ok" });
   });
   
-  // Endpoint especializado para probar el scraper de HTML renderizado
-  app.get("/api/bat/html-example", async (req: Request, res: Response) => {
+  // Endpoint para probar el nuevo scraper unificado de Bring a Trailer
+  app.get("/api/bat/test", async (req: Request, res: Response) => {
     try {
       // Obtener parámetros de búsqueda
       const make = req.query.make as string || 'Ford';
       const model = req.query.model as string || 'Mustang';
       const year = req.query.year as string;
       
-      console.log(`Probando scraper HTML renderizado para: ${make} ${model} ${year || ''}`);
+      console.log(`Probando nuevo scraper unificado de Bring a Trailer para: ${make} ${model} ${year || ''}`);
       
-      // Llamar al scraper especializado
-      const results = await scrapeBringATrailerFromExample(make, model, year);
-      
-      console.log(`Resultados encontrados: ${results.length}`);
-      
-      // Devolver resultados
-      res.json({
-        success: true,
-        count: results.length,
-        results
-      });
-    } catch (error: any) {
-      console.error('Error al procesar HTML de ejemplo:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error al procesar HTML de ejemplo',
-        message: error.message
-      });
-    }
-  });
-  
-  // Endpoint para probar el nuevo scraper directo de subastas
-  app.get("/api/bat/direct-auctions", async (req: Request, res: Response) => {
-    try {
-      // Obtener parámetros de búsqueda
-      const make = req.query.make as string || 'Ford';
-      const model = req.query.model as string || 'Mustang';
-      const year = req.query.year as string;
-      
-      console.log(`Probando scraper directo de auctions para: ${make} ${model} ${year || ''}`);
-      
-      // Llamar al scraper directo
-      const results = await scrapeBringATrailerDirectAuctions(make, model, year);
+      // Llamar al nuevo scraper
+      const results = await scrapeBringATrailer(make, model, year);
       
       console.log(`Resultados encontrados: ${results.length}`);
       
@@ -380,134 +260,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         results
       });
     } catch (error: any) {
-      console.error('Error al procesar página de auctions:', error);
+      console.error('Error al procesar con nuevo scraper de Bring a Trailer:', error);
       res.status(500).json({
         success: false,
-        error: 'Error al procesar página de auctions',
-        message: error.message
-      });
-    }
-  });
-  
-  // Endpoint para probar el scraper optimizado de subastas
-  app.get("/api/bat/optimized", async (req: Request, res: Response) => {
-    try {
-      // Obtener parámetros de búsqueda
-      const make = req.query.make as string || 'Ford';
-      const model = req.query.model as string || 'Mustang';
-      const year = req.query.year as string;
-      
-      console.log(`Probando scraper optimizado para: ${make} ${model} ${year || ''}`);
-      
-      // Llamar al scraper optimizado
-      const results = await scrapeBringATrailerDirectOptimized(make, model, year);
-      
-      console.log(`Resultados encontrados: ${results.length}`);
-      
-      // Devolver resultados
-      res.json({
-        success: true,
-        count: results.length,
-        results
-      });
-    } catch (error: any) {
-      console.error('Error al procesar con scraper optimizado:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error al procesar con scraper optimizado',
-        message: error.message
-      });
-    }
-  });
-  
-  // Endpoint para probar el scraper de coincidencia directa con el HTML exacto
-  app.get("/api/bat/direct-match", async (req: Request, res: Response) => {
-    try {
-      // Obtener parámetros de búsqueda
-      const make = req.query.make as string || 'Ford';
-      const model = req.query.model as string || 'Mustang';
-      const year = req.query.year as string;
-      
-      console.log(`Probando scraper de coincidencia directa para: ${make} ${model} ${year || ''}`);
-      
-      // Llamar al scraper de coincidencia directa
-      const results = await scrapeBringATrailerDirectMatch(make, model, year);
-      
-      console.log(`Resultados encontrados: ${results.length}`);
-      
-      // Devolver resultados
-      res.json({
-        success: true,
-        count: results.length,
-        results
-      });
-    } catch (error: any) {
-      console.error('Error al procesar con scraper de coincidencia directa:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error al procesar con scraper de coincidencia directa',
-        message: error.message
-      });
-    }
-  });
-  
-  // Endpoint para probar el scraper especializado para Dodge
-  app.get("/api/bat/dodge", async (req: Request, res: Response) => {
-    try {
-      // Obtener parámetros de búsqueda
-      const make = req.query.make as string || 'Dodge';
-      const model = req.query.model as string || 'Challenger';
-      const year = req.query.year as string;
-      
-      console.log(`Probando scraper especializado para Dodge: ${make} ${model} ${year || ''}`);
-      
-      // Llamar al scraper especializado para Dodge
-      const results = await scrapeBringATrailerDodge(make, model, year);
-      
-      console.log(`Resultados encontrados: ${results.length}`);
-      
-      // Devolver resultados
-      res.json({
-        success: true,
-        count: results.length,
-        results
-      });
-    } catch (error: any) {
-      console.error('Error al procesar con scraper especializado para Dodge:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error al procesar con scraper especializado para Dodge',
-        message: error.message
-      });
-    }
-  });
-  
-  // Endpoint para probar el nuevo scraper directo mejorado (FIXED)
-  app.get("/api/bat/fixed", async (req: Request, res: Response) => {
-    try {
-      // Obtener parámetros de búsqueda
-      const make = req.query.make as string || 'Ford';
-      const model = req.query.model as string || 'Ranchero';
-      const year = req.query.year as string || '1971';
-      
-      console.log(`Probando scraper directo MEJORADO para: ${make} ${model} ${year || ''}`);
-      
-      // Llamar al scraper directo mejorado
-      const results = await scrapeBringATrailerDirectFixed(make, model, year);
-      
-      console.log(`Resultados encontrados: ${results.length}`);
-      
-      // Devolver resultados
-      res.json({
-        success: true,
-        count: results.length,
-        results
-      });
-    } catch (error: any) {
-      console.error('Error al procesar con scraper directo mejorado:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Error al procesar con scraper directo mejorado',
+        error: 'Error al procesar con nuevo scraper de Bring a Trailer',
         message: error.message
       });
     }
