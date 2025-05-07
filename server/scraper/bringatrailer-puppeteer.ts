@@ -133,7 +133,10 @@ export async function scrapeBringATrailerRealTime(make: string, model: string, y
       const countdownElement = await card.$('.bidding-countdown .countdown-text');
       let endsIn: string | null = null;
       if (countdownElement) {
-        endsIn = await page.evaluate(el => el.textContent, countdownElement);
+        const timeText = await page.evaluate(el => el.textContent, countdownElement);
+        if (timeText) {
+          endsIn = timeText;
+        }
       }
       
       // Extraer estado 'No Reserve'

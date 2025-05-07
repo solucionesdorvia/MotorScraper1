@@ -238,7 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "ok" });
   });
   
-  // Endpoint para probar el nuevo scraper unificado de Bring a Trailer
+  // Endpoint para probar el nuevo scraper unificado de Bring a Trailer con navegación real
   app.get("/api/bat/test", async (req: Request, res: Response) => {
     try {
       // Obtener parámetros de búsqueda
@@ -246,12 +246,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const model = req.query.model as string || 'Mustang';
       const year = req.query.year as string;
       
-      console.log(`Probando nuevo scraper unificado de Bring a Trailer para: ${make} ${model} ${year || ''}`);
+      console.log(`🚀 Probando scraper con navegación real de Bring a Trailer para: ${make} ${model} ${year || ''}`);
       
-      // Llamar al nuevo scraper
+      // Llamar al nuevo scraper con navegación real
       const results = await scrapeBringATrailer(make, model, year);
       
-      console.log(`Resultados encontrados: ${results.length}`);
+      console.log(`✅ Resultados encontrados: ${results.length}`);
       
       // Devolver resultados
       res.json({
@@ -260,10 +260,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         results
       });
     } catch (error: any) {
-      console.error('Error al procesar con nuevo scraper de Bring a Trailer:', error);
+      console.error('❌ Error al procesar con scraper de navegación real de Bring a Trailer:', error);
       res.status(500).json({
         success: false,
-        error: 'Error al procesar con nuevo scraper de Bring a Trailer',
+        error: 'Error al procesar con scraper de navegación real de Bring a Trailer',
         message: error.message
       });
     }
