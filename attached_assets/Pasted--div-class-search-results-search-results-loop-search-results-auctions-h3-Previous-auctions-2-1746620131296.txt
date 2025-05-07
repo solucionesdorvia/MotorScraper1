@@ -1,0 +1,923 @@
+<div class="search-results search-results-loop search-results-auctions">
+	
+	<h3>Previous auctions (269)</h3>
+
+	<div class="previous-listings previous-listings-search group" data-pagination-query="query_previous_auctions">
+		
+<div class="listing-card listing-card-separate " data-listing_id="92786739" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92786739" data-timestamp_end="1746479047" data-pusher="post;list;92786739" data-pusher_stats="post;stats;92786739">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_img_20250423_180919314-21620.jpg?resize=470%2C318" alt="522-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-356/" title="522-Powered 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-356/">522-Powered 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang fastback is powered by a 522ci V8 linked with a Tremec five-speed manual transmission and it rides on an adjustable coilover suspension with Ridetech dampers and tubular components. Finished in red over black upholstery, the car is further equipped with a scooped hood, LED lighting, Baer disc brakes, Rusthforth Rated-X…</div>
+
+            
+            <div class="item-results">Sold for USD $61,856 <span> on 5/5/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="92777185" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92777185" data-timestamp_end="1746124900" data-pusher="post;list;92777185" data-pusher_stats="post;stats;92777185">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_20250415_231810789_ios-96655.jpg?resize=470%2C318" alt="408-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-355/" title="408-Powered 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-355/">408-Powered 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang fastback was modified prior to the current owner's 2010 acquisition by installing Eleanor-style bodywork, a 408ci V8, and a five-speed manual transmission. The engine was assembled with Edelbrock fuel injection, a SCAT crankshaft, a Crane Cams camshaft, aluminum cylinder heads, and forged flat-top pistons.</div>
+
+            
+            <div class="item-results">Sold for USD $97,555 <span> on 5/1/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="92075505" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92075505" data-timestamp_end="1745874780" data-pusher="post;list;92075505" data-pusher_stats="post;stats;92075505">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_1967_ford_mustang_89cb7f48-0645-4655-8009-58525188e9c6-hClrNa-99123-99124-scaled.jpg?resize=470%2C318" alt="1967 Ford Mustang Fastback 390 4-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-352/" title="1967 Ford Mustang Fastback 390 4-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-352/">1967 Ford Mustang Fastback 390 4-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang fastback was acquired as a project by the seller in 2020, and it was subsequently restored. The seller states the special-order color of Sapphire Blue was re-applied to the exterior after repairs were performed, and the underside was painted with red oxide primer when the body was on a rotisserie.</div>
+
+            
+            <div class="item-results">Bid to USD $67,000 <span> on 4/28/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="91353961" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91353961" data-timestamp_end="1744391614" data-pusher="post;list;91353961" data-pusher_stats="post;stats;91353961">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/03/DSC09875-Enhanced-NR-00521-scaled.jpg?resize=470%2C318" alt="Supercharged Coyote-Powered Shelby Mustang GT500 Fastback by Revology">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/shelby-mustang-fastback-gt500-by-revology/" title="Supercharged Coyote-Powered Shelby Mustang GT500 Fastback by Revology"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/shelby-mustang-fastback-gt500-by-revology/">Supercharged Coyote-Powered Shelby Mustang GT500 Fastback by Revology</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                                <div class="item-tag item-tag-premium ">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This Shelby Mustang GT500 fastback re-creation was built by Revology Cars of Orlando, Florida and completed in 2021. The car is finished in Jet Black Metallic with Silver Frost Metallic stripes and powered by a supercharged Roush Performance 5.0-liter Coyote V8 linked to ten-speed automatic transmission, a carbon-fiber driveshaft, and an 8.8”…</div>
+
+            
+            <div class="item-results">Sold for USD $273,500 <span> on 4/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="88446414" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=88446414" data-timestamp_end="1743715513" data-pusher="post;list;88446414" data-pusher_stats="post;stats;88446414">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/1967_ford_mustang_img_1925-15526.jpeg?resize=470%2C318" alt="1967 Ford Mustang Sports Sprint Coupe">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-345/" title="1967 Ford Mustang Sports Sprint Coupe"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-345/">1967 Ford Mustang Sports Sprint Coupe</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang coupe was fitted with a 302ci V8 under prior ownership and is finished in Acapulco Blue with a black vinyl roof. It was optioned with the Sports Sprint package and also has a three-speed automatic transmission, American Racing wheels, dual exhaust system, an AM radio, and front bucket seats trimmed in black and blue vinyl.</div>
+
+            
+            <div class="item-results">Sold for USD $20,600 <span> on 4/3/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="90340963" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=90340963" data-timestamp_end="1743614678" data-pusher="post;list;90340963" data-pusher_stats="post;stats;90340963">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/03/1967_ford_shelby-mustang-gt500_1967_ford_shelby-mustang-gt500_b16b7ae6-cf52-46ba-9baa-844c055b6f68-mfVnWc-03511-03512-scaled.jpg?resize=470%2C318" alt="GT500-Style, Hendricks 434-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-shelby-mustang-gt500-15/" title="GT500-Style, Hendricks 434-Powered 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-shelby-mustang-gt500-15/">GT500-Style, Hendricks 434-Powered 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang was built as a S-code coupe , and it was modified in the style of the "Eleanor" GT500 fastback from 2000 version of Gone in 60 Seconds. Highlighting the build is a Hendricks Motorsport-built 434ci FE V8 with roller rockers, JBA headers, and MSD ignition, and it is linked through a Tremec five-speed manual to the Ford 9”…</div>
+
+            
+            <div class="item-results">Sold for USD $126,000 <span> on 4/2/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="89252723" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=89252723" data-timestamp_end="1743446646" data-pusher="post;list;89252723" data-pusher_stats="post;stats;89252723">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/02/1967_ford_mustang_gt500_heroshot2_03022025-16-04181.jpg?resize=470%2C318" alt="GT500-Style 1967 Ford Mustang Fastback 6-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-350/" title="GT500-Style 1967 Ford Mustang Fastback 6-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-350/">GT500-Style 1967 Ford Mustang Fastback 6-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang underwent a multi-year modification process that was completed in 2019 by Hellbent Race Cars and Customs of Islandia, New York. Work involved assembling the Dart 427ci SHP V8 block with components sourced from Mahle, COMP Cams, and Edelbrock, installing a Tremec six-speed manual transmission, refinishing the GT500-style…</div>
+
+            
+            <div class="item-results">Sold for USD $99,999 <span> on 3/31/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="90761527" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=90761527" data-timestamp_end="1743019310" data-pusher="post;list;90761527" data-pusher_stats="post;stats;90761527">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/03/Mustang-1-13211.jpg?resize=470%2C318" alt="Coyote-Powered 1967 Ford Mustang Convertible 6-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-348/" title="Coyote-Powered 1967 Ford Mustang Convertible 6-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-348/">Coyote-Powered 1967 Ford Mustang Convertible 6-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible was purchased by the current owner in 2018, and the subsequent four-year build included the installation of a 5.0-liter Coyote V8, a Tremec six-speed manual transmission, and a 9" rear axle with a Quick Performance third member. The body was refinished in metallic green, a black convertible top was installed, and…</div>
+
+            
+            <div class="item-results">Bid to USD $91,000 <span> on 3/26/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="90012537" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=90012537" data-timestamp_end="1741726003" data-pusher="post;list;90012537" data-pusher_stats="post;stats;90012537">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/02/Web-50431-67-Ford-Mustang-5-27869.jpg?resize=470%2C318" alt="1967 Ford Mustang GT Fastback K-Code 4-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-26/" title="1967 Ford Mustang GT Fastback K-Code 4-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-26/">1967 Ford Mustang GT Fastback K-Code 4-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GT is a K-code fastback that is the only Mustang produced in this specification for the model year according to Kevin Marti. The car underwent a multi-year refurbishment which was completed in 2011. Power comes from a rebuilt 289ci HiPo V8 paired with a replacement four-speed Toploader manual transmission, and the exterior…</div>
+
+            
+            <div class="item-results">Sold for USD $160,000 <span> on 3/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="87825060" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=87825060" data-timestamp_end="1740598134" data-pusher="post;list;87825060" data-pusher_stats="post;stats;87825060">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/1967_ford_mustang_mustang-bat-auction-00544-87684.jpg?resize=470%2C318" alt="1967 Ford Mustang GTA Fastback S-Code">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-344/" title="1967 Ford Mustang GTA Fastback S-Code"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-344/">1967 Ford Mustang GTA Fastback S-Code</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GTA fastback was initially delivered to Healy Motors in Canada, remaining registered there until the seller's purchase in 2013. Powered by a replacement 390ci S-code V8 paired with a three-speed automatic transmission, the car wears a repaint in metallic blue over black vinyl upholstery.</div>
+
+            
+            <div class="item-results">Sold for USD $50,000 <span> on 2/26/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="88340748" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=88340748" data-timestamp_end="1739470270" data-pusher="post;list;88340748" data-pusher_stats="post;stats;88340748">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/DSC03746-25236-scaled.jpg?resize=470%2C318" alt="1967 Shelby Mustang GT500 Fastback 4-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-25/" title="1967 Shelby Mustang GT500 Fastback 4-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-25/">1967 Shelby Mustang GT500 Fastback 4-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                                <div class="item-tag item-tag-premium ">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Shelby Mustang GT500 fastback is one of 2,048 produced for the model year and was completed on January 18th. It was first delivered to Carey Paul Ford in Decatur, Georgia, and the original owner had the car repainted black. It is believed to have remained registered in the state from new, and it was acquired by its current owner in 2015.</div>
+
+            
+            <div class="item-results">Bid to USD $185,000 <span> on 2/13/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="89094097" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=89094097" data-timestamp_end="1739313513" data-pusher="post;list;89094097" data-pusher_stats="post;stats;89094097">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/02/1967_ford_shelby-mustang-gt500_t7__8250-72366-scaled-xe397o_d32568-93728.jpg?resize=470%2C318" alt="460-Powered 1967 Ford Mustang Convertible">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72-2/" title="460-Powered 1967 Ford Mustang Convertible"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72-2/">460-Powered 1967 Ford Mustang Convertible</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible was refurbished and modified with Eleanor-style bodywork circa 2011. Power comes from a 460ci Ford Racing V8 linked to a three-speed automatic transmission, and the chassis has been outfitted with front coilovers, rear track bars, power steering, and four-wheel disc brakes.</div>
+
+            
+            <div class="item-results">Bid to USD $94,000 <span> on 2/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85257025" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85257025" data-timestamp_end="1739306817" data-pusher="post;list;85257025" data-pusher_stats="post;stats;85257025">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang-gt_1000020835-82230.jpg?resize=470%2C318" alt="1967 Ford Mustang GTA Fastback S-Code">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-22/" title="1967 Ford Mustang GTA Fastback S-Code"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-22/">1967 Ford Mustang GTA Fastback S-Code</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GTA fastback was first delivered in Long Beach, California, and was refurbished in 2012. The car is finished in Lime Gold over black vinyl and is powered by a 390ci S-code V8 paired with a three-speed automatic transmission. Equipment includes a limited-slip differential, 14" styled steel wheels, front disc brakes, GT side…</div>
+
+            
+            <div class="item-results">Sold for USD $96,390 <span> on 2/11/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="88023171" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=88023171" data-timestamp_end="1738434199" data-pusher="post;list;88023171" data-pusher_stats="post;stats;88023171">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/BaT_Revology-Mustang_004-61861.jpg?resize=470%2C318" alt="Shelby Mustang GT500 Fastback by Revology">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/shelby-mustang-gt500-fastback-by-revology-2/" title="Shelby Mustang GT500 Fastback by Revology"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/shelby-mustang-gt500-fastback-by-revology-2/">Shelby Mustang GT500 Fastback by Revology</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                                <div class="item-tag item-tag-premium ">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This Shelby Mustang GT500 fastback recreation was built by Revology Cars of Orlando, Florida, and purchased new by the current owner. Completed in 2022, the car is finished in Midnight Blue Metallic with Wimbledon White stripes and powered by a supercharged Roush Performance 5.0-liter Coyote V8 linked to a Tremec six-speed manual transmission, a…</div>
+
+            
+            <div class="item-results">Sold for USD $299,000 <span> on 2/1/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="87731547" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=87731547" data-timestamp_end="1737148032" data-pusher="post;list;87731547" data-pusher_stats="post;stats;87731547">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2025/01/1967_ford_mustang_img_2443-86032.jpg?resize=470%2C318" alt="1967 Ford Mustang Coupe 289">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-343/" title="1967 Ford Mustang Coupe 289"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-343/">1967 Ford Mustang Coupe 289</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang coupe is powered by a 289ci Challenger V8 paired with a three-speed automatic transmission and is finished in Lime Gold over Ivy Gold upholstery. Features include a black vinyl roof covering, hood vents, 14" steel wheels, turbine-style wheel covers, power steering, front bucket seats, an AM radio, air conditioning, and an…</div>
+
+            
+            <div class="item-results">Sold for USD $26,000 <span> on 1/17/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86248791" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86248791" data-timestamp_end="1736975518" data-pusher="post;list;86248791" data-pusher_stats="post;stats;86248791">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang_exterior_31-26022.jpg?resize=470%2C318" alt="Supercharged 347-Powered 1967 Ford Mustang GT Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-340/" title="Supercharged 347-Powered 1967 Ford Mustang GT Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-340/">Supercharged 347-Powered 1967 Ford Mustang GT Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang was initially delivered to Walker Ford in Augusta, Georgia, optioned with the GT Equipment Group. A 2015-2018 refurbishment involved installing a supercharged 347ci stroker V8 that is backed by a Tremec five-speed manual transmission as well as fitting "Eleanor"-style bodywork and finishing it in dark green with white…</div>
+
+            
+            <div class="item-results">Sold for USD $151,000 <span> on 1/15/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85530271" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85530271" data-timestamp_end="1736019073" data-pusher="post;list;85530271" data-pusher_stats="post;stats;85530271">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang_1967_ford_mustang_3b553829-4dc5-4912-9b79-8c534afb1493-5jgiis-50409-77866.jpg?resize=470%2C318" alt="1967 Ford Mustang Convertible">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-335/" title="1967 Ford Mustang Convertible"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-335/">1967 Ford Mustang Convertible</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible is powered by a 289ci V8 paired with a three-speed automatic transmission and is finished in Candy Apple Red over red vinyl. Equipment includes a white convertible top, chrome Cragar S/S wheels, front disc brakes, power steering, front disc brakes, front bucket seats, an AM radio, and a cabin heater.</div>
+
+            
+            <div class="item-results">Sold for USD $32,250 <span> on 1/4/25 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="83910730" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=83910730" data-timestamp_end="1735503624" data-pusher="post;list;83910730" data-pusher_stats="post;stats;83910730">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/10/1967_ford_shelby-mustang-gt500_1967_ford_shelby-mustang-gt500_448f7f15-0e75-40f2-99fb-ba79cba7f418-emweeq-48222-68153.jpg?resize=470%2C318" alt="Modified 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-fastback-158/" title="Modified 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-fastback-158/">Modified 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang fastback underwent refurbishment and modification approximately two years ago and was acquired by the selling dealer in 2024. It has been fitted with a fiberglass body kit, a rear spoiler, and a Shelby-style tail panel as well as rack-and-pinon steering, adjustable coilovers, front and rear sway bars, and Total Control…</div>
+
+            
+            <div class="item-results">Sold for USD $110,000 <span> on 12/29/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86314677" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86314677" data-timestamp_end="1735499640" data-pusher="post;list;86314677" data-pusher_stats="post;stats;86314677">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang-gt_img_1904-34915.jpeg?resize=470%2C318" alt="1967 Ford Mustang GT Convertible S-Code 4-Speed Project">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-23/" title="1967 Ford Mustang GT Convertible S-Code 4-Speed Project"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-23/">1967 Ford Mustang GT Convertible S-Code 4-Speed Project</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                                <div class="item-tag item-tag-noreserve">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                
+                                <div class="item-tag item-tag-repeat">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GT convertible left the Dearborn factory equipped with an S-code 390ci V8 along with a four-speed manual transmission and a limited-slip differential. Originally delivered to Lee Jarmon Ford of Carrollton, Texas, the car remained registered in Texas through 1982, after which it was reportedly stored until October 2022.</div>
+
+            
+            <div class="item-results">Sold for USD $20,000 <span> on 12/29/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86866723" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86866723" data-timestamp_end="1735248734" data-pusher="post;list;86866723" data-pusher_stats="post;stats;86866723">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/12/T7__8260-72414-scaled.jpg?resize=470%2C318" alt="460-Powered 1967 Ford Mustang Convertible">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72/" title="460-Powered 1967 Ford Mustang Convertible"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-convertible-72/">460-Powered 1967 Ford Mustang Convertible</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang convertible was refurbished and modified with Eleanor-style bodywork circa 2011. Power comes from a 460ci Ford Racing V8 linked to a three-speed automatic transmission, and the chassis has been outfitted with front coilovers, rear track bars, power steering, and four-wheel disc brakes.</div>
+
+            
+            <div class="item-results">Sold for USD $135,000 <span> on 12/26/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86739779" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86739779" data-timestamp_end="1734990425" data-pusher="post;list;86739779" data-pusher_stats="post;stats;86739779">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/12/1967_ford_mustang_img_3966-49153.jpeg?resize=470%2C318" alt="393-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-341/" title="393-Powered 1967 Ford Mustang Fastback 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-341/">393-Powered 1967 Ford Mustang Fastback 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang was ordered as a C-code 289 fastback, and a previous owner installed a Ford 9" axle and a 351ci Windsor V8 that was stroked to displace 393ci according to the seller. Following their acquisition in 2021, the seller replaced engine gaskets and installed a Tremec TKX five-speed manual from American Powertrain, which also…</div>
+
+            
+            <div class="item-results">Bid to USD $48,500 <span> on 12/23/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="86116673" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=86116673" data-timestamp_end="1734127500" data-pusher="post;list;86116673" data-pusher_stats="post;stats;86116673">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang_img_2053-42997.jpeg?resize=470%2C318" alt="1967 Ford Mustang Sports Sprint Coupe 289">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-339/" title="1967 Ford Mustang Sports Sprint Coupe 289"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-339/">1967 Ford Mustang Sports Sprint Coupe 289</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This Ford Mustang coupe was first sold in August 1967 through Dale Russell Motors in Canon City, Colorado. It was ordered in Burnt Amber with saddle upholstery, the Sports Sprint appearance package, and a 289ci V8. The car remained in Colorado for some time and is believed to have accrued just 27k miles before it was acquired by the selling dealer…</div>
+
+            
+            <div class="item-results">Bid to USD $24,017 <span> on 12/13/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85738293" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85738293" data-timestamp_end="1732748006" data-pusher="post;list;85738293" data-pusher_stats="post;stats;85738293">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang-gt_img_7351-68816.jpg?resize=470%2C318" alt="1967 Ford Mustang GTA Coupe S-Code">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-gt-12-2/" title="1967 Ford Mustang GTA Coupe S-Code"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-gt-12-2/">1967 Ford Mustang GTA Coupe S-Code</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GTA coupe is said to have been acquired by the seller's late father in 2006 and subsequently refurbished. It is powered by a 390ci V8 paired with a three-speed automatic transmission and is refinished in burgundy over Parchment vinyl. Equipment includes a white vinyl roof, 14" styled steel wheels, power-assisted front disc…</div>
+
+            
+            <div class="item-results">Sold for USD $37,900 <span> on 11/27/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+
+<div class="listing-card listing-card-separate " data-listing_id="85533380" data-watched="false" data-watch_url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85533380" data-timestamp_end="1732047900" data-pusher="post;list;85533380" data-pusher_stats="post;stats;85533380">
+
+    <div class="thumbnail">
+        <img src="https://bringatrailer.com/wp-content/uploads/2024/11/1967_ford_mustang_1967_ford_mustang_1967_ford_mustang_4b68aa95-7683-4ec0-8654-04cf071118a9-pamj05-33632-33633-scaled-cqwl7u_1f9c51-62172.jpg?resize=470%2C318" alt="1967 Ford Mustang GT Fastback 390 5-Speed">
+        <a class="image-overlay" href="https://bringatrailer.com/listing/1967-ford-mustang-277-2/" title="1967 Ford Mustang GT Fastback 390 5-Speed"></a>
+
+                <div class="icon-item-watch"></div>
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live"></div>
+            <h3><a href="https://bringatrailer.com/listing/1967-ford-mustang-277-2/">1967 Ford Mustang GT Fastback 390 5-Speed</a></h3>
+
+                        <div class="item-tags">
+
+                                    <div class="item-tag item-tag-currency ">
+                        <img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States">                                                <span class="show-country-name">USA</span>
+                    </div>
+                
+                
+                
+                            </div>
+            
+            <div class="item-excerpt">This 1967 Ford Mustang GT fastback underwent a refurbishment that was completed circa 2016. Power comes from a replacement 390ci V8 that has a Holley carburetor and an Edelbrock intake manifold and is backed by a Tremec five-speed manual transmission. The car was refinished in green over a black interior and has 15" American Racing wheels, front…</div>
+
+            
+            <div class="item-results">Sold for USD $71,000 <span> on 11/19/24 </span></div>
+        </div>
+
+        
+        <progress max="120" value="0" class="progress-final-min"></progress>
+    </div>
+</div>
+	</div>
+
+	
+
+<div class="pagination">
+    <div class="separator-line"></div>
+    	<a href="https://bringatrailer.com/search/page/2/?s=ford+mustang+1967" class="page-numbers"><span data-older="">Show More</span></a>    <div class="separator-line"></div>
+</div>
+
+	</div>
