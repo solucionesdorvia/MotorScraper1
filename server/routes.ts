@@ -5,15 +5,7 @@ import { scrapeEbay } from "./scraper/ebay";
 import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
-import { scrapeBringATrailer } from "./scraper/bat";
-import { scrapeBringATrailerWithAI } from "./scraper/bringatrailer-ai";
-import { scrapeBringATrailerFocused } from "./scraper/bat-focused";
-import { emergencyScrapeBringATrailer } from "./scraper/bat-emergency";
-import { scrapeBringATrailerAdapter } from "./scraper/bat-adapter";
-import { scrapeBringATrailerLiveDirect } from "./scraper/bat-live-direct";
-import { scrapeBringATrailerLiveOnly } from "./scraper/bat-live-only";
-import { scrapeBringATrailerDirectUrl } from "./scraper/bat-direct-url";
-import { scrapeBringATrailerLiveHtml } from "./scraper/bat-live-html";
+import { scrapeBringATrailerSimple } from "./scraper/bat-simple";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -159,81 +151,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // CASCADA DE SCRAPERS - Del más específico al más general
-            console.log('🔴 INICIANDO CASCADA DE SCRAPERS PARA ENCONTRAR SUBASTAS ACTIVAS:');
-            
-            // 1. Primer intento: Probar con el scraper estándar
-            console.log('1° INTENTO: Usando scraper básico (encuentra más resultados)...');
-            let tempResults = await scrapeBringATrailer(
+            // Usando el scraper simplificado proporcionado por el usuario
+            console.log('Usando scraper simplificado para encontrar subastas activas...');
+            bringATrailerResults = await scrapeBringATrailerSimple(
               make, 
               model,
               searchParams.year?.toString()
             );
             
-            // Verificar si los resultados parecen ser activos (básico)
-            let activeResults = tempResults.filter(vehicle => 
-              vehicle.auctionData?.isAuction && 
-              vehicle.auctionData?.endsIn && 
-              vehicle.auctionData.endsIn !== "Finalizada"
-            );
-            
-            console.log(`Scraper básico encontró ${tempResults.length} resultados, ${activeResults.length} parecen activos`);
-            
-            // Si encontramos resultados activos, usarlos
-            if (activeResults.length > 0) {
-              console.log('✅ ÉXITO: El scraper básico encontró subastas que parecen activas');
-              bringATrailerResults = activeResults;
-            } else {
-              // 2. Segundo intento: Usar el scraper especializado para Live Listings
-              console.log('2° INTENTO: Usando scraper especializado para Live Listings...');
-              bringATrailerResults = await scrapeBringATrailerLiveOnly(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-              
-              // 3. Si aún no hay resultados, probar con el scraper de HTML exacto
-              if (bringATrailerResults.length === 0) {
-                console.log('3° INTENTO: Usando scraper de HTML exacto...');
-                bringATrailerResults = await scrapeBringATrailerLiveHtml(
-                  make, 
-                  model,
-                  searchParams.year?.toString()
-                );
-              }
-              
-              // 4. Si todavía no hay resultados, usar el scraper de emergencia
-              if (bringATrailerResults.length === 0) {
-                console.log('4° INTENTO: Usando scraper de emergencia...');
-                bringATrailerResults = await emergencyScrapeBringATrailer(
-                  make, 
-                  model,
-                  searchParams.year?.toString()
-                );
-              }
-            }
-            
             // Reportar resultados
             if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS`);
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper simplificado`);
             } else {
               console.log('⚠️ No se encontraron subastas activas para esta búsqueda');
             }
           } catch (error) {
             console.error('Error al obtener resultados de Bring a Trailer:', error);
-            // Intento de respaldo con OpenAI si fallaron los scrapers normales
-            try {
-              console.log('Intentando obtener resultados con OpenAI como respaldo...');
-              bringATrailerResults = await scrapeBringATrailerWithAI(
-                make, 
-                model,
-                searchParams.year?.toString()
-              );
-              console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con OpenAI (respaldo)`);
-            } catch (backupError) {
-              console.error('Error al obtener resultados de Bring a Trailer con OpenAI:', backupError);
-              bringATrailerResults = [];
-            }
+            bringATrailerResults = [];
           }
         } else {
           console.log('No se solicitan resultados de Bring a Trailer');
@@ -251,8 +185,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Log para depurar BringATrailer resultados en detalle
         if (bringATrailerResults.length > 0) {
           console.log('Listado de vehículos de Bring a Trailer:');
-          bringATrailerResults.forEach((vehicle, index) => {
-            console.log(`Vehículo ${index + 1}: ${vehicle.title} - Precio: ${vehicle.price} - Tiempo: ${vehicle.auctionData?.endsIn || "En curso"}`);
+          bringATrailerResults.forEach((vehicle: InsertVehicle, index) => {
+            console.log(`Vehículo ${index + 1}: ${vehicle.title} - Precio: ${vehicle.price} - Tiempo: ${vehicle.endsIn || "En curso"}`);
           });
         }
         
