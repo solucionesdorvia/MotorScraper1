@@ -12,6 +12,7 @@ interface BaTListing {
   link: string;
   description: string;
   price: number | null;
+  timeRemaining?: string;
 }
 
 /**
@@ -19,9 +20,28 @@ interface BaTListing {
  * que se centra en las tarjetas de listados visibles
  */
 export async function scrapeBringATrailerSimple(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
+  // Construir la consulta base
   const query = year ? `${make} ${model} ${year}` : `${make} ${model}`;
+  
+  // Consultar la URL principal para obtener resultados de búsqueda que incluyen subastas activas
+  // URL principal de búsqueda
   const searchUrl = `https://bringatrailer.com/search/?s=${encodeURIComponent(query)}`;
-  const headers = { 'User-Agent': 'Mozilla/5.0' };
+  
+  // URL directa a la página de subastas activas
+  const auctionResultsUrl = `https://bringatrailer.com/search/auction-results/?s=${encodeURIComponent(query)}&status=open`;
+  
+  console.log(`URL de búsqueda para subastas activas en BaT (URL principal): ${searchUrl}`);
+  console.log(`URL directa a subastas activas en BaT: ${auctionResultsUrl}`);
+  
+  // User-Agent realista para simular navegador
+  const headers = { 
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+    'Cache-Control': 'max-age=0'
+  };
 
   try {
     console.log(`Consultando URL simplificada: ${searchUrl}`);
@@ -42,6 +62,30 @@ export async function scrapeBringATrailerSimple(make: string, model: string, yea
         const yearMatch = listing.title.match(/(19\d{2}|20\d{2})/);
         const extractedYear = yearMatch ? parseInt(yearMatch[0], 10) : (year ? parseInt(year, 10) : null);
 
+        // Todas las subastas en este div son ACTIVAS
+        // Vamos a traducir el tiempo restante al español
+        const timeRemaining = listing.timeRemaining || '';
+        let endsIn = 'En curso';
+        
+        if (timeRemaining) {
+          if (timeRemaining.includes('day')) {
+            const days = timeRemaining.match(/(\d+)/);
+            if (days && days[1]) {
+              endsIn = days[1] === '1' ? '1 día' : `${days[1]} días`;
+            }
+          } else if (timeRemaining.includes('hour')) {
+            const hours = timeRemaining.match(/(\d+)/);
+            if (hours && hours[1]) {
+              endsIn = hours[1] === '1' ? '1 hora' : `${hours[1]} horas`;
+            }
+          } else if (timeRemaining.includes('min')) {
+            const mins = timeRemaining.match(/(\d+)/);
+            if (mins && mins[1]) {
+              endsIn = mins[1] === '1' ? '1 minuto' : `${mins[1]} minutos`;
+            }
+          }
+        }
+
         return {
           title: listing.title,
           make,
@@ -53,7 +97,7 @@ export async function scrapeBringATrailerSimple(make: string, model: string, yea
           price: listing.price,
           isAuction: true,
           currentBid: listing.price,
-          endsIn: 'En curso', // Todas las subastas mostradas en BaT están activas
+          endsIn: endsIn, // Tiempo restante traducido al español
           transmission: null,
           bodyType: null,
           location: 'Estados Unidos',
@@ -96,88 +140,53 @@ function removeDuplicates(listings: BaTListing[]): BaTListing[] {
 }
 
 /**
- * Extrae los listados de Bring a Trailer desde el HTML usando selectores directos
+ * Extrae los listados de Bring a Trailer desde el HTML enfocándose en las subastas en vivo
+ * dentro del div "search-result-listings" específicamente
  */
 function extractListings(html: string): BaTListing[] {
   const $ = cheerio.load(html);
   const listings: BaTListing[] = [];
 
-  // Intentar varios selectores para encontrar tarjetas de listado
-  console.log('Buscando tarjetas de listado con múltiples selectores...');
+  console.log('Buscando subastas ACTIVAS en el div "search-result-listings"...');
   
-  // Selector 1: Buscar directamente tarjetas de listado
-  const listingCards = $('a.listing-card, .search-result-grid-item, a[href*="/listing/"], a[href*="/auctions/"]');
-  console.log(`Encontradas ${listingCards.length} tarjetas con selector principal`);
+  // Buscar específicamente el div search-result-listings que contiene las subastas activas
+  const searchResultListings = $('#search-result-listings');
   
-  // Selector 2: Buscar cualquier enlace que contenga un título
-  const titleLinks = $('a').filter(function() {
-    return $(this).find('h3').length > 0;
-  });
-  console.log(`Encontrados ${titleLinks.length} enlaces con títulos`);
+  if (searchResultListings.length === 0) {
+    console.log('❌ No se encontró el div "search-result-listings" que contiene las subastas activas');
+    return listings;
+  }
   
-  // Combinar resultados de ambos selectores
-  const allListingElements = [...listingCards.toArray(), ...titleLinks.toArray()].filter(
-    (el, index, self) => self.indexOf(el) === index // Eliminar duplicados
-  );
-  console.log(`Total de ${allListingElements.length} elementos de listado encontrados`);
+  console.log('✅ Encontrado el div "search-result-listings"');
   
-  // Procesar todos los elementos encontrados
-  allListingElements.forEach((el, index) => {
-    const $el = $(el);
+  // Buscar todas las tarjetas de listado dentro de search-result-listings
+  const liveListingsCards = searchResultListings.find('a.listing-card');
+  console.log(`Encontradas ${liveListingsCards.length} tarjetas de subastas ACTIVAS`);
+  
+  // Procesar cada tarjeta de subasta activa
+  liveListingsCards.each((index, element) => {
+    const $el = $(element);
     
-    // Debug - Mostrar el HTML del elemento
-    console.log(`Elemento ${index + 1}:`);
-    console.log(`HTML: ${$el.html()?.substring(0, 150)}...`);
+    // Extraer el título
+    const title = $el.find('h3').text().trim();
     
-    // Intentar extraer el título de varias maneras
-    let title = $el.find('h3').text().trim();
-    if (!title) {
-      console.log(`No se encontró título con h3, buscando con otros selectores...`);
-      title = $el.find('h2').text().trim() || 
-              $el.find('.title').text().trim() ||
-              $el.find('[class*="title"]').text().trim();
-    }
+    // Extraer la imagen
+    const image = $el.find('.thumbnail img').attr('src') || '';
     
-    // Búsqueda más amplia de imágenes
-    const image = $el.find('img').attr('src') || 
-                  $el.find('img').attr('data-src') || 
-                  $el.find('.listing-image img').attr('src') || '';
+    // Obtener el enlace completo
+    const link = $el.attr('href') || '';
     
-    // Asegurarse de obtener el enlace completo
-    let link = '';
-    if ($el.is('a')) {
-      link = $el.attr('href') || '';
-      console.log(`Elemento es un enlace con href: ${link}`);
-    } else {
-      link = $el.find('a').attr('href') || '';
-      console.log(`Elemento no es un enlace, encontrado href interno: ${link}`);
-    }
+    // Buscar descripción
+    const description = $el.find('.item-excerpt').text().trim();
     
-    // Buscar descripción en varios lugares
-    const description = $el.find('.item-excerpt, .listing-results, .listing-stats, .listing-bid-status, .bid-price').text().trim();
-
-    console.log(`Título extraído: "${title}"`);
-    console.log(`Enlace extraído: "${link}"`);
-    console.log(`Imagen extraída: "${image}"`);
-    console.log(`Descripción extraída: "${description}"`);
-    
-    // Si no tenemos título pero tenemos enlace, intentar extraer título del enlace
-    if (!title && link) {
-      const titleFromLink = link.split('/').filter(part => part.trim() !== '').pop() || '';
-      if (titleFromLink) {
-        title = titleFromLink.replace(/-/g, ' ').trim();
-        console.log(`Título extraído del enlace: "${title}"`);
-      }
-    }
-
-    // Extraer precio/oferta si está disponible en la descripción o en otros elementos
+    // Extraer precio/oferta actual
     let price: number | null = null;
-    const bidText = $el.find('.bid-price, .bid-value, .current-bid, [class*="bid"], [class*="price"]').text().trim();
+    const bidText = $el.find('.bid-formatted').text().trim();
     
     if (bidText) {
-      // Intentar extraer precio con formato $XX,XXX o similar
-      const priceMatch = bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/) || 
-                          description.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
+      // Intentar extraer precio con formato "USD $XX,XXX"
+      const priceMatch = bidText.match(/USD\s+\$(\d{1,3}(,\d{3})*|\d+)/) || 
+                         bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
       
       if (priceMatch && priceMatch[1]) {
         price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
@@ -185,17 +194,29 @@ function extractListings(html: string): BaTListing[] {
       }
     }
     
+    // Extraer tiempo restante
+    const timeRemaining = $el.find('.countdown-text').text().trim();
+    
+    console.log(`Subasta #${index + 1}:`);
+    console.log(`Título: "${title}"`);
+    console.log(`Enlace: "${link}"`);
+    console.log(`Imagen: "${image}"`);
+    console.log(`Descripción: "${description}"`);
+    console.log(`Oferta actual: "${bidText}" => $${price || 'N/A'}`);
+    console.log(`Tiempo restante: "${timeRemaining}"`);
+    
     if (title && link) {
-      console.log(`✅ Tarjeta válida encontrada: ${title} - ${link} - $${price || 'N/A'}`);
+      console.log(`✅ Subasta ACTIVA encontrada: ${title} - ${price ? '$' + price : 'Sin oferta'} - ${timeRemaining}`);
       listings.push({ 
         title, 
         image: image || 'https://i.imgur.com/U45aNlT.jpg', 
         link, 
         description,
-        price
+        price,
+        timeRemaining
       });
     } else {
-      console.log(`❌ Tarjeta descartada: Título=${!!title}, Link=${!!link}`);
+      console.log(`❌ Subasta descartada: Sin título o enlace`);
     }
     
     console.log('-----------------------------------');
