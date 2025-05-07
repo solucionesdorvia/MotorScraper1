@@ -15,6 +15,7 @@ import { scrapeBringATrailerDirectAuctions } from "./scraper/bat-direct-auctions
 import { scrapeBringATrailerDirectOptimized } from "./scraper/bat-direct-optimized";
 import { scrapeBringATrailerDirectMatch } from "./scraper/bat-direct-match";
 import { scrapeBringATrailerDodge } from "./scraper/bat-dodge-improved";
+import { scrapeBringATrailerDirectFixed } from "./scraper/bat-direct-fixed";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -162,17 +163,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           try {
             // Utilizamos un sistema de cascada de scrapers, probando en orden hasta obtener resultados
             
-            // 1. Intentamos con el scraper de coincidencia directa (basado en HTML proporcionado)
-            console.log('1. Intentando scraper de coincidencia directa...');
-            bringATrailerResults = await scrapeBringATrailerDirectMatch(
+            // 1. Comenzamos con el nuevo scraper mejorado (coincidencia directa y mejor extracción)
+            console.log('1. Intentando scraper directo mejorado...');
+            bringATrailerResults = await scrapeBringATrailerDirectFixed(
               make, 
               model,
               searchParams.year?.toString()
             );
             
-            // 2. Si no hay resultados, probamos con el scraper optimizado
+            // 2. Si no hay resultados, intentamos con el scraper de coincidencia directa anterior
             if (bringATrailerResults.length === 0) {
-              console.log('2. Intentando scraper optimizado...');
+              console.log('2. Intentando scraper de coincidencia directa...');
+              bringATrailerResults = await scrapeBringATrailerDirectMatch(
+                make, 
+                model,
+                searchParams.year?.toString()
+              );
+            }
+            
+            // 3. Si todavía no hay resultados, probamos con el scraper optimizado
+            if (bringATrailerResults.length === 0) {
+              console.log('3. Intentando scraper optimizado...');
               bringATrailerResults = await scrapeBringATrailerDirectOptimized(
                 make, 
                 model,
@@ -180,9 +191,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               );
             }
             
-            // 3. Si sigue sin haber resultados, probamos con el scraper directo
+            // 4. Si sigue sin haber resultados, probamos con el scraper directo
             if (bringATrailerResults.length === 0) {
-              console.log('3. Intentando scraper directo de auctions...');
+              console.log('4. Intentando scraper directo de auctions...');
               bringATrailerResults = await scrapeBringATrailerDirectAuctions(
                 make, 
                 model,
@@ -190,9 +201,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               );
             }
             
-            // 4. Para modelos Dodge, probamos con el scraper especializado para Dodge
+            // 5. Para modelos Dodge, probamos con el scraper especializado para Dodge
             if (bringATrailerResults.length === 0 && make.toLowerCase() === 'dodge') {
-              console.log('4. Detectada búsqueda de Dodge, usando scraper especializado...');
+              console.log('5. Detectada búsqueda de Dodge, usando scraper especializado...');
               bringATrailerResults = await scrapeBringATrailerDodge(
                 make, 
                 model,
@@ -200,9 +211,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               );
             }
             
-            // 5. Si todavía no hay resultados, probamos con el scraper de HTML de ejemplo
+            // 6. Si todavía no hay resultados, probamos con el scraper de HTML de ejemplo
             if (bringATrailerResults.length === 0) {
-              console.log('5. Intentando scraper basado en HTML ejemplo...');
+              console.log('6. Intentando scraper basado en HTML ejemplo...');
               bringATrailerResults = await scrapeBringATrailerFromExample(
                 make, 
                 model,
@@ -210,9 +221,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               );
             }
             
-            // 6. Como último recurso, usamos el scraper universal
+            // 7. Como último recurso, usamos el scraper universal
             if (bringATrailerResults.length === 0) {
-              console.log('6. Intentando scraper universal (último recurso)...');
+              console.log('7. Intentando scraper universal (último recurso)...');
               bringATrailerResults = await scrapeBringATrailerUniversal(
                 make, 
                 model,
@@ -449,6 +460,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         error: 'Error al procesar con scraper especializado para Dodge',
+        message: error.message
+      });
+    }
+  });
+  
+  // Endpoint para probar el nuevo scraper directo mejorado (FIXED)
+  app.get("/api/bat/fixed", async (req: Request, res: Response) => {
+    try {
+      // Obtener parámetros de búsqueda
+      const make = req.query.make as string || 'Ford';
+      const model = req.query.model as string || 'Ranchero';
+      const year = req.query.year as string || '1971';
+      
+      console.log(`Probando scraper directo MEJORADO para: ${make} ${model} ${year || ''}`);
+      
+      // Llamar al scraper directo mejorado
+      const results = await scrapeBringATrailerDirectFixed(make, model, year);
+      
+      console.log(`Resultados encontrados: ${results.length}`);
+      
+      // Devolver resultados
+      res.json({
+        success: true,
+        count: results.length,
+        results
+      });
+    } catch (error: any) {
+      console.error('Error al procesar con scraper directo mejorado:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error al procesar con scraper directo mejorado',
         message: error.message
       });
     }
