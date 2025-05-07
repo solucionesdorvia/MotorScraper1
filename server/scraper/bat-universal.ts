@@ -21,18 +21,17 @@ export async function scrapeBringATrailerUniversal(make: string, model: string, 
     // Array para almacenar todos los vehículos encontrados
     let allVehicles: InsertVehicle[] = [];
     
-    // Construir URL de búsqueda específica
-    const url = buildUrl(make, model, year);
-    console.log(`URL de búsqueda específica: ${url}`);
-    
-    // 1. MÉTODO NUEVO: Buscar en la página general de TODAS las subastas activas
-    // Este método es el más confiable para encontrar todas las subastas activas
+    // 1. MÉTODO SIMPLIFICADO: Buscar directamente en la sección "auctions" de Bring a Trailer
+    // Esta sección solo muestra subastas activas
     try {
-      console.log('1. NUEVO MÉTODO: Buscando en la página general de TODAS las subastas activas...');
-      const allActiveAuctionsUrl = 'https://bringatrailer.com/auction-results?status=open';
-      console.log(`URL de todas las subastas activas: ${allActiveAuctionsUrl}`);
+      console.log('1. MÉTODO SIMPLIFICADO: Buscando en la sección "auctions" de BaT...');
       
-      const response = await axios.get(allActiveAuctionsUrl, {
+      // URL directa a la sección de auctions con filtros
+      const query = `${make} ${model} ${year || ''}`.trim();
+      const auctionsUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(query)}`;
+      console.log(`URL de la sección de auctions: ${auctionsUrl}`);
+      
+      const response = await axios.get(auctionsUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -44,31 +43,29 @@ export async function scrapeBringATrailerUniversal(make: string, model: string, 
         timeout: 15000
       });
       
-      console.log('✅ Obtenido HTML de la página general de subastas activas');
+      console.log('✅ Obtenido HTML de la sección de auctions');
       
-      // Extraer vehículos activos que coincidan con nuestra búsqueda
-      const vehicles = extractActiveAuctionsFromGeneralPage(response.data, make, model, year);
+      // Extraer vehículos activos de la sección de auctions
+      const vehicles = extractActiveAuctionsFromAuctionsPage(response.data, make, model, year);
       
       if (vehicles.length > 0) {
-        console.log(`✅ Encontradas ${vehicles.length} subastas ACTIVAS en la página general`);
+        console.log(`✅ Encontradas ${vehicles.length} subastas ACTIVAS en la sección de auctions`);
         allVehicles = [...allVehicles, ...vehicles];
       } else {
-        console.log('⚠️ No se encontraron subastas activas relevantes en la página general');
+        console.log('⚠️ No se encontraron subastas activas en la sección de auctions');
       }
     } catch (error: any) {
-      console.error('Error al buscar en la página general de subastas activas:', error.message);
+      console.error('Error al buscar en la sección de auctions:', error.message);
     }
     
-    // 2. Intentar con URL directa a subastas activas específicas de la búsqueda
+    // 2. Si no hay resultados, intentar con la página general de subastas activas sin filtros
     if (allVehicles.length === 0) {
       try {
-        console.log('2. Intentando con la URL directa a subastas activas específicas...');
+        console.log('2. Intentando con la página general de subastas activas sin filtros...');
+        const allActiveAuctionsUrl = 'https://bringatrailer.com/auctions/';
+        console.log(`URL de la página general de subastas activas: ${allActiveAuctionsUrl}`);
         
-        // URL que muestra directamente subastas activas para la búsqueda
-        const directUrl = `https://bringatrailer.com/search/auction-results/?s=${encodeURIComponent(make + ' ' + model + (year ? ' ' + year : ''))}&status=open`;
-        console.log(`URL directa a subastas activas específicas: ${directUrl}`);
-        
-        const response = await axios.get(directUrl, {
+        const response = await axios.get(allActiveAuctionsUrl, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -80,75 +77,36 @@ export async function scrapeBringATrailerUniversal(make: string, model: string, 
           timeout: 15000
         });
         
-        console.log('✅ Obtenido HTML de la URL directa específica');
+        console.log('✅ Obtenido HTML de la página general de subastas activas');
         
-        // Extraer vehículos de subastas activas del HTML
+        // Extraer vehículos activos que coincidan con nuestra búsqueda
         const vehicles = extractActiveVehicles(response.data, make, model, year);
         
         if (vehicles.length > 0) {
-          console.log(`✅ Encontradas ${vehicles.length} subastas ACTIVAS en la búsqueda específica`);
+          console.log(`✅ Encontradas ${vehicles.length} subastas ACTIVAS en la página general`);
           
           // Añadir solo vehículos que no estén ya en allVehicles
-          vehicles.forEach(vehicle => {
+          vehicles.forEach((vehicle: InsertVehicle) => {
             if (!allVehicles.some(v => v.sourceUrl === vehicle.sourceUrl)) {
               allVehicles.push(vehicle);
             }
           });
         } else {
-          console.log('⚠️ No se encontraron subastas activas en la URL directa específica');
+          console.log('⚠️ No se encontraron subastas activas relevantes en la página general');
         }
       } catch (error: any) {
-        console.error('Error con la URL directa específica:', error.message);
+        console.error('Error al buscar en la página general de subastas activas:', error.message);
       }
     }
     
-    // 3. Si aún no hay resultados, intentar con la URL normal
-    if (allVehicles.length === 0) {
-      try {
-        console.log('3. Intentando con la URL normal de búsqueda...');
-        
-        const response = await axios.get(url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Cache-Control': 'max-age=0'
-          },
-          timeout: 15000
-        });
-        
-        console.log('✅ Obtenido HTML de la URL normal');
-        
-        // Extraer vehículos de subastas activas del HTML
-        const vehicles = extractActiveVehicles(response.data, make, model, year);
-        
-        if (vehicles.length > 0) {
-          console.log(`✅ Encontradas ${vehicles.length} subastas ACTIVAS en la búsqueda normal`);
-          
-          // Añadir solo vehículos que no estén ya en allVehicles
-          vehicles.forEach(vehicle => {
-            if (!allVehicles.some(v => v.sourceUrl === vehicle.sourceUrl)) {
-              allVehicles.push(vehicle);
-            }
-          });
-        } else {
-          console.log('⚠️ No se encontraron subastas activas en la URL normal');
-        }
-      } catch (error: any) {
-        console.error('Error con la URL normal:', error.message);
-      }
-    }
-    
-    // 4. Como último recurso, intentar con el HTML de ejemplo (solo para Ford Mustang 1967)
+    // 3. Como último recurso, intentar con el HTML de ejemplo (solo para Ford Mustang 1967)
     if (
       allVehicles.length === 0 &&
       make.toLowerCase() === 'ford' && 
       model.toLowerCase() === 'mustang' && 
       year === '1967'
     ) {
-      console.log('4. Intentando con HTML de ejemplo de Ford Mustang 1967...');
+      console.log('3. Intentando con HTML de ejemplo de Ford Mustang 1967...');
       try {
         // Ruta al archivo de HTML de ejemplo
         const examplePath = path.join(process.cwd(), 'attached_assets', 'Pasted--div-class-search-result-live-listings-id-search-result-live-listings-div-class-searc-1746620170955.txt');
@@ -191,66 +149,89 @@ export async function scrapeBringATrailerUniversal(make: string, model: string, 
 }
 
 /**
- * Extrae vehículos activos de la página general de subastas activas
- * Esta función está especializada en extraer de la página https://bringatrailer.com/auction-results?status=open
+ * Extrae vehículos activos de la sección auctions de BaT
+ * Esta función está especializada en extraer de la página https://bringatrailer.com/auctions/?search=...
  */
-function extractActiveAuctionsFromGeneralPage(html: string, make: string, model: string, year?: string): InsertVehicle[] {
+function extractActiveAuctionsFromAuctionsPage(html: string, make: string, model: string, year?: string): InsertVehicle[] {
   try {
     const $ = cheerio.load(html);
     const vehicles: InsertVehicle[] = [];
     
-    console.log(`Buscando subastas activas para: ${make} ${model} ${year || ''} en la página general...`);
+    console.log(`Buscando subastas activas para: ${make} ${model} ${year || ''} en la sección "auctions"...`);
     
-    // Estructura específica de la página general de subastas activas
-    // Los elementos tienen la clase "current-auction"
-    const auctionElements = $('.current-auction');
-    console.log(`Encontradas ${auctionElements.length} subastas activas en total en la página`);
+    // Estructura específica de la página de auctions
+    // Vamos a buscar todos los elementos de tipo artículo o tarjeta de subasta
+    const auctionElements = $('.auction-item, .auctions-item, .listing-card, article, .current-auction');
+    console.log(`Encontrados ${auctionElements.length} elementos de subasta en total en la página`);
+    
+    // Si no encontramos elementos típicos, buscar cualquier enlace que parezca un listado de vehículo
+    if (auctionElements.length === 0) {
+      return extractActiveVehicles(html, make, model, year);
+    }
     
     auctionElements.each((index, element) => {
       try {
         const auction = $(element);
         
-        // Extraer enlace y título
-        const linkElement = auction.find('.current-auction-link');
+        // Extraer enlace principal
+        const linkElement = auction.is('a') ? auction : auction.find('a').first();
         const href = linkElement.attr('href') || '';
         
-        // Extraer título del atributo alt de la imagen o de otras fuentes
-        let title = '';
-        const imgElement = linkElement.find('img');
-        if (imgElement.length > 0) {
-          title = imgElement.attr('alt') || '';
+        // Solo procesar si parece un enlace a un listado
+        if (!href || (!href.includes('/listing/') && !href.includes('/auctions/'))) {
+          return; // Continuar con el siguiente elemento
         }
         
-        // Si no hay título en la imagen, intentar con otras fuentes
+        // Extraer título de diferentes maneras
+        let title = '';
+        
+        // 1. Buscar en elementos h3 o h2 (títulos comunes)
+        const titleElement = auction.find('h3, h2').first();
+        if (titleElement.length > 0) {
+          title = titleElement.text().trim();
+        }
+        
+        // 2. Si no hay título, buscar en el atributo alt de la imagen
+        if (!title) {
+          const imgElement = auction.find('img').first();
+          if (imgElement.length > 0) {
+            title = imgElement.attr('alt') || '';
+          }
+        }
+        
+        // 3. Si aún no hay título, usar el texto del enlace
         if (!title) {
           title = linkElement.text().trim();
         }
         
-        // Extraer datos de precio y tiempo
+        // Extraer datos de precio/puja
         let bidText = '';
         let price = 0;
-        let timeRemaining = '';
         
-        // Buscar precio
-        const bidElement = auction.find('[data-listing-current]');
+        // Intentar diferentes selectores para encontrar el precio o puja actual
+        const bidElement = auction.find('.bid-information, .auction-bid, .bid-formatted, .current-bid, [data-listing-current], .price').first();
         if (bidElement.length > 0) {
           bidText = bidElement.text().trim();
           price = extractPrice(bidText) || 0;
         }
         
-        // Buscar tiempo restante
-        const timeElement = auction.find('.current-auction-data-time');
+        // Extraer tiempo restante
+        let timeRemaining = '';
+        
+        // Intentar diferentes selectores para encontrar el tiempo restante
+        const timeElement = auction.find('.time-remaining, .countdown-text, .auction-time, .current-auction-data-time, .remaining-time').first();
         if (timeElement.length > 0) {
           timeRemaining = timeElement.text().trim();
         }
         
-        // Buscar imagen
+        // Extraer imagen
         let imageUrl = '';
+        const imgElement = auction.find('img').first();
         if (imgElement.length > 0) {
           imageUrl = imgElement.attr('src') || '';
         }
         
-        // Verificar si es relevante para nuestra búsqueda
+        // Verificar si tenemos los datos mínimos y si es relevante para nuestra búsqueda
         if (title && href && isRelevant(title, make, model, year)) {
           console.log(`Encontrada subasta activa relevante: "${title}" - ${href}`);
           console.log(`  Precio: ${bidText}, Tiempo: ${timeRemaining}`);
@@ -290,10 +271,10 @@ function extractActiveAuctionsFromGeneralPage(html: string, make: string, model:
       }
     });
     
-    console.log(`Total de vehículos relevantes encontrados en la página general: ${vehicles.length}`);
+    console.log(`Total de vehículos relevantes encontrados en la sección "auctions": ${vehicles.length}`);
     return vehicles;
   } catch (error: any) {
-    console.error('Error al extraer subastas activas de la página general:', error.message);
+    console.error('Error al extraer subastas activas de la sección "auctions":', error.message);
     return [];
   }
 }
