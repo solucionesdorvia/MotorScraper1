@@ -1,359 +1,315 @@
 /**
- * SCRAPER PARA BRING A TRAILER BASADO EN EL PATRÓN HTML
+ * SCRAPER BASADO EN PATRONES ESPECÍFICOS PARA BRING A TRAILER
  * 
- * Este scraper está diseñado para extraer datos reales de las subastas activas 
- * utilizando exactamente el mismo patrón HTML que se encuentra en el sitio.
- * Basado en el HTML proporcionado por el usuario.
+ * Este scraper está diseñado para manejar el HTML específico proporcionado por
+ * el usuario, que tiene una estructura particular con Knockout.js.
  */
 
-import axios from "axios";
-import * as cheerio from "cheerio";
-import { InsertVehicle } from "@shared/schema";
-
-// Interfaces para resolver problemas con los tipos de Cheerio
-type CheerioElement = any;
-type CheerioAPI = ReturnType<typeof cheerio.load>;
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import { InsertVehicle } from '../../shared/schema';
 
 /**
- * Extrae subastas activas de Bring a Trailer utilizando el patrón HTML exacto
+ * Extrae subastas activas usando el patrón específico del HTML
  */
 export async function scrapeBringATrailerPattern(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   try {
-    console.log(`Extrayendo subastas activas de Bring a Trailer para: ${make} ${model} ${year || ''}`);
-    console.log('Usando scraper basado en el patrón HTML exacto de las subastas activas');
+    console.log(`Buscando subastas activas en BaT usando patrones específicos para: ${make} ${model} ${year || ''}`);
     
-    // URL principal de búsqueda
-    const mainUrl = buildUrl(make, model, year);
-    console.log(`URL de búsqueda: ${mainUrl}`);
+    // Construir URL para la sección de auctions con los parámetros de búsqueda
+    const query = `${make} ${model} ${year || ''}`.trim();
+    const url = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(query)}`;
+    console.log(`URL: ${url}`);
     
-    // URL directa a subastas activas
-    const activeAuctionsUrl = buildActiveUrl(make, model, year);
-    console.log(`URL directa a subastas activas: ${activeAuctionsUrl}`);
+    // Realizar solicitud HTTP
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'es-ES,es;q=0.8,en-US;q=0.5,en;q=0.3',
+      },
+      timeout: 15000
+    });
     
-    // Intentar primero con la URL específica para subastas activas
-    let html = '';
-    try {
-      const response = await axios.get(activeAuctionsUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-          'Referer': 'https://bringatrailer.com/',
-          'Connection': 'keep-alive',
-          'Upgrade-Insecure-Requests': '1',
-          'Cache-Control': 'max-age=0',
-        }
-      });
-      html = response.data;
-      console.log('✅ Obtenido HTML de la URL de subastas activas');
-    } catch (error) {
-      console.error('Error obteniendo la URL de subastas activas:', error);
-      
-      // Si falla, intentar con la URL principal
-      try {
-        const mainResponse = await axios.get(mainUrl, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
-            'Referer': 'https://bringatrailer.com/',
-            'Connection': 'keep-alive',
-            'Upgrade-Insecure-Requests': '1',
-            'Cache-Control': 'max-age=0',
-          }
-        });
-        html = mainResponse.data;
-        console.log('✅ Obtenido HTML de la URL principal como respaldo');
-      } catch (mainError) {
-        console.error('Error obteniendo la URL principal:', mainError);
-        return [];
-      }
-    }
-    
-    // Extraer datos de las subastas activas del HTML
-    const vehicles = extractLiveVehicles(html, make, model, year);
-    console.log(`Extraídos ${vehicles.length} vehículos de subastas activas`);
-    
-    return vehicles;
-  } catch (error) {
-    console.error('Error extraiendo subastas activas:', error);
+    // Aquí analizamos contenido específico que sabemos que existe en el HTML
+    return extractVehiclesFromPattern(response.data, make, model, year);
+  } catch (error: any) {
+    console.error(`Error al obtener datos de BaT con patrón específico: ${error.message}`);
     return [];
   }
 }
 
 /**
- * Extrae vehículos con subastas activas del HTML
+ * Extrae datos de vehículos del HTML basado en el patrón proporcionado
  */
-function extractLiveVehicles(html: string, make: string, model: string, year?: string): InsertVehicle[] {
-  const $ = cheerio.load(html);
-  const vehicles: InsertVehicle[] = [];
-  
-  // Método 1: Basado EXACTAMENTE en la estructura HTML real proporcionada
-  console.log('Método 1: Buscando en la sección de "Live Listings" con estructura exacta...');
-  // Primero buscamos el div de "search-result-live-listings"
-  const liveListingsSection = $('.search-result-live-listings, #search-result-live-listings');
-  
-  if (liveListingsSection.length > 0) {
-    console.log('✅ Encontrada sección "Live Listings"');
+function extractVehiclesFromPattern(html: string, make: string, model: string, year?: string): InsertVehicle[] {
+  try {
+    const $ = cheerio.load(html);
+    const vehicles: InsertVehicle[] = [];
     
-    // En el HTML real, las tarjetas (a.listing-card) están dentro de un div.search-result-listings
-    // que está dentro del div.search-result-live-listings
-    const liveListings = liveListingsSection.find('a.listing-card');
-    console.log(`Encontrados ${liveListings.length} tarjetas de listados en la sección Live Listings`);
+    console.log('Analizando HTML con patrón específico...');
     
-    if (liveListings.length > 0) {
-      console.log('Analizando tarjetas de subastas activas:');
-      
-      liveListings.each((index: number, element: CheerioElement) => {
-        // Verificamos si este es un listado activo buscando los elementos que solo aparecen en subastas activas
-        const $el = $(element);
-        const hasBidding = $el.find('.item-bidding').length > 0;
-        const hasCountdown = $el.find('.countdown-text').length > 0;
+    // Buscar todos los enlaces de listado
+    $('a[href*="/listing/"]').each((index, element) => {
+      try {
+        const card = $(element);
+        const href = card.attr('href') || '';
+        const pusher = card.attr('data-pusher') || '';
         
-        console.log(`Tarjeta #${index + 1} - ¿Tiene sección de pujas?: ${hasBidding}, ¿Tiene contador?: ${hasCountdown}`);
-        
-        if (hasBidding && hasCountdown) {
-          const vehicle = extractVehicleFromCard($, element, make, model, year);
-          if (vehicle) {
-            console.log(`✅ Procesado vehículo activo #${index + 1}: ${vehicle.title}`);
-            vehicles.push(vehicle);
-          }
-        } else {
-          console.log(`❌ Tarjeta #${index + 1} no es una subasta activa (sin pujas o contador)`);
-        }
-      });
-    } else {
-      console.log('❌ No se encontraron tarjetas dentro de la sección Live Listings');
-    }
-  } else {
-    console.log('❌ No se encontró la sección "Live Listings"');
-  }
-  
-  // Método 2: Si no se encuentra la sección Live Listings o no hay resultados, buscar en toda la página
-  if (vehicles.length === 0) {
-    console.log('Método 2: Buscando en toda la página por listados activos...');
-    
-    // Buscar cualquier div search-result-listings que esté directamente en la página
-    const searchResultListings = $('.search-result-listings, #search-result-listings');
-    
-    if (searchResultListings.length > 0) {
-      console.log('✅ Encontrada sección "search-result-listings" directamente en la página');
-      
-      // Buscar TODAS las tarjetas de listado
-      const allListings = searchResultListings.find('a.listing-card');
-      console.log(`Total de ${allListings.length} tarjetas encontradas en la sección general`);
-      
-      // Filtramos para quedarnos solo con las que tienen elementos de subasta activa
-      console.log('Analizando TODAS las tarjetas para encontrar subastas activas:');
-      
-      allListings.each((index: number, element: CheerioElement) => {
-        const $el = $(element);
-        // Verificamos múltiples señales de que es una subasta activa
-        const hasBidding = $el.find('.item-bidding').length > 0;
-        const hasCountdown = $el.find('.countdown-text').length > 0;
-        const hasBidFormatted = $el.find('.bid-formatted').length > 0;
-        
-        console.log(`Tarjeta general #${index + 1} - ¿Tiene sección de pujas?: ${hasBidding}, ¿Tiene contador?: ${hasCountdown}, ¿Tiene precio formateado?: ${hasBidFormatted}`);
-        
-        // Solo procesar si es una subasta ACTIVA (tiene elementos de puja y contador)
-        if ((hasBidding || hasBidFormatted) && hasCountdown) {
-          // Extraer el título para un primer log más claro
-          const title = $el.find('h3').text().trim();
-          console.log(`💰 Parece una subasta ACTIVA: "${title}"`);
+        // Verificar si es un listado válido
+        if (href.includes('/listing/')) {
+          console.log(`Encontrado enlace de listado: ${href}`);
           
-          const vehicle = extractVehicleFromCard($, element, make, model, year);
-          if (vehicle) {
-            console.log(`✅ Procesado vehículo activo #${index + 1}: ${vehicle.title}`);
+          // Extraer título del elemento h3
+          const titleElement = card.find('h3');
+          const title = titleElement.text().trim();
+          console.log(`  Título: ${title || 'No encontrado'}`);
+          
+          // Extraer imagen
+          const imageElement = card.find('.thumbnail img');
+          const imageUrl = imageElement.attr('src') || '';
+          
+          // Extraer descripción
+          const excerptElement = card.find('.item-excerpt');
+          const excerpt = excerptElement.text().trim();
+          console.log(`  Descripción: ${excerpt ? 'Encontrada' : 'No encontrada'}`);
+          
+          // Extraer información de puja
+          const bidElement = card.find('.bid-formatted');
+          const bidText = bidElement.text().trim();
+          console.log(`  Puja: ${bidText || 'No encontrada'}`);
+          
+          // Extraer tiempo restante
+          const timeElement = card.find('.countdown-text');
+          const timeRemaining = timeElement.text().trim();
+          console.log(`  Tiempo restante: ${timeRemaining || 'No encontrado'}`);
+          
+          // Verificar si el título es relevante
+          if (title && isRelevant(title, make, model, year)) {
+            // Extraer precio
+            const price = extractPrice(bidText);
+            
+            // Crear objeto de vehículo
+            const vehicle: InsertVehicle = {
+              title,
+              make,
+              model,
+              source: 'bringatrailer',
+              sourceUrl: href,
+              imageUrl,
+              year: extractYear(title) || (year ? parseInt(year) : null),
+              price: price || 0,
+              isAuction: true,
+              currentBid: price || 0,
+              endsIn: timeRemaining || 'En curso',
+              transmission: extractTransmission(title),
+              bodyType: extractBodyType(title),
+              location: 'Estados Unidos',
+              mileage: null,
+              color: null,
+              vin: null,
+              fuelType: null,
+              dealerName: null,
+              hasDeals: false
+            };
+            
             vehicles.push(vehicle);
+            console.log(`✅ Vehículo relevante añadido: "${title}" con puja ${bidText}`);
+          } else if (title) {
+            console.log(`❌ Vehículo no relevante para ${make} ${model} ${year || ''}: "${title}"`);
+          } else {
+            console.log(`❌ Listado sin título descartado: ${href}`);
           }
-        } else {
-          console.log(`❌ Tarjeta general #${index + 1} no es una subasta activa (sin elementos de puja o contador)`);
+        }
+      } catch (error: any) {
+        console.error(`Error al procesar tarjeta: ${error.message}`);
+      }
+    });
+    
+    // Si no encontramos listados, intentar un enfoque más laxo buscando dentro de cualquier div
+    if (vehicles.length === 0) {
+      console.log('Intentando búsqueda más flexible de listados...');
+      
+      // Buscar divs que contengan href a listing
+      $('div').each((index, element) => {
+        const div = $(element);
+        const html = div.html() || '';
+        
+        // Si el div contiene "/listing/" en su HTML, podría contener información valiosa
+        if (html.includes('/listing/')) {
+          console.log(`Div #${index} contiene referencias a listados, analizando...`);
+          
+          // Buscar URLs de listados dentro del HTML
+          const listingRegex = /href="(https:\/\/bringatrailer\.com\/listing\/[^"]+)"/g;
+          let match;
+          while ((match = listingRegex.exec(html)) !== null) {
+            const listingUrl = match[1];
+            console.log(`  URL de listado encontrada: ${listingUrl}`);
+            
+            // Buscar título en proximidad a la URL
+            const titleMatch = new RegExp(`href="${listingUrl}"[^>]*>.*?<h3[^>]*>([^<]+)<\/h3>`, 's').exec(html);
+            const title = titleMatch ? titleMatch[1].trim() : '';
+            
+            if (title && isRelevant(title, make, model, year)) {
+              // Buscar puja cerca del título
+              const bidRegex = new RegExp(`${title}.*?bid-formatted[^>]*>([^<]+)<\/span>`, 's');
+              const bidMatch = bidRegex.exec(html);
+              const bidText = bidMatch ? bidMatch[1].trim() : '';
+              
+              // Buscar tiempo restante
+              const timeRegex = new RegExp(`${title}.*?countdown-text[^>]*>([^<]+)<\/span>`, 's');
+              const timeMatch = timeRegex.exec(html);
+              const timeRemaining = timeMatch ? timeMatch[1].trim() : '';
+              
+              // Buscar imagen
+              const imgRegex = new RegExp(`href="${listingUrl}"[^>]*>.*?<img[^>]*src="([^"]+)"`, 's');
+              const imgMatch = imgRegex.exec(html);
+              const imageUrl = imgMatch ? imgMatch[1] : '';
+              
+              console.log(`  Título: ${title}, Puja: ${bidText}, Tiempo: ${timeRemaining}`);
+              
+              // Extraer precio
+              const price = extractPrice(bidText);
+              
+              // Crear objeto de vehículo
+              const vehicle: InsertVehicle = {
+                title,
+                make,
+                model,
+                source: 'bringatrailer',
+                sourceUrl: listingUrl,
+                imageUrl,
+                year: extractYear(title) || (year ? parseInt(year) : null),
+                price: price || 0,
+                isAuction: true,
+                currentBid: price || 0,
+                endsIn: timeRemaining || 'En curso',
+                transmission: extractTransmission(title),
+                bodyType: extractBodyType(title),
+                location: 'Estados Unidos',
+                mileage: null,
+                color: null,
+                vin: null,
+                fuelType: null,
+                dealerName: null,
+                hasDeals: false
+              };
+              
+              vehicles.push(vehicle);
+              console.log(`✅ Vehículo relevante añadido desde HTML: "${title}"`);
+            } else if (title) {
+              console.log(`❌ Vehículo no relevante para ${make} ${model} ${year || ''}: "${title}"`);
+            }
+          }
         }
       });
-    } else {
-      console.log('❌ No se encontró ninguna sección "search-result-listings" directamente en la página');
     }
-  }
-  
-  // Filtrar solo los vehículos relevantes para la búsqueda
-  const relevantVehicles = vehicles.filter(vehicle => 
-    isRelevant(vehicle.title, make, model, year)
-  );
-  
-  console.log(`Total de vehículos relevantes: ${relevantVehicles.length} de ${vehicles.length} encontrados`);
-  
-  return relevantVehicles;
-}
-
-/**
- * Extrae los datos de un vehículo desde una tarjeta de listado
- */
-function extractVehicleFromCard($: CheerioAPI, element: CheerioElement, make: string, model: string, year?: string): InsertVehicle | null {
-  const $el = $(element);
-  
-  // Extraer información básica - basado exactamente en el HTML real proporcionado
-  const title = $el.find('h3').text().trim();
-  const link = $el.attr('href') || '';
-  const image = $el.find('.thumbnail img').attr('src') || '';
-  const description = $el.find('.item-excerpt').text().trim();
-  
-  // Si no hay título o enlace, descartar
-  if (!title || !link) {
-    console.log('❌ Listado descartado: Sin título o enlace');
-    return null;
-  }
-  
-  console.log(`Procesando título: ${title}`);
-  console.log(`URL: ${link}`);
-  
-  // Extraer precio actual - basado exactamente en el HTML real proporcionado
-  let price: number | null = null;
-  const bidFormatted = $el.find('.bid-formatted').text().trim();
-  
-  console.log(`Precio encontrado en HTML: "${bidFormatted}"`);
-  
-  if (bidFormatted) {
-    // Varios formatos posibles: USD $25,000 o $25,000 o 25,000
-    const priceMatch = bidFormatted.match(/USD\s+\$(\d{1,3}(,\d{3})*|\d+)/) || 
-                        bidFormatted.match(/\$(\d{1,3}(,\d{3})*|\d+)/) ||
-                        bidFormatted.match(/(\d{1,3}(,\d{3})*|\d+)/);
     
-    if (priceMatch && priceMatch[1]) {
-      price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
-      console.log(`Precio extraído: $${price}`);
-    } else {
-      console.log('No se pudo extraer el precio del texto');
-    }
-  } else {
-    console.log('No se encontró elemento de precio en esta tarjeta');
+    console.log(`Total de vehículos relevantes encontrados con patrón específico: ${vehicles.length}`);
+    return vehicles;
+  } catch (error: any) {
+    console.error(`Error al extraer datos con patrón específico: ${error.message}`);
+    return [];
   }
-  
-  // Extraer tiempo restante - basado exactamente en el HTML real proporcionado
-  let timeRemaining = $el.find('.countdown-text').text().trim();
-  console.log(`Tiempo restante encontrado: "${timeRemaining}"`);
-  let endsIn = 'En curso';
-  
-  if (timeRemaining) {
-    if (timeRemaining.includes('day')) {
-      const days = timeRemaining.match(/(\d+)/);
-      if (days && days[1]) {
-        endsIn = days[1] === '1' ? '1 día' : `${days[1]} días`;
-      }
-    } else if (timeRemaining.includes('hour')) {
-      const hours = timeRemaining.match(/(\d+)/);
-      if (hours && hours[1]) {
-        endsIn = hours[1] === '1' ? '1 hora' : `${hours[1]} horas`;
-      }
-    } else if (timeRemaining.includes('min')) {
-      const mins = timeRemaining.match(/(\d+)/);
-      if (mins && mins[1]) {
-        endsIn = mins[1] === '1' ? '1 minuto' : `${mins[1]} minutos`;
-      }
-    }
-  }
-  
-  // Extraer año del título
-  const yearMatch = title.match(/(19\d{2}|20\d{2})/);
-  const extractedYear = yearMatch ? parseInt(yearMatch[0], 10) : (year ? parseInt(year, 10) : null);
-  
-  // Determinar información adicional basada en el título
-  const bodyType = extractBodyType(title);
-  const transmission = extractTransmission(title);
-  
-  // Crear objeto de vehículo
-  const vehicle: InsertVehicle = {
-    title,
-    make,
-    model,
-    source: 'bringatrailer',
-    sourceUrl: link.startsWith('http') ? link : `https://bringatrailer.com${link}`,
-    imageUrl: image || 'https://i.imgur.com/U45aNlT.jpg',
-    year: extractedYear,
-    price,
-    isAuction: true,
-    currentBid: price,
-    endsIn,
-    transmission,
-    bodyType,
-    location: 'Estados Unidos',
-    mileage: null,
-    color: null,
-    vin: null,
-    fuelType: null,
-    dealerName: null,
-    hasDeals: false
-  };
-  
-  return vehicle;
-}
-
-/**
- * Construye la URL de búsqueda para Bring a Trailer
- */
-function buildUrl(make: string, model: string, year?: string): string {
-  const query = `${make} ${model}${year ? ' ' + year : ''}`;
-  const encodedQuery = encodeURIComponent(query);
-  return `https://bringatrailer.com/search/?s=${encodedQuery}`;
-}
-
-/**
- * Construye la URL directa a subastas activas
- */
-function buildActiveUrl(make: string, model: string, year?: string): string {
-  const query = `${make} ${model}${year ? ' ' + year : ''}`;
-  const encodedQuery = encodeURIComponent(query);
-  return `https://bringatrailer.com/search/auction-results/?s=${encodedQuery}&status=open`;
 }
 
 /**
  * Determina si un título es relevante para los criterios de búsqueda
  */
 function isRelevant(title: string, make: string, model: string, year?: string): boolean {
-  if (!title) return false;
-  
   const titleLower = title.toLowerCase();
   const makeLower = make.toLowerCase();
   const modelLower = model.toLowerCase();
   
-  // Comprobar que el título contiene la marca y el modelo
-  const hasMake = titleLower.includes(makeLower);
-  const hasModel = titleLower.includes(modelLower);
+  // Caso especial para "Chevrolet" que puede aparecer como "Chevy"
+  let makePresent = titleLower.includes(makeLower);
+  if (makeLower === "chevrolet" && titleLower.includes("chevy")) {
+    makePresent = true;
+  }
   
-  // Si se especifica un año, comprobar que el título lo contiene
-  const hasYear = year ? titleLower.includes(year) : true;
+  // Caso especial para "Volkswagen" que puede aparecer como "VW"
+  if (makeLower === "volkswagen" && titleLower.includes("vw")) {
+    makePresent = true;
+  }
   
-  return hasMake && hasModel && hasYear;
+  // Si el título no contiene la marca, no es relevante
+  if (!makePresent) {
+    return false;
+  }
+  
+  // Manejo especial para modelos con guiones como "F-250"
+  let modelPresent = false;
+  
+  // Si el modelo contiene guiones, intentar diferentes variaciones
+  if (modelLower.includes('-')) {
+    // Intentar con el modelo exacto
+    if (titleLower.includes(modelLower)) {
+      modelPresent = true;
+    }
+    
+    // Intentar sin el guión (F250 en lugar de F-250)
+    const modelWithoutHyphen = modelLower.replace(/-/g, '');
+    if (titleLower.includes(modelWithoutHyphen)) {
+      modelPresent = true;
+    }
+    
+    // Intentar con espacio en lugar del guión (F 250 en lugar de F-250)
+    const modelWithSpace = modelLower.replace(/-/g, ' ');
+    if (titleLower.includes(modelWithSpace)) {
+      modelPresent = true;
+    }
+    
+    // Intentar solo con el número si es un modelo como "F-250"
+    const modelParts = modelLower.split('-');
+    if (modelParts.length > 1 && titleLower.includes(modelParts[0]) && titleLower.includes(modelParts[1])) {
+      modelPresent = true;
+    }
+  } else {
+    // Para modelos sin guiones, verificación normal
+    modelPresent = titleLower.includes(modelLower);
+  }
+  
+  // Si ninguna variación del modelo está presente, no es relevante
+  if (!modelPresent) {
+    return false;
+  }
+  
+  // Si se especificó un año, verificar si el título contiene el año
+  if (year && !titleLower.includes(year)) {
+    return false;
+  }
+  
+  return true;
 }
 
 /**
- * Extrae el tipo de carrocería del título
+ * Extrae el precio del texto
  */
-function extractBodyType(title: string): string | null {
-  const bodyTypes = [
-    { term: 'fastback', result: 'Fastback' },
-    { term: 'coupe', result: 'Coupe' },
-    { term: 'convertible', result: 'Convertible' },
-    { term: 'cabrio', result: 'Convertible' },
-    { term: 'cabriolet', result: 'Convertible' },
-    { term: 'sedan', result: 'Sedan' },
-    { term: 'hatchback', result: 'Hatchback' },
-    { term: 'wagon', result: 'Wagon' },
-    { term: 'estate', result: 'Wagon' },
-    { term: 'roadster', result: 'Roadster' },
-    { term: 'spider', result: 'Convertible' },
-    { term: 'spyder', result: 'Convertible' },
-    { term: 'targa', result: 'Targa' },
-    { term: 'pickup', result: 'Pickup' },
-    { term: 'truck', result: 'Pickup' },
-    { term: 'suv', result: 'SUV' }
-  ];
+function extractPrice(text: string): number | null {
+  if (!text) return null;
   
-  const titleLower = title.toLowerCase();
+  // Eliminar prefijos de moneda (USD, $, etc.)
+  const cleanText = text.replace(/USD|\$|,/g, '').trim();
   
-  for (const type of bodyTypes) {
-    if (titleLower.includes(type.term)) {
-      return type.result;
-    }
+  // Buscar números en el texto
+  const match = cleanText.match(/(\d+)/);
+  
+  if (match) {
+    return parseInt(match[1]);
+  }
+  
+  return null;
+}
+
+/**
+ * Extrae el año del título
+ */
+function extractYear(text: string): number | null {
+  // Buscar años entre 1900 y 2025
+  const match = text.match(/\b(19\d{2}|20[0-2]\d)\b/);
+  
+  if (match) {
+    return parseInt(match[1]);
   }
   
   return null;
@@ -362,35 +318,57 @@ function extractBodyType(title: string): string | null {
 /**
  * Extrae la transmisión del título
  */
-function extractTransmission(title: string): string | null {
-  const titleLower = title.toLowerCase();
+function extractTransmission(text: string): string | null {
+  const lowerText = text.toLowerCase();
   
-  if (titleLower.includes('5-speed') || titleLower.includes('5 speed') || titleLower.includes('5-velocidades')) {
-    return 'Manual 5-Velocidades';
-  }
-  
-  if (titleLower.includes('6-speed') || titleLower.includes('6 speed') || titleLower.includes('6-velocidades')) {
-    return 'Manual 6-Velocidades';
-  }
-  
-  if (titleLower.includes('4-speed') || titleLower.includes('4 speed') || titleLower.includes('4-velocidades')) {
-    return 'Manual 4-Velocidades';
-  }
-  
-  if (titleLower.includes('3-speed') || titleLower.includes('3 speed') || titleLower.includes('3-velocidades')) {
-    return 'Manual 3-Velocidades';
-  }
-  
-  if (titleLower.includes('manual')) {
+  if (lowerText.includes('manual') || lowerText.includes('speed') || lowerText.includes('5-speed') || lowerText.includes('4-speed') || lowerText.includes('6-speed')) {
+    // Intentar extraer el número de velocidades
+    const speedMatch = lowerText.match(/(\d)(?:-|\s)?speed/i);
+    if (speedMatch) {
+      return `Manual ${speedMatch[1]}-Velocidades`;
+    }
     return 'Manual';
   }
   
-  if (titleLower.includes('automatic') || titleLower.includes('automático') || titleLower.includes('automatico')) {
+  if (lowerText.includes('automatic') || lowerText.includes('auto')) {
     return 'Automático';
   }
   
-  if (titleLower.includes('dsg') || titleLower.includes('pdk') || titleLower.includes('tiptronic')) {
-    return 'Automático Secuencial';
+  return null;
+}
+
+/**
+ * Extrae el tipo de carrocería del título
+ */
+function extractBodyType(text: string): string | null {
+  const lowerText = text.toLowerCase();
+  
+  if (lowerText.includes('coupe')) {
+    return 'Coupe';
+  }
+  
+  if (lowerText.includes('sedan')) {
+    return 'Sedan';
+  }
+  
+  if (lowerText.includes('convertible')) {
+    return 'Convertible';
+  }
+  
+  if (lowerText.includes('fastback')) {
+    return 'Fastback';
+  }
+  
+  if (lowerText.includes('wagon') || lowerText.includes('estate')) {
+    return 'Wagon';
+  }
+  
+  if (lowerText.includes('suv')) {
+    return 'SUV';
+  }
+  
+  if (lowerText.includes('truck') || lowerText.includes('pickup')) {
+    return 'Pickup';
   }
   
   return null;
