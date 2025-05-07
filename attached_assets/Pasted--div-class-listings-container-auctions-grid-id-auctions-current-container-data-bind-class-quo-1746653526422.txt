@@ -1,0 +1,157 @@
+<div class="listings-container auctions-grid" id="auctions-current-container" data-bind="class: &quot;auctions-&quot; + listingsView(), fastForEach: itemsFiltered">
+    
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1970-dodge-challenger-t-a-16/" data-pusher="post;list;92840388">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/04/1970_dodge_challenger-ta_dsc09061-66921.jpg?resize=470%2C318" alt="1970 Dodge Challenger T/A 340 Six Pack">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92840388"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="78361"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">1970 Dodge Challenger T/A 340 Six Pack</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium" style="display: none;">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1970 Dodge Challenger T/A coupe is one of approximately 2,400 produced to homologate the model for competition in the SCCA’s Trans-Am series. T/A-specific equipment included a flat-black fiberglass hood with a functional scoop as well as a rear spoiler, longitudinal black stripes, uprated suspension components, and a side-outlet dual…</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $31,000</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text final-countdown" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">21:46:01</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="78361"></progress>
+    </div>
+</a>
+    
+    
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1970-dodge-charger-41/" data-pusher="post;list;85762587">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2024/11/1970_dodge_charger_001_5-26380.jpg?resize=470%2C318" alt="Hellcat-Powered 1970 Dodge Charger">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=85762587"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="158341"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">Hellcat-Powered 1970 Dodge Charger</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium" style="display: none;">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1970 Dodge Charger was acquired by the seller in 2023 as a rolling shell that became the basis for a custom build displayed at SEMA later that year. The body was modified with flared fenders and a carbon-fiber roof overlay, and a supercharged 6.2-liter Hemi V8 and eight-speed TorqueFlite automatic transmission sourced from a 2016 Challenger…</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $80,000</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">2 days</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="158341"></progress>
+    </div>
+</a>
+    </div>
