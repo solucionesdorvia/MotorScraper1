@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { scrapeEbay } from "./scraper/ebay";
@@ -11,6 +11,7 @@ import { scrapeBringATrailerFocused } from "./scraper/bat-focused";
 import { emergencyScrapeBringATrailer } from "./scraper/bat-emergency";
 import { scrapeBringATrailerAdapter } from "./scraper/bat-adapter";
 import { scrapeBringATrailerLiveDirect } from "./scraper/bat-live-direct";
+import { scrapeBringATrailerLiveOnly } from "./scraper/bat-live-only";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -156,73 +157,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // SCRAPER ULTRA-DIRECTO: Extrae solo de la sección "Live Listings"
-            console.log('🔴 ENFOQUE RADICAL: Extrayendo SOLO de la sección LIVE LISTINGS...');
-            bringATrailerResults = await scrapeBringATrailerLiveDirect(
+            // NUEVO SCRAPER ULTRA-PRECISO: Extrae solo de la sección "Live Listings" basado en HTML real
+            console.log('🔴 ENFOQUE DEFINITIVO: Extrayendo SOLO de la sección LIVE LISTINGS oficial...');
+            bringATrailerResults = await scrapeBringATrailerLiveOnly(
               make, 
               model,
               searchParams.year?.toString()
             );
             
-            // Si el LiveDirect encuentra resultados, los usamos
+            // Si el nuevo LiveOnly encuentra resultados, los usamos
             if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO COMPLETO con LiveDirect: ${bringATrailerResults.length} subastas GARANTIZADAS ACTIVAS`);
+              console.log(`✅ ÉXITO ABSOLUTO con LiveOnly: ${bringATrailerResults.length} subastas VERDADERAMENTE ACTIVAS`);
             } else {
-              // Si LiveDirect falla, intentamos con el adaptador Express
-              console.log('LiveDirect no encontró resultados, intentando con adaptador Express...');
-              bringATrailerResults = await scrapeBringATrailerAdapter(
+              // Si LiveOnly falla, intentamos con LiveDirect
+              console.log('LiveOnly no encontró resultados, intentando con LiveDirect...');
+              bringATrailerResults = await scrapeBringATrailerLiveDirect(
                 make, 
                 model,
                 searchParams.year?.toString()
               );
               
-              // Si el adaptador encuentra resultados, los usamos
+              // Si el LiveDirect encuentra resultados, los usamos
               if (bringATrailerResults.length > 0) {
-                console.log(`✅ ÉXITO con adaptador EXPRESS: ${bringATrailerResults.length} subastas activas encontradas`);
+                console.log(`✅ ÉXITO COMPLETO con LiveDirect: ${bringATrailerResults.length} subastas GARANTIZADAS ACTIVAS`);
               } else {
-                // Si el adaptador falla, probamos con el scraper de emergencia
-                console.log('El adaptador no encontró resultados, intentando con scraper de emergencia...');
-                bringATrailerResults = await emergencyScrapeBringATrailer(
+                // Si LiveDirect falla, intentamos con el adaptador Express
+                console.log('LiveDirect no encontró resultados, intentando con adaptador Express...');
+                bringATrailerResults = await scrapeBringATrailerAdapter(
                   make, 
                   model,
                   searchParams.year?.toString()
                 );
                 
-                // Si el scraper de emergencia encuentra resultados, los usamos
+                // Si el adaptador encuentra resultados, los usamos
                 if (bringATrailerResults.length > 0) {
-                  console.log(`✅ Éxito con scraper de EMERGENCIA: ${bringATrailerResults.length} subastas activas encontradas`);
+                  console.log(`✅ ÉXITO con adaptador EXPRESS: ${bringATrailerResults.length} subastas activas encontradas`);
                 } else {
-                  // Si el de emergencia falla, probamos con el enfocado
-                  console.log('El scraper de emergencia no encontró resultados, intentando con scraper enfocado...');
-                  bringATrailerResults = await scrapeBringATrailerFocused(
+                  // Si el adaptador falla, probamos con el scraper de emergencia
+                  console.log('El adaptador no encontró resultados, intentando con scraper de emergencia...');
+                  bringATrailerResults = await emergencyScrapeBringATrailer(
                     make, 
                     model,
                     searchParams.year?.toString()
                   );
                   
-                  // Si el scraper enfocado encuentra resultados, los usamos
+                  // Si el scraper de emergencia encuentra resultados, los usamos
                   if (bringATrailerResults.length > 0) {
-                    console.log(`✅ Éxito con scraper ENFOCADO: ${bringATrailerResults.length} subastas activas encontradas`);
+                    console.log(`✅ Éxito con scraper de EMERGENCIA: ${bringATrailerResults.length} subastas activas encontradas`);
                   } else {
-                    // Si no hay resultados con el enfocado, intentamos el normal
-                    console.log('El scraper enfocado no encontró resultados, intentando con scraper normal...');
-                    bringATrailerResults = await scrapeBringATrailer(
+                    // Si el de emergencia falla, probamos con el enfocado
+                    console.log('El scraper de emergencia no encontró resultados, intentando con scraper enfocado...');
+                    bringATrailerResults = await scrapeBringATrailerFocused(
                       make, 
                       model,
                       searchParams.year?.toString()
                     );
                     
-                    // Si el normal tampoco encuentra, usamos OpenAI
-                    if (bringATrailerResults.length === 0) {
-                      console.log('No se encontraron resultados con el scraper normal, intentando con OpenAI...');
-                      bringATrailerResults = await scrapeBringATrailerWithAI(
+                    // Si el scraper enfocado encuentra resultados, los usamos
+                    if (bringATrailerResults.length > 0) {
+                      console.log(`✅ Éxito con scraper ENFOCADO: ${bringATrailerResults.length} subastas activas encontradas`);
+                    } else {
+                      // Si no hay resultados con el enfocado, intentamos el normal
+                      console.log('El scraper enfocado no encontró resultados, intentando con scraper normal...');
+                      bringATrailerResults = await scrapeBringATrailer(
                         make, 
                         model,
                         searchParams.year?.toString()
                       );
-                      console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con OpenAI`);
-                    } else {
-                      console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con scraper normal`);
+                      
+                      // Si el normal tampoco encuentra, usamos OpenAI
+                      if (bringATrailerResults.length === 0) {
+                        console.log('No se encontraron resultados con el scraper normal, intentando con OpenAI...');
+                        bringATrailerResults = await scrapeBringATrailerWithAI(
+                          make, 
+                          model,
+                          searchParams.year?.toString()
+                        );
+                        console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con OpenAI`);
+                      } else {
+                        console.log(`Obtenidos ${bringATrailerResults.length} resultados de Bring a Trailer con scraper normal`);
+                      }
                     }
                   }
                 }
