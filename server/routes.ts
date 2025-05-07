@@ -11,6 +11,7 @@ import { scrapeBringATrailerPattern } from "./scraper/bat-pattern";
 import { scrapeBringATrailerUniversal } from "./scraper/bat-universal";
 import { scrapeBringATrailerAuctions } from "./scraper/bat-auctions";
 import { scrapeBringATrailerAuctionsV2 } from "./scraper/bat-auctions-v2";
+import { scrapeBringATrailerDirectAuctions } from "./scraper/bat-direct-auctions";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -156,72 +157,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // Primero intentamos con el scraper ejemplo que usa HTML ya renderizado
-            console.log('Intentando scraper con HTML ejemplo ya renderizado...');
-            bringATrailerResults = await scrapeBringATrailerFromExample(
+            // NUEVO MÉTODO: Primero intentamos con el scraper directo de auctions
+            console.log('Intentando nuevo scraper directo de auctions...');
+            bringATrailerResults = await scrapeBringATrailerDirectAuctions(
               make, 
               model,
               searchParams.year?.toString()
             );
             
             if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper de HTML ejemplo`);
+              console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el nuevo scraper directo`);
             } else {
-              console.log('⚠️ No se encontraron subastas activas con el scraper de HTML ejemplo');
+              console.log('⚠️ No se encontraron subastas activas con el nuevo scraper directo');
               
-              // Luego intentamos con el scraper basado en patrones específicos
-              console.log('Intentando scraper basado en patrones específicos...');
-              bringATrailerResults = await scrapeBringATrailerPattern(
+              // Intentamos con el scraper ejemplo que usa HTML ya renderizado (respaldo)
+              console.log('Intentando scraper con HTML ejemplo ya renderizado (respaldo)...');
+              bringATrailerResults = await scrapeBringATrailerFromExample(
                 make, 
                 model,
                 searchParams.year?.toString()
               );
               
               if (bringATrailerResults.length > 0) {
-                console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper de patrones`);
+                console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper de HTML ejemplo`);
               } else {
-                console.log('⚠️ No se encontraron subastas activas con el scraper de patrones');
+                console.log('⚠️ No se encontraron subastas activas con el scraper de HTML ejemplo');
                 
-                // Luego intentamos con el scraper especializado V2 para la sección "auctions"
-                console.log('Intentando scraper especializado V2 para la sección "auctions"...');
-                bringATrailerResults = await scrapeBringATrailerAuctionsV2(
+                // Como último recurso, usamos el scraper universal
+                console.log('Usando scraper universal como respaldo final...');
+                bringATrailerResults = await scrapeBringATrailerUniversal(
                   make, 
                   model,
                   searchParams.year?.toString()
                 );
                 
                 if (bringATrailerResults.length > 0) {
-                  console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper V2`);
+                  console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper universal`);
                 } else {
-                  console.log('⚠️ No se encontraron subastas activas con el scraper V2');
-                  
-                  // Intentar con el scraper original de auctions
-                  console.log('Intentando con el scraper original de auctions...');
-                  bringATrailerResults = await scrapeBringATrailerAuctions(
-                    make, 
-                    model,
-                    searchParams.year?.toString()
-                  );
-                  
-                  if (bringATrailerResults.length > 0) {
-                    console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper de auctions`);
-                  } else {
-                    console.log('⚠️ No se encontraron subastas activas con el scraper de auctions');
-                    
-                    // Si no encontramos resultados, intentamos con el scraper universal como respaldo
-                    console.log('Usando scraper universal como respaldo final...');
-                    bringATrailerResults = await scrapeBringATrailerUniversal(
-                      make, 
-                      model,
-                      searchParams.year?.toString()
-                    );
-                    
-                    if (bringATrailerResults.length > 0) {
-                      console.log(`✅ ÉXITO: Encontradas ${bringATrailerResults.length} subastas ACTIVAS con el scraper universal`);
-                    } else {
-                      console.log('⚠️ No se encontraron subastas activas con el scraper universal');
-                    }
-                  }
+                  console.log('⚠️ No se encontraron subastas activas con el scraper universal');
                 }
               }
             }
@@ -318,11 +291,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         count: results.length,
         results
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al procesar HTML de ejemplo:', error);
       res.status(500).json({
         success: false,
         error: 'Error al procesar HTML de ejemplo',
+        message: error.message
+      });
+    }
+  });
+  
+  // Endpoint para probar el nuevo scraper directo de subastas
+  app.get("/api/bat/direct-auctions", async (req: Request, res: Response) => {
+    try {
+      // Obtener parámetros de búsqueda
+      const make = req.query.make as string || 'Ford';
+      const model = req.query.model as string || 'Mustang';
+      const year = req.query.year as string;
+      
+      console.log(`Probando scraper directo de auctions para: ${make} ${model} ${year || ''}`);
+      
+      // Llamar al scraper directo
+      const results = await scrapeBringATrailerDirectAuctions(make, model, year);
+      
+      console.log(`Resultados encontrados: ${results.length}`);
+      
+      // Devolver resultados
+      res.json({
+        success: true,
+        count: results.length,
+        results
+      });
+    } catch (error: any) {
+      console.error('Error al procesar página de auctions:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error al procesar página de auctions',
         message: error.message
       });
     }

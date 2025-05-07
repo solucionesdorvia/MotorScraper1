@@ -1,0 +1,313 @@
+<div class="listings-container auctions-grid" id="auctions-current-container" data-bind="class: &quot;auctions-&quot; + listingsView(), fastForEach: itemsFiltered">
+    
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1967-shelby-mustang-gt500-27/" data-pusher="post;list;91725777">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/03/1967_shelby_mustang-gt500_1967-ford-shelby-gt500-002-39035.jpg?resize=470%2C318" alt="29-Years-Owned 1967 Shelby Mustang GT500 Fastback">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=91725777"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="9075"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">29-Years-Owned 1967 Shelby Mustang GT500 Fastback</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1967 Shelby Mustang GT500 fastback is one of 2,048 examples produced for the model year and was completed on June 13, 1967. It has been registered in California since new and was acquired by the seller in 1996. Mechanical work carried out in 2023 included installing a replacement 428ci engine block, a SCAT rotating assembly, and a hydraulic…</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $115,000</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text final-countdown" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">2:31:15</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="9075"></progress>
+    </div>
+</a>
+    
+    
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1967-ford-mustang-29-2/" data-pusher="post;list;92873391">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang-gt_img_0625-39159.jpg?resize=470%2C318" alt="23-Years-Owned, 417 FE-Powered 1967 Ford Mustang Fastback 5-Speed">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92873391"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="363435"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">23-Years-Owned, 417 FE-Powered 1967 Ford Mustang Fastback 5-Speed</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium" style="display: none;">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1967 Ford Mustang was built as a 289 fastback, and it was acquired by the seller and his son as a disassembled project in 2002. It was subsequently mounted on a rotisserie, modified, and refinished, and in ~2020 the seller had a 390ci FE V8 rebuilt with an Eagle crankshaft and 428 pistons for a reported displacement of 417ci.</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $25,000</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">4 days</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="363435"></progress>
+    </div>
+</a>
+    
+    
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1968-ford-mustang-294/" data-pusher="post;list;92776264">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/04/1968_ford_mustang-gt_1000011948-15684.jpg?resize=470%2C318" alt="1968 Ford Mustang Coupe">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=92776264"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="456555"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">1968 Ford Mustang Coupe</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium" style="display: none;">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1968 Ford Mustang coupe was acquired by the seller's late father approximately 20 years ago. It is finished in blue over black vinyl upholstery and is powered by a 289ci V8 paired with a three-speed automatic transmission. Features include 14" steel wheels, front disc brakes, power steering, hood vents, front bucket seats, and a cabin heater.</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $3,200</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">5 days</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="456555"></progress>
+    </div>
+</a>
+    
+    
+<a class="listing-card bg-white-transparent" data-bind="attr: { href: url, &quot;data-pusher&quot;: pusher}, fadeVisible: isVisible" style="" href="https://bringatrailer.com/listing/1967-ford-mustang-357/" data-pusher="post;list;93014266">
+    <div class="thumbnail">
+        <img data-bind="attr: { src: thumbnailUrl, alt: title }" src="https://bringatrailer.com/wp-content/uploads/2025/04/1967_ford_mustang_img_8866-24634.jpeg?resize=470%2C318" alt="1967 Ford Mustang Coupe 289 5-Speed">
+        <div class="image-overlay"></div>
+        <div class="icon-item-watch" data-bind="css: { &quot;item-watched&quot;: watched }, attr: { &quot;data-watch-url&quot;: watchUrl }, click: toggleListingWatch" data-watch-url="https://bringatrailer.com/wp-admin/admin-ajax.php?action=bat_listing_watch&amp;listing=93014266"></div>
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="529155"></progress>
+    </div>
+
+    <div class="content">
+        <div class="content-main">
+            <div class="icon-live" data-bind="visible: showLive" style="display: none;"></div>
+            <h3 data-bind="html: title">1967 Ford Mustang Coupe 289 5-Speed</h3>
+
+            <div class="item-tags" data-bind="visible: premium || noreserve || repeat || currency">
+                <div class="item-tag item-tag-currency" data-bind="visible: currency, css: { 'is-international': isInternational }">
+                    <span class="show-country-flag" data-bind="html: countryFlag"><img class="countries-flags" src="https://bringatrailer.com/wp-content/themes/bringatrailer/assets/img/countries/us.svg" alt="United States"></span>
+                    <abbr data-bind="visible: isInternational" style="display: none;">
+                        International                    </abbr>
+                    <span class="show-country-name" data-bind="text: countryCodeAlpha3">USA</span>
+                </div>
+                <div class="item-tag item-tag-premium" data-bind="visible: premium" style="display: none;">
+                    <abbr title="Premium listing">P</abbr>
+                    <span>Premium</span>
+                </div>
+                <div class="item-tag item-tag-noreserve" data-bind="visible: noreserve" style="display: none;">
+                    <abbr title="No reserve listing">NR</abbr>
+                    <span>No Reserve</span>
+                </div>
+                <div class="item-tag item-tag-repeat" data-bind="visible: repeat" style="display: none;">
+                    <abbr title="Alumni listing">A</abbr>
+                    <span>Alumni</span>
+                </div>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+
+            <div class="item-excerpt" data-bind="html: excerpt">This 1967 Ford Mustang coupe was acquired as a project by the seller in 2019 from a farm in California, where it had sat outside a barn since ~2001. Subsequent work included fitting GT-style lights and Magnum 500-style wheels, replacing the right floor board, refreshing the 289ci V8 and installing an four-barrel Edelbrock carburetor as well as a…</div>
+
+            <div class="item-stats" data-bind="visible: showStats" style="display: none;">
+                <div class="stats-comments" data-bind="visible: comments" style="display: none;">
+                    <span class="icon-comments"></span>
+                    <span class="item-comments" data-bind="text: comments"></span>
+                    <span>Comments</span>
+                </div>
+                <div class="stats-views" data-bind="visible: views" style="display: none;">
+                    <span class="item-views" data-bind="text: views"></span>
+                    <span>Views</span>
+                </div>
+                <div class="stats-watchers" data-bind="visible: watchers" style="display: none;">
+                    <span class="item-watchers" data-bind="text: watchers"></span>
+                    <span>Watchers</span>
+                </div>
+            </div>
+
+            <div class="item-results" data-bind="html: soldText, visible: soldText" style="display: none;">false</div>
+        </div>
+
+        <div class="content-secondary">
+            <div class="item-bidding" data-bind="visible: active">
+                <span class="bidding-bid">
+                    <span class="bid-label" data-bind="text: currentBidLabel">Bid:</span>
+                    <span class="bid-formatted bold" data-bind="text: currentBidFormatted">USD $10,289</span>
+                </span>
+
+                <span class="bidding-countdown">
+                    <span class="icon-clock"></span>
+                    <span class="countdown-text" data-bind="css: { &quot;final-countdown&quot;: 86400 > secondsToEnd() }, text: countdownText">6 days</span>
+                </span>
+            </div>
+
+            <div class="item-distance" data-bind="visible: showDistance" style="display: none;"><span data-bind="text: distanceText">United States</span> <span class="item-distance-from" data-bind="text: distanceFrom"></span></div>
+        </div>
+
+        <progress max="120" data-bind="css: { &quot;progress-counting&quot;: 121 > secondsToEnd() &amp;&amp; 0 < secondsToEnd(), &quot;progress-final-min&quot;: 61 > secondsToEnd() }, value: secondsToEnd()" value="529155"></progress>
+    </div>
+</a>
+    </div>
