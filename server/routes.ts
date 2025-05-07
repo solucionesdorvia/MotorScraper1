@@ -190,9 +190,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
               );
             }
             
-            // 4. Si todavía no hay resultados, probamos con el scraper de HTML de ejemplo
+            // 4. Para modelos Dodge, probamos con el scraper especializado para Dodge
+            if (bringATrailerResults.length === 0 && make.toLowerCase() === 'dodge') {
+              console.log('4. Detectada búsqueda de Dodge, usando scraper especializado...');
+              bringATrailerResults = await scrapeBringATrailerDodge(
+                make, 
+                model,
+                searchParams.year?.toString()
+              );
+            }
+            
+            // 5. Si todavía no hay resultados, probamos con el scraper de HTML de ejemplo
             if (bringATrailerResults.length === 0) {
-              console.log('4. Intentando scraper basado en HTML ejemplo...');
+              console.log('5. Intentando scraper basado en HTML ejemplo...');
               bringATrailerResults = await scrapeBringATrailerFromExample(
                 make, 
                 model,
@@ -200,9 +210,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               );
             }
             
-            // 5. Como último recurso, usamos el scraper universal
+            // 6. Como último recurso, usamos el scraper universal
             if (bringATrailerResults.length === 0) {
-              console.log('5. Intentando scraper universal (último recurso)...');
+              console.log('6. Intentando scraper universal (último recurso)...');
               bringATrailerResults = await scrapeBringATrailerUniversal(
                 make, 
                 model,
@@ -408,6 +418,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         error: 'Error al procesar con scraper de coincidencia directa',
+        message: error.message
+      });
+    }
+  });
+  
+  // Endpoint para probar el scraper especializado para Dodge
+  app.get("/api/bat/dodge", async (req: Request, res: Response) => {
+    try {
+      // Obtener parámetros de búsqueda
+      const make = req.query.make as string || 'Dodge';
+      const model = req.query.model as string || 'Challenger';
+      const year = req.query.year as string;
+      
+      console.log(`Probando scraper especializado para Dodge: ${make} ${model} ${year || ''}`);
+      
+      // Llamar al scraper especializado para Dodge
+      const results = await scrapeBringATrailerDodge(make, model, year);
+      
+      console.log(`Resultados encontrados: ${results.length}`);
+      
+      // Devolver resultados
+      res.json({
+        success: true,
+        count: results.length,
+        results
+      });
+    } catch (error: any) {
+      console.error('Error al procesar con scraper especializado para Dodge:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Error al procesar con scraper especializado para Dodge',
         message: error.message
       });
     }

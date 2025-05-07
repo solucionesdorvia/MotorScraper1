@@ -272,7 +272,7 @@ function extractVehiclesFromHTML(html: string, make: string, model: string, year
   console.log(`Encontradas ${cards.length} tarjetas de listado en total`);
   
   // Procesar cada tarjeta
-  cards.each((index: number, element: any) => {
+  cards.each(function(index, element) {
     try {
       const card = $(element);
       
