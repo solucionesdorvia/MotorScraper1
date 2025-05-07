@@ -436,9 +436,22 @@ function isRelevantVehicle(title: string, make: string, model: string, year?: st
     return false;
   }
   
-  // Si se especificó un año, verificar si el título contiene el año
-  if (year && !titleLower.includes(year)) {
-    return false;
+  // Si se especificó un año, hacemos una verificación más flexible
+  // Permitimos que coincida con años cercanos (±3 años)
+  if (year) {
+    const yearNumber = parseInt(year);
+    const titleYearMatch = titleLower.match(/\b(19\d{2}|20[0-2]\d)\b/);
+    
+    if (titleYearMatch) {
+      const titleYear = parseInt(titleYearMatch[1]);
+      // Aceptamos una diferencia de hasta 3 años
+      if (Math.abs(titleYear - yearNumber) > 3) {
+        return false;
+      }
+    } else if (!titleLower.includes(year)) {
+      // Si no hay un año detectado y el texto no contiene el año buscado
+      return false;
+    }
   }
   
   return true;
