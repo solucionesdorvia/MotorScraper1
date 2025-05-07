@@ -12,6 +12,7 @@ import { emergencyScrapeBringATrailer } from "./scraper/bat-emergency";
 import { scrapeBringATrailerAdapter } from "./scraper/bat-adapter";
 import { scrapeBringATrailerLiveDirect } from "./scraper/bat-live-direct";
 import { scrapeBringATrailerLiveOnly } from "./scraper/bat-live-only";
+import { scrapeBringATrailerDirectUrl } from "./scraper/bat-direct-url";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
@@ -157,21 +158,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (searchParams.bringatrailer && make) {
           console.log(`Solicitando resultados de Bring a Trailer para: ${make} ${model} ${searchParams.year?.toString() || ''}`);
           try {
-            // NUEVO SCRAPER ULTRA-PRECISO: Extrae solo de la sección "Live Listings" basado en HTML real
-            console.log('🔴 ENFOQUE DEFINITIVO: Extrayendo SOLO de la sección LIVE LISTINGS oficial...');
-            bringATrailerResults = await scrapeBringATrailerLiveOnly(
+            // NUEVO SCRAPER DIRECTO POR URL: Consulta directamente la página de subastas activas
+            console.log('🔴 ENFOQUE ULTRA DIRECTO: Consultando directamente la página de SUBASTAS ACTIVAS...');
+            bringATrailerResults = await scrapeBringATrailerDirectUrl(
               make, 
               model,
               searchParams.year?.toString()
             );
             
-            // Si el nuevo LiveOnly encuentra resultados, los usamos
+            // Si el nuevo DirectUrl encuentra resultados, los usamos
             if (bringATrailerResults.length > 0) {
-              console.log(`✅ ÉXITO ABSOLUTO con LiveOnly: ${bringATrailerResults.length} subastas VERDADERAMENTE ACTIVAS`);
+              console.log(`✅ ÉXITO ABSOLUTO con DirectUrl: ${bringATrailerResults.length} subastas VERDADERAMENTE ACTIVAS`);
             } else {
-              // Si LiveOnly falla, intentamos con LiveDirect
-              console.log('LiveOnly no encontró resultados, intentando con LiveDirect...');
-              bringATrailerResults = await scrapeBringATrailerLiveDirect(
+              // Si DirectUrl falla, intentamos con LiveOnly
+              console.log('DirectUrl no encontró resultados, intentando con LiveOnly...');
+              bringATrailerResults = await scrapeBringATrailerLiveOnly(
                 make, 
                 model,
                 searchParams.year?.toString()
