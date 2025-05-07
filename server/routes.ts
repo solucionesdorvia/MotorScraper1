@@ -14,7 +14,7 @@ import { scrapeBringATrailerAuctionsV2 } from "./scraper/bat-auctions-v2";
 import { scrapeBringATrailerDirectAuctions } from "./scraper/bat-direct-auctions";
 import { scrapeBringATrailerDirectOptimized } from "./scraper/bat-direct-optimized";
 import { scrapeBringATrailerDirectMatch } from "./scraper/bat-direct-match";
-import { scrapeBringATrailerDodge } from "./scraper/bat-dodge-example";
+import { scrapeBringATrailerDodge } from "./scraper/bat-dodge-improved";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
