@@ -159,85 +159,128 @@ function extractActiveAuctionsFromAuctionsPage(html: string, make: string, model
     
     console.log(`Buscando subastas activas para: ${make} ${model} ${year || ''} en la sección "auctions"...`);
     
-    // Estructura específica de la página de auctions
-    // Vamos a buscar todos los elementos de tipo artículo o tarjeta de subasta
-    const auctionElements = $('.auction-item, .auctions-item, .listing-card, article, .current-auction');
-    console.log(`Encontrados ${auctionElements.length} elementos de subasta en total en la página`);
+    // Estructura específica de la página de auctions según el HTML proporcionado
+    // Primero buscamos las tarjetas de listado que están dentro del contenedor auctions-grid
+    const listingCards = $('.auctions-grid .listing-card, .listings-container.auctions-grid a.listing-card');
+    console.log(`Encontrados ${listingCards.length} tarjetas de listado en la sección "auctions"`);
     
-    // Si no encontramos elementos típicos, buscar cualquier enlace que parezca un listado de vehículo
-    if (auctionElements.length === 0) {
-      return extractActiveVehicles(html, make, model, year);
+    // Si no encontramos tarjetas de listado, intentar con un método más genérico
+    if (listingCards.length === 0) {
+      const auctionElements = $('.auction-item, .auctions-item, article, .current-auction, a[href*="/listing/"]');
+      console.log(`Encontrados ${auctionElements.length} elementos de subasta genéricos en la página`);
+      
+      // Si no hay elementos típicos, buscar cualquier enlace que parezca un listado de vehículo
+      if (auctionElements.length === 0) {
+        return extractActiveVehicles(html, make, model, year);
+      }
+      
+      // Procesar elementos genéricos
+      auctionElements.each((index, element) => {
+        try {
+          const auction = $(element);
+          
+          // Extraer enlace principal
+          const linkElement = auction.is('a') ? auction : auction.find('a').first();
+          const href = linkElement.attr('href') || '';
+          
+          // Solo procesar si parece un enlace a un listado
+          if (!href || (!href.includes('/listing/') && !href.includes('/auctions/'))) {
+            return; // Continuar con el siguiente elemento
+          }
+          
+          // Extraer título de diferentes maneras
+          let title = '';
+          
+          // 1. Buscar en elementos h3 o h2 (títulos comunes)
+          const titleElement = auction.find('h3, h2').first();
+          if (titleElement.length > 0) {
+            title = titleElement.text().trim();
+          }
+          
+          // 2. Si no hay título, buscar en el atributo alt de la imagen
+          if (!title) {
+            const imgElement = auction.find('img').first();
+            if (imgElement.length > 0) {
+              title = imgElement.attr('alt') || '';
+            }
+          }
+          
+          // 3. Si aún no hay título, usar el texto del enlace
+          if (!title) {
+            title = linkElement.text().trim();
+          }
+          
+          // Procesar el elemento si tenemos un título
+          if (title && href) {
+            processAuctionElement(auction, title, href, make, model, year, vehicles);
+          }
+        } catch (error: any) {
+          console.error(`Error al procesar elemento de subasta genérico: ${error.message}`);
+        }
+      });
+      
+      return vehicles;
     }
     
-    auctionElements.each((index, element) => {
+    // Procesar las tarjetas de listado del formato estándar de la página de auctions
+    listingCards.each((index, element) => {
       try {
-        const auction = $(element);
+        const card = $(element);
+        const href = card.attr('href') || '';
         
-        // Extraer enlace principal
-        const linkElement = auction.is('a') ? auction : auction.find('a').first();
-        const href = linkElement.attr('href') || '';
-        
-        // Solo procesar si parece un enlace a un listado
-        if (!href || (!href.includes('/listing/') && !href.includes('/auctions/'))) {
+        // Solo procesar si es un enlace a un listado
+        if (!href || !href.includes('/listing/')) {
           return; // Continuar con el siguiente elemento
         }
         
-        // Extraer título de diferentes maneras
+        // Extraer título del h3 dentro del content-main
         let title = '';
-        
-        // 1. Buscar en elementos h3 o h2 (títulos comunes)
-        const titleElement = auction.find('h3, h2').first();
+        const titleElement = card.find('.content h3, .content-main h3').first();
         if (titleElement.length > 0) {
           title = titleElement.text().trim();
         }
         
-        // 2. Si no hay título, buscar en el atributo alt de la imagen
+        // Si no hay título en h3, intentar con el atributo alt de la imagen
         if (!title) {
-          const imgElement = auction.find('img').first();
+          const imgElement = card.find('.thumbnail img, img').first();
           if (imgElement.length > 0) {
             title = imgElement.attr('alt') || '';
           }
         }
         
-        // 3. Si aún no hay título, usar el texto del enlace
-        if (!title) {
-          title = linkElement.text().trim();
-        }
-        
-        // Extraer datos de precio/puja
-        let bidText = '';
-        let price = 0;
-        
-        // Intentar diferentes selectores para encontrar el precio o puja actual
-        const bidElement = auction.find('.bid-information, .auction-bid, .bid-formatted, .current-bid, [data-listing-current], .price').first();
-        if (bidElement.length > 0) {
-          bidText = bidElement.text().trim();
-          price = extractPrice(bidText) || 0;
-        }
-        
-        // Extraer tiempo restante
-        let timeRemaining = '';
-        
-        // Intentar diferentes selectores para encontrar el tiempo restante
-        const timeElement = auction.find('.time-remaining, .countdown-text, .auction-time, .current-auction-data-time, .remaining-time').first();
-        if (timeElement.length > 0) {
-          timeRemaining = timeElement.text().trim();
-        }
-        
-        // Extraer imagen
-        let imageUrl = '';
-        const imgElement = auction.find('img').first();
-        if (imgElement.length > 0) {
-          imageUrl = imgElement.attr('src') || '';
-        }
-        
-        // Verificar si tenemos los datos mínimos y si es relevante para nuestra búsqueda
+        // Verificar si tenemos un título y es relevante antes de continuar
         if (title && href && isRelevant(title, make, model, year)) {
+          // Extraer información de puja
+          let bidText = '';
+          let price = 0;
+          
+          // Buscar el elemento que contiene la puja actual (según el HTML proporcionado)
+          const bidElement = card.find('.bid-formatted').first();
+          if (bidElement.length > 0) {
+            bidText = bidElement.text().trim();
+            price = extractPrice(bidText) || 0;
+          }
+          
+          // Extraer tiempo restante
+          let timeRemaining = '';
+          
+          // Buscar el elemento que contiene el tiempo restante (según el HTML proporcionado)
+          const timeElement = card.find('.countdown-text').first();
+          if (timeElement.length > 0) {
+            timeRemaining = timeElement.text().trim();
+          }
+          
+          // Extraer imagen
+          let imageUrl = '';
+          const imgElement = card.find('.thumbnail img, img').first();
+          if (imgElement.length > 0) {
+            imageUrl = imgElement.attr('src') || '';
+          }
+          
+          // Crear y agregar vehículo
+          const cleanTitle = cleanTitleText(title);
           console.log(`Encontrada subasta activa relevante: "${title}" - ${href}`);
           console.log(`  Precio: ${bidText}, Tiempo: ${timeRemaining}`);
-          
-          // Limpiar el título
-          const cleanTitle = cleanTitleText(title);
           
           // Crear objeto de vehículo
           const vehicle: InsertVehicle = {
@@ -267,15 +310,94 @@ function extractActiveAuctionsFromAuctionsPage(html: string, make: string, model
           console.log(`✅ Vehículo activo añadido: "${cleanTitle}"`);
         }
       } catch (error: any) {
-        console.error(`Error al procesar subasta: ${error.message}`);
+        console.error(`Error al procesar tarjeta de listado: ${error.message}`);
       }
     });
     
-    console.log(`Total de vehículos relevantes encontrados en la sección "auctions": ${vehicles.length}`);
     return vehicles;
   } catch (error: any) {
     console.error('Error al extraer subastas activas de la sección "auctions":', error.message);
     return [];
+  }
+}
+
+/**
+ * Procesa un elemento de subasta genérico
+ */
+function processAuctionElement(
+  auction: cheerio.Cheerio, 
+  title: string, 
+  href: string, 
+  make: string, 
+  model: string, 
+  year: string | undefined, 
+  vehicles: InsertVehicle[]
+): void {
+  try {
+    // Extraer datos de precio/puja
+    let bidText = '';
+    let price = 0;
+    
+    // Intentar diferentes selectores para encontrar el precio o puja actual
+    const bidElement = auction.find('.bid-information, .auction-bid, .bid-formatted, .current-bid, [data-listing-current], .price').first();
+    if (bidElement.length > 0) {
+      bidText = bidElement.text().trim();
+      price = extractPrice(bidText) || 0;
+    }
+    
+    // Extraer tiempo restante
+    let timeRemaining = '';
+    
+    // Intentar diferentes selectores para encontrar el tiempo restante
+    const timeElement = auction.find('.time-remaining, .countdown-text, .auction-time, .current-auction-data-time, .remaining-time').first();
+    if (timeElement.length > 0) {
+      timeRemaining = timeElement.text().trim();
+    }
+    
+    // Extraer imagen
+    let imageUrl = '';
+    const imgElement = auction.find('img').first();
+    if (imgElement.length > 0) {
+      imageUrl = imgElement.attr('src') || '';
+    }
+    
+    // Verificar si tenemos los datos mínimos y si es relevante para nuestra búsqueda
+    if (title && href && isRelevant(title, make, model, year)) {
+      console.log(`Encontrada subasta activa relevante: "${title}" - ${href}`);
+      console.log(`  Precio: ${bidText}, Tiempo: ${timeRemaining}`);
+      
+      // Limpiar el título
+      const cleanTitle = cleanTitleText(title);
+      
+      // Crear objeto de vehículo
+      const vehicle: InsertVehicle = {
+        title: cleanTitle,
+        make,
+        model,
+        source: 'bringatrailer',
+        sourceUrl: href,
+        imageUrl,
+        year: extractYear(cleanTitle) || (year ? parseInt(year) : null),
+        price,
+        isAuction: true,
+        currentBid: price,
+        endsIn: translateTimeRemaining(timeRemaining),
+        transmission: extractTransmission(cleanTitle),
+        bodyType: extractBodyType(cleanTitle),
+        location: 'Estados Unidos',
+        mileage: null,
+        color: null,
+        vin: null,
+        fuelType: null,
+        dealerName: null,
+        hasDeals: false
+      };
+      
+      vehicles.push(vehicle);
+      console.log(`✅ Vehículo activo añadido: "${cleanTitle}"`);
+    }
+  } catch (error: any) {
+    console.error(`Error al procesar subasta: ${error.message}`);
   }
 }
 
