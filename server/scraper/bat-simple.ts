@@ -11,6 +11,7 @@ interface BaTListing {
   image: string;
   link: string;
   description: string;
+  price: number | null;
 }
 
 /**
@@ -29,17 +30,17 @@ export async function scrapeBringATrailerSimple(make: string, model: string, yea
 
     console.log(`Encontrados ${listings.length} listados en la versión simplificada`);
 
+    // Eliminar duplicados basados en la URL
+    const uniqueListings = removeDuplicates(listings);
+    console.log(`Después de eliminar duplicados: ${uniqueListings.length} listados únicos`);
+
     // Convertir los listados de BaT a formato InsertVehicle
-    const vehicles: InsertVehicle[] = listings
+    const vehicles: InsertVehicle[] = uniqueListings
       .filter(listing => isRelevant(listing.title, make, model, year))
       .map(listing => {
         // Extraer año del título
         const yearMatch = listing.title.match(/(19\d{2}|20\d{2})/);
         const extractedYear = yearMatch ? parseInt(yearMatch[0], 10) : (year ? parseInt(year, 10) : null);
-
-        // Extraer precio/oferta si está disponible en la descripción
-        const priceMatch = listing.description.match(/\$(\d+,\d+|\d+)/);
-        const price = priceMatch ? parseInt(priceMatch[1].replace(/,/g, ''), 10) : null;
 
         return {
           title: listing.title,
@@ -47,11 +48,11 @@ export async function scrapeBringATrailerSimple(make: string, model: string, yea
           model,
           source: 'bringatrailer',
           sourceUrl: listing.link.startsWith('http') ? listing.link : `https://bringatrailer.com${listing.link}`,
-          imageUrl: listing.image,
+          imageUrl: listing.image || 'https://i.imgur.com/U45aNlT.jpg', // Imagen predeterminada en Imgur
           year: extractedYear,
-          price,
+          price: listing.price,
           isAuction: true,
-          currentBid: price,
+          currentBid: listing.price,
           endsIn: 'En curso', // Todas las subastas mostradas en BaT están activas
           transmission: null,
           bodyType: null,
@@ -65,12 +66,33 @@ export async function scrapeBringATrailerSimple(make: string, model: string, yea
         };
       });
 
-    console.log(`Convertidos ${vehicles.length} vehículos relevantes de ${listings.length} listados`);
+    console.log(`Convertidos ${vehicles.length} vehículos relevantes de ${uniqueListings.length} listados`);
+    
+    // Registrar detalles de cada vehículo
+    vehicles.forEach((vehicle, index) => {
+      console.log(`Vehículo ${index + 1}: ${vehicle.title} - Precio: ${vehicle.price} - Tiempo: ${vehicle.endsIn}`);
+    });
+    
     return vehicles;
   } catch (error) {
     console.error('Error scraping Bring a Trailer (simple):', error);
     return [];
   }
+}
+
+/**
+ * Elimina listados duplicados basándose en la URL
+ */
+function removeDuplicates(listings: BaTListing[]): BaTListing[] {
+  const uniqueUrls = new Set<string>();
+  return listings.filter(listing => {
+    const normalizedUrl = listing.link.toLowerCase();
+    if (uniqueUrls.has(normalizedUrl)) {
+      return false;
+    }
+    uniqueUrls.add(normalizedUrl);
+    return true;
+  });
 }
 
 /**
@@ -148,13 +170,29 @@ function extractListings(html: string): BaTListing[] {
       }
     }
 
+    // Extraer precio/oferta si está disponible en la descripción o en otros elementos
+    let price: number | null = null;
+    const bidText = $el.find('.bid-price, .bid-value, .current-bid, [class*="bid"], [class*="price"]').text().trim();
+    
+    if (bidText) {
+      // Intentar extraer precio con formato $XX,XXX o similar
+      const priceMatch = bidText.match(/\$(\d{1,3}(,\d{3})*|\d+)/) || 
+                          description.match(/\$(\d{1,3}(,\d{3})*|\d+)/);
+      
+      if (priceMatch && priceMatch[1]) {
+        price = parseInt(priceMatch[1].replace(/,/g, ''), 10);
+        console.log(`Precio extraído: $${price}`);
+      }
+    }
+    
     if (title && link) {
-      console.log(`✅ Tarjeta válida encontrada: ${title} - ${link}`);
+      console.log(`✅ Tarjeta válida encontrada: ${title} - ${link} - $${price || 'N/A'}`);
       listings.push({ 
         title, 
-        image: image || 'https://bringatrailer.com/wp-content/themes/bringatrailer/images/bat-logo.png', 
+        image: image || 'https://i.imgur.com/U45aNlT.jpg', 
         link, 
-        description 
+        description,
+        price
       });
     } else {
       console.log(`❌ Tarjeta descartada: Título=${!!title}, Link=${!!link}`);
