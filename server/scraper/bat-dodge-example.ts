@@ -174,52 +174,74 @@ export async function scrapeBringATrailerDodge(make: string, model: string, year
   console.log(`🔎 Buscando con scraper ESPECIALIZADO para Dodge: ${make} ${model} ${year || ''}`);
   
   try {
-    // Primero intenta hacer una solicitud HTTP real
+    // Primero intentamos hacer una solicitud HTTP real
     const searchQuery = [make, model, year].filter(Boolean).join('+');
     const searchUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
     console.log(`URL de búsqueda: ${searchUrl}`);
     
     try {
-      // Usar un timeout muy estricto (5 segundos) para evitar bloqueos
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
+      // Usar un timeout más generoso (10 segundos) para evitar problemas de conectividad
       const response = await axios.get(searchUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Cache-Control': 'no-cache'
         },
-        signal: controller.signal,
-        timeout: 5000 // 5 segundos máximo
+        timeout: 10000 // 10 segundos máximo
       });
       
-      // Limpiar el timeout
-      clearTimeout(timeoutId);
-      
-      console.log(`✅ HTML obtenido (${response.data.length} bytes) de la URL real`);
-      
-      // Extraer vehículos del HTML
-      const vehicles = extractVehiclesFromHTML(response.data, make, model, year);
-      
-      if (vehicles.length > 0) {
-        console.log(`✅ Encontrados ${vehicles.length} vehículos relevantes en el HTML real.`);
-        return vehicles;
-      }
-      
-      console.log('⚠️ No se encontraron vehículos relevantes en el HTML real. Usando HTML de ejemplo...');
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.name === 'AbortError' || (error as any).code === 'ECONNABORTED') {
-          console.log('⚠️ La solicitud HTTP excedió el tiempo límite, usando HTML de ejemplo fallback');
+      if (response.status === 200 && response.data) {
+        console.log(`✅ HTML obtenido (${response.data.length} bytes) de la URL real`);
+        
+        // Extraer vehículos del HTML
+        const vehicles = extractVehiclesFromHTML(response.data, make, model, year);
+        
+        if (vehicles.length > 0) {
+          console.log(`✅ Encontrados ${vehicles.length} vehículos relevantes en el HTML real.`);
+          return vehicles;
         } else {
-          console.error(`Error al obtener HTML real: ${error.message}`);
+          console.log('⚠️ No se encontraron vehículos relevantes en el HTML real.');
         }
       } else {
-        console.error('Error desconocido al obtener HTML real');
+        console.error(`❌ Respuesta no válida: ${response.status}`);
       }
+    } catch (error) {
+      console.error(`❌ Error al obtener datos de Bring a Trailer: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
     
-    // Si no pudimos obtener resultados o hubo errores, devolvemos array vacío
+    // Si no se pudieron obtener resultados o hubo errores, intentamos con una URL alternativa
+    try {
+      console.log('⚠️ Intentando con URL alternativa...');
+      const alternativeUrl = `https://bringatrailer.com/search/?s=${encodeURIComponent(searchQuery)}`;
+      console.log(`URL alternativa: ${alternativeUrl}`);
+      
+      const response = await axios.get(alternativeUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+          'Cache-Control': 'no-cache'
+        },
+        timeout: 10000
+      });
+      
+      if (response.status === 200 && response.data) {
+        console.log(`✅ HTML alternativo obtenido (${response.data.length} bytes)`);
+        
+        // Extraer vehículos del HTML alternativo
+        const vehicles = extractVehiclesFromHTML(response.data, make, model, year);
+        
+        if (vehicles.length > 0) {
+          console.log(`✅ Encontrados ${vehicles.length} vehículos relevantes en el HTML alternativo.`);
+          return vehicles;
+        } else {
+          console.log('⚠️ No se encontraron vehículos relevantes en el HTML alternativo.');
+        }
+      }
+    } catch (error) {
+      console.error(`❌ Error al obtener datos alternativos: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    }
+    
+    // Si todas las opciones fallaron, devolvemos array vacío
     console.log('❌ No se pudieron obtener datos reales de Bring a Trailer');
     return [];
     
@@ -261,12 +283,31 @@ function extractVehiclesFromHTML(html: string, make: string, model: string, year
     console.log(`✅ Encontrado contenedor principal con ${listingsContainer.find('a.listing-card').length} tarjetas de listado`);
   }
   
-  // Buscar todas las tarjetas de listado en el contenedor
-  let cards = $(listingsContainer).find('a.listing-card');
-  if (cards.length === 0) {
-    // Si no encontramos tarjetas en el contenedor, buscar en todo el HTML
-    console.log('⚠️ No se encontraron tarjetas en el contenedor específico, buscando en todo el HTML');
-    cards = $('a.listing-card');
+  // Buscar todas las tarjetas de listado usando distintos selectores
+  let cards = $();
+  
+  // Estrategia 1: Buscar en el contenedor específico
+  const cardsInContainer = $(listingsContainer).find('a.listing-card');
+  if (cardsInContainer.length > 0) {
+    console.log(`Encontradas ${cardsInContainer.length} tarjetas en el contenedor principal`);
+    cards = cardsInContainer;
+  } else {
+    // Estrategia 2: Buscar en cualquier contenedor de listings
+    const cardsInGenericContainer = $('.listings-container a.listing-card');
+    if (cardsInGenericContainer.length > 0) {
+      console.log(`Encontradas ${cardsInGenericContainer.length} tarjetas en contenedores genéricos`);
+      cards = cardsInGenericContainer;
+    } else {
+      // Estrategia 3: Buscar cualquier tarjeta de listado en toda la página
+      console.log('⚠️ No se encontraron tarjetas en los contenedores, buscando en toda la página');
+      cards = $('a.listing-card');
+      
+      // Estrategia 4: Buscar resultados de búsqueda generales
+      if (cards.length === 0) {
+        console.log('⚠️ No se encontraron tarjetas estándar, buscando resultados generales');
+        cards = $('.search-result-items .listing-card, .search-results .auction-item, .search-results-loop a.tile, .search-result-live-listings a');
+      }
+    }
   }
   
   console.log(`Encontradas ${cards.length} tarjetas de listado en total`);
@@ -279,8 +320,24 @@ function extractVehiclesFromHTML(html: string, make: string, model: string, year
       // Extraer URL del listado
       const url = card.attr('href') || '';
       
-      // Extraer título
-      const title = card.find('h3').text().trim();
+      // Extraer título usando diferentes selectores posibles
+      let title = '';
+      const h3 = card.find('h3');
+      if (h3.length > 0) {
+        title = h3.text().trim();
+      } else {
+        const h4 = card.find('h4, .item-title, .listing-title, .auction-title');
+        if (h4.length > 0) {
+          title = h4.text().trim();
+        } else {
+          // Última opción: intentar encontrar cualquier elemento que parezca un título
+          const possibleTitle = card.find('strong, .title, .name').first();
+          if (possibleTitle.length > 0) {
+            title = possibleTitle.text().trim();
+          }
+        }
+      }
+      
       console.log(`Analizando listado #${index + 1}: "${title}" (${url})`);
       
       if (!title) {
@@ -288,22 +345,80 @@ function extractVehiclesFromHTML(html: string, make: string, model: string, year
         return;
       }
       
-      // Extraer imagen
-      const imgElement = card.find('.thumbnail img');
-      const imageUrl = imgElement.attr('src') || '';
+      // Extraer imagen con diferentes selectores posibles
+      let imageUrl = '';
+      const imgInThumbnail = card.find('.thumbnail img');
+      if (imgInThumbnail.length > 0) {
+        imageUrl = imgInThumbnail.attr('src') || '';
+      } else {
+        const anyImg = card.find('img');
+        if (anyImg.length > 0) {
+          imageUrl = anyImg.attr('src') || '';
+        } else {
+          const imgContainer = card.find('.image-container, .listing-image, .auction-image');
+          if (imgContainer.length > 0) {
+            const imgInContainer = imgContainer.find('img');
+            if (imgInContainer.length > 0) {
+              imageUrl = imgInContainer.attr('src') || '';
+            } else {
+              // Intentar encontrar un background-image
+              const style = imgContainer.attr('style') || '';
+              const bgMatch = style.match(/background-image:\s*url\(['"]?([^'"]+)['"]?\)/i);
+              if (bgMatch) {
+                imageUrl = bgMatch[1];
+              }
+            }
+          }
+        }
+      }
       
-      // Extraer descripción
-      const description = card.find('.item-excerpt').text().trim();
+      // Extraer descripción con diferentes selectores posibles
+      let description = '';
+      const excerpt = card.find('.item-excerpt, .description, .auction-excerpt');
+      if (excerpt.length > 0) {
+        description = excerpt.text().trim();
+      }
       
-      // Extraer precio actual (oferta)
-      const bidElement = card.find('.bid-formatted');
-      const bidText = bidElement.text().trim();
-      const currentBid = extractPrice(bidText);
+      // Extraer precio actual (oferta) con diferentes selectores posibles
+      let bidText = '';
+      let currentBid = null;
+      
+      const bidFormatted = card.find('.bid-formatted, .current-bid, .price, .auction-price');
+      if (bidFormatted.length > 0) {
+        bidText = bidFormatted.text().trim();
+        currentBid = extractPrice(bidText);
+      } else {
+        // Buscar cualquier texto que parezca un precio
+        const possiblePriceElements = card.find('*').filter(function() {
+          const text = $(this).text().trim();
+          return /\$\d+|\d+\s*USD/i.test(text);
+        });
+        
+        if (possiblePriceElements.length > 0) {
+          bidText = possiblePriceElements.first().text().trim();
+          currentBid = extractPrice(bidText);
+        }
+      }
+      
       console.log(`  💰 Puja actual: ${bidText} (${currentBid || 'desconocido'})`);
       
-      // Extraer tiempo restante
-      const timeElement = card.find('.countdown-text');
-      const timeRemaining = timeElement.text().trim();
+      // Extraer tiempo restante con diferentes selectores posibles
+      let timeRemaining = '';
+      const countdownText = card.find('.countdown-text, .countdown, .time-left, .auction-end-time');
+      if (countdownText.length > 0) {
+        timeRemaining = countdownText.text().trim();
+      } else {
+        // Buscar cualquier texto que parezca un tiempo
+        const possibleTimeElements = card.find('*').filter(function() {
+          const text = $(this).text().trim();
+          return /\d+d|\d+h|\d+m|days?|hours?|mins?|ending|ends/i.test(text);
+        });
+        
+        if (possibleTimeElements.length > 0) {
+          timeRemaining = possibleTimeElements.first().text().trim();
+        }
+      }
+      
       console.log(`  ⏱️ Tiempo restante: ${timeRemaining}`);
       
       // Verificar si el título es relevante para la búsqueda
