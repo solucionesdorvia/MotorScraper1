@@ -55,20 +55,58 @@ export async function scrapeBringATrailerDirect(make: string, model: string, yea
     
     console.log(`✅ Respuesta recibida con status: ${response.status}`);
     
+    // Guardar el HTML para análisis
+    const htmlContent = response.data;
+    
+    // Mostrar un pequeño fragmento para depuración
+    console.log(`🔍 Fragmento de HTML: ${htmlContent.substring(0, 150)}...`);
+    
+    // Analizar estructura básica HTML
+    if (htmlContent.includes('auctions-current-container')) {
+      console.log(`✅ HTML contiene el ID del contenedor de subastas activas`);
+    } else {
+      console.log(`⚠️ HTML no contiene el ID del contenedor de subastas activas`);
+    }
+    
+    if (htmlContent.includes('listing-card')) {
+      console.log(`✅ HTML contiene la clase de tarjetas de listado`);
+    } else {
+      console.log(`⚠️ HTML no contiene la clase de tarjetas de listado`);
+    }
+    
     // Crear DOM a partir del HTML
-    const dom = new JSDOM(response.data);
+    const dom = new JSDOM(htmlContent);
     const document = dom.window.document;
+    
+    // Verificar estructura del DOM
+    console.log(`🔎 DOM creado, verificando estructura...`);
+    console.log(`🔎 Título de la página: ${document.title}`);
     
     // Extraer contenedor de subastas actuales
     console.log(`🔎 Buscando contenedor de subastas actuales...`);
     
     // Contenedor principal de subastas activas
-    const auctionsContainer = document.querySelector('#auctions-current-container');
+    let auctionsContainer = document.querySelector('#auctions-current-container');
     
     if (!auctionsContainer) {
-      console.log(`⚠️ No se encontró el contenedor de subastas actuales`);
-      return [];
+      console.log(`⚠️ No se encontró el contenedor de subastas actuales mediante querySelector`);
+      
+      // Intentar encontrar por ID directamente
+      const containerById = document.getElementById('auctions-current-container');
+      if (containerById) {
+        console.log(`✅ Contenedor encontrado mediante getElementById`);
+        // Usar este contenedor en lugar del anterior
+        auctionsContainer = containerById;
+      } else {
+        console.log(`⚠️ No se encontró el contenedor ni siquiera con getElementById`);
+        return [];
+      }
+    } else {
+      console.log(`✅ Contenedor encontrado mediante querySelector`);
     }
+    
+    // Verificar estructura antes de extraer tarjetas
+    console.log(`🔎 Estructura HTML del contenedor: ${auctionsContainer?.outerHTML?.substring(0, 200)}...`);
     
     // Extraer tarjetas de listado
     const listingCards = auctionsContainer.querySelectorAll('.listing-card');
@@ -80,6 +118,12 @@ export async function scrapeBringATrailerDirect(make: string, model: string, yea
     
     console.log(`✅ Encontradas ${listingCards.length} tarjetas de listado`);
     
+    // Mostrar información detallada de la primera tarjeta
+    if (listingCards.length > 0) {
+      const firstCard = listingCards[0];
+      console.log(`🔍 Primera tarjeta HTML: ${firstCard.outerHTML.substring(0, 200)}...`);
+    }
+    
     // Procesar cada tarjeta de listado
     for (let i = 0; i < listingCards.length; i++) {
       const card = listingCards[i];
@@ -88,13 +132,33 @@ export async function scrapeBringATrailerDirect(make: string, model: string, yea
       const titleElement = card.querySelector('h3');
       const title = titleElement ? titleElement.textContent || "" : "";
       
+      let titleValue = title;
+      if (!titleValue || titleValue.trim() === "") {
+        console.log(`⚠️ No se pudo extraer el título del listado #${i + 1}`);
+        console.log(`⚠️ HTML de la tarjeta: ${card.outerHTML.substring(0, 150)}...`);
+        
+        try {
+          // Intentar extraer directamente el texto del atributo alt de la imagen
+          const imgElement = card.querySelector('.thumbnail img');
+          if (imgElement) {
+            const altText = imgElement.getAttribute('alt');
+            if (altText && altText.trim() !== "") {
+              console.log(`✅ Se extrajo título alternativo: ${altText}`);
+              titleValue = altText;
+            }
+          }
+        } catch (e) {
+          console.error(`❌ Error al intentar extraer título alternativo: ${e}`);
+        }
+      }
+      
       // Verificar si el título es relevante para la búsqueda
-      if (!isRelevant(title, make, model, year)) {
-        console.log(`⚠️ Listado no relevante: ${title}`);
+      if (!isRelevant(titleValue, make, model, year)) {
+        console.log(`⚠️ Listado no relevante: ${titleValue}`);
         continue;
       }
       
-      console.log(`✅ Listado relevante encontrado: ${title}`);
+      console.log(`✅ Listado relevante encontrado: ${titleValue}`);
       
       // URL de la subasta
       const href = card.getAttribute('href');
@@ -126,11 +190,11 @@ export async function scrapeBringATrailerDirect(make: string, model: string, yea
       const hasNoReserve = !!noReserveElement;
       
       // Extraer información adicional del título
-      const { extractedYear, transmission, bodyType } = extractInfoFromTitle(title);
+      const { extractedYear, transmission, bodyType } = extractInfoFromTitle(titleValue);
       
       // Crear objeto de vehículo
       const vehicle: InsertVehicle = {
-        title: title,
+        title: titleValue,
         make: make,
         model: model,
         price: currentBid,
