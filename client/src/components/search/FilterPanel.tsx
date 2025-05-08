@@ -88,12 +88,12 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
   return (
     <aside className="lg:w-1/4 bg-white rounded-lg shadow p-4 h-fit">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Filters</h2>
+        <h2 className="text-lg font-semibold">Filtros</h2>
         <button 
           className="text-primary text-sm font-medium"
           onClick={onResetFilters}
         >
-          Reset All
+          Restablecer
         </button>
       </div>
       
@@ -105,7 +105,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FilterAccordion title="Price Range" defaultOpen={true}>
+          <FilterAccordion title="Rango de Precio" defaultOpen={true}>
             <div className="flex items-center gap-2">
               <FormField
                 control={form.control}
@@ -115,7 +115,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
                     <FormControl>
                       <Input 
                         type="number" 
-                        placeholder="Min" 
+                        placeholder="Mínimo" 
                         {...field} 
                         className="p-2 border border-neutral-300 rounded-md text-sm"
                       />
@@ -132,7 +132,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
                     <FormControl>
                       <Input 
                         type="number" 
-                        placeholder="Max" 
+                        placeholder="Máximo" 
                         {...field} 
                         className="p-2 border border-neutral-300 rounded-md text-sm"
                       />
@@ -143,7 +143,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
             </div>
           </FilterAccordion>
           
-          <FilterAccordion title="Mileage">
+          <FilterAccordion title="Kilometraje">
             <div className="flex items-center gap-2">
               <FormField
                 control={form.control}
@@ -153,7 +153,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
                     <FormControl>
                       <Input 
                         type="number" 
-                        placeholder="Min" 
+                        placeholder="Mínimo" 
                         {...field} 
                         className="p-2 border border-neutral-300 rounded-md text-sm"
                       />
@@ -170,7 +170,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
                     <FormControl>
                       <Input 
                         type="number" 
-                        placeholder="Max" 
+                        placeholder="Máximo" 
                         {...field} 
                         className="p-2 border border-neutral-300 rounded-md text-sm"
                       />
@@ -181,7 +181,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
             </div>
           </FilterAccordion>
           
-          <FilterAccordion title="Body Type">
+          <FilterAccordion title="Tipo de Carrocería">
             <div className="space-y-2">
               {bodyTypes.map((bodyType) => (
                 <FormField
@@ -209,7 +209,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
             </div>
           </FilterAccordion>
           
-          <FilterAccordion title="Transmission">
+          <FilterAccordion title="Transmisión">
             <div className="space-y-2">
               {transmissions.map((transmission) => (
                 <FormField
@@ -265,7 +265,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
             type="submit" 
             className="mt-6 w-full btn-primary"
           >
-            Apply Filters
+            Aplicar Filtros
           </Button>
         </form>
       </Form>

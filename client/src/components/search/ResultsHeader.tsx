@@ -31,17 +31,17 @@ const ResultsHeader = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold">{formatTitle()}</h2>
-          <p className="text-neutral-600 text-sm">{totalResults} results found</p>
+          <p className="text-neutral-600 text-sm">{totalResults} resultados encontrados</p>
         </div>
         
         <div className="flex items-center gap-3">
-          <label className="text-sm text-neutral-700 whitespace-nowrap">Sort by:</label>
+          <label className="text-sm text-neutral-700 whitespace-nowrap">Ordenar por:</label>
           <Select 
             defaultValue={currentSort || "relevance"}
             onValueChange={onSortChange}
           >
             <SelectTrigger className="border border-neutral-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-auto">
-              <SelectValue placeholder="Select sort" />
+              <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>
             <SelectContent>
               {sortOptions.map((option) => (
