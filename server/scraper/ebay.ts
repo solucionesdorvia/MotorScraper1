@@ -5,7 +5,15 @@ import { InsertVehicle } from '@shared/schema';
 export async function scrapeEbay(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   try {
     const query = `${make} ${model} ${year || ''}`.trim();
-    const url = `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}&_sacat=0&_from=R40&_trksid=m570.l1313`;
+    
+    console.log(`🚗 Iniciando búsqueda en eBay Motors para: ${query}`);
+    console.log('🔍 Aplicando filtros para excluir repuestos: categoría específica + precio mínimo + filtro de palabras clave');
+    
+    // Modificar URL para:
+    // 1. Filtrar por categoría de vehículos (6001)
+    // 2. Establecer precio mínimo de $1500
+    // 3. Buscar solo en la categoría de autos y camionetas
+    const url = `https://www.ebay.com/sch/6001/i.html?_nkw=${encodeURIComponent(query)}&_udlo=1500&_fsrp=1&_sacat=6001&LH_ItemCondition=3000&_from=R40&_trksid=m570.l1313`;
     
     const response = await axios.get(url, {
       headers: {
@@ -24,13 +32,18 @@ export async function scrapeEbay(make: string, model: string, year?: string): Pr
     
     // Process search results - adjust selectors based on eBay's HTML structure
     // This is based on the attached HTML sample structure
+    let totalItems = 0;
+    let filteredItems = 0;
+    
     $('.s-item__wrapper').each((index, element) => {
       if (index === 0) return; // Skip the first item which is often a "Shop on eBay" header
       
+      totalItems++;
       const title = $(element).find('.s-item__title').text().trim();
       
       // Skip if it's not a vehicle listing or doesn't match our criteria
       if (!title || !isRelevantListing(title, make, model, year)) {
+        filteredItems++;
         return;
       }
       
@@ -94,6 +107,10 @@ export async function scrapeEbay(make: string, model: string, year?: string): Pr
       });
     });
     
+    // Registrar estadísticas de filtrado
+    console.log(`✅ eBay Motors: Se encontraron ${results.length} vehículos completos`);
+    console.log(`ℹ️ eBay Motors: Estadísticas de filtrado - Total: ${totalItems}, Filtrados como repuestos: ${filteredItems}, Tasa de filtrado: ${Math.round((filteredItems/totalItems)*100)}%`);
+    
     return results;
   } catch (error) {
     console.error('Error scraping eBay:', error);
@@ -111,7 +128,34 @@ function isRelevantListing(title: string, make: string, model: string, year?: st
   // Check if title contains both make and model
   const hasMakeAndModel = lowerTitle.includes(lowerMake) && lowerTitle.includes(lowerModel);
   
-  // If year is provided, check if title contains year
+  // Filtrar repuestos y accesorios con palabras clave negativas
+  const partsKeywords = [
+    'parts', 'part', 'repuesto', 'repuestos', 'pieza', 'piezas', 'accesorio', 'accesorios',
+    'emblem', 'emblema', 'manual', 'handbook', 'repair', 'reparación', 'cover', 'cubierta',
+    'wheel', 'rueda', 'rim', 'aro', 'llanta', 'llantas', 'tire', 'neumatico', 'kit', 
+    'filter', 'filtro', 'light', 'luz', 'luces', 'bulb', 'bombilla', 'mirror', 'espejo',
+    'door', 'puerta', 'hood', 'capó', 'trunk', 'maletero', 'engine', 'motor', 'solo',
+    'only', 'bracket', 'soporte', 'mount', 'montaje', 'switch', 'interruptor', 'handle', 'manija'
+  ];
+  
+  // Si el título contiene alguna palabra clave de repuestos, no es relevante
+  for (const keyword of partsKeywords) {
+    if (lowerTitle.includes(keyword)) {
+      console.log(`Filtrando repuesto: "${title}" por palabra clave "${keyword}"`);
+      return false;
+    }
+  }
+  
+  // Comprobar si el vehículo es antiguo (1900-1995)
+  const extractedYear = extractYear(title);
+  if (extractedYear) {
+    if (extractedYear < 1900 || extractedYear > 1995) {
+      console.log(`Filtrando vehículo fuera del rango de años (1900-1995): "${title}" - Año: ${extractedYear}`);
+      return false;
+    }
+  }
+  
+  // Si year es proporcionado, verificar que el título lo contenga
   if (year) {
     return hasMakeAndModel && lowerTitle.includes(year);
   }
