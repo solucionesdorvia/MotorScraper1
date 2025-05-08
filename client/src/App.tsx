@@ -7,7 +7,6 @@ import { FavoritesProvider } from "@/lib/favorites-context";
 import Navbar from "@/components/layout/Navbar";
 import Home from "@/pages/Home";
 import SearchResults from "@/pages/SearchResults";
-import BatDiagnostic from "@/pages/BatDiagnostic";
 import Favorites from "@/pages/Favorites";
 import NotFound from "@/pages/not-found";
 
@@ -16,7 +15,6 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/search" component={SearchResults} />
-      <Route path="/diagnostic" component={BatDiagnostic} />
       <Route path="/favorites" component={Favorites} />
       <Route component={NotFound} />
     </Switch>
