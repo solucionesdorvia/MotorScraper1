@@ -191,7 +191,8 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
     console.log(`📝 Longitud del HTML recibido: ${data.length} caracteres`);
     
     // Crear un DOM virtual con el HTML completo recibido
-    const { JSDOM } = require('jsdom');
+    // Importar JSDOM de forma compatible con ESM
+    const JSDOM = (await import('jsdom')).JSDOM;
     const dom = new JSDOM(data);
     const document = dom.window.document;
     
@@ -221,7 +222,7 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
       
       // Extraer la información del elemento
       const titleElement = card.querySelector('h3');
-      const title = titleElement ? titleElement.textContent.trim() : "";
+      const title = titleElement && titleElement.textContent ? titleElement.textContent.trim() : "";
       
       // Solo procesar si tenemos un título
       if (!title) {
@@ -236,7 +237,7 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
       
       const bidElement = card.querySelector('.bidding-bid .bid-formatted');
       let currentBid = null;
-      if (bidElement) {
+      if (bidElement && bidElement.textContent) {
         const bidText = bidElement.textContent;
         const bidMatch = bidText.match(/\$([0-9,]+)/);
         if (bidMatch && bidMatch[1]) {
@@ -245,7 +246,7 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
       }
       
       const countdownElement = card.querySelector('.bidding-countdown .countdown-text');
-      const endsIn = countdownElement ? countdownElement.textContent.trim() : null;
+      const endsIn = countdownElement && countdownElement.textContent ? countdownElement.textContent.trim() : null;
       
       const noReserveElement = card.querySelector('.item-tag-noreserve');
       const hasNoReserve = !!noReserveElement;

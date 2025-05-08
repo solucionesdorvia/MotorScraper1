@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Diagnóstico de Bring a Trailer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, button {
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      background-color: #4a65a3;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 8px 15px;
+    }
+    button:hover {
+      background-color: #3a5293;
+    }
+    #results {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      display: none;
+    }
+    img {
+      max-width: 100%;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+    }
+    pre {
+      background-color: #f9f9f9;
+      padding: 10px;
+      overflow: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      max-height: 300px;
+    }
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      margin-top: 20px;
+      border-radius: 5px 5px 0 0;
+    }
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 10px 16px;
+      transition: 0.3s;
+      color: #000;
+    }
+    .tab button:hover {
+      background-color: #ddd;
+    }
+    .tab button.active {
+      background-color: #4a65a3;
+      color: white;
+    }
+    .tabcontent {
+      display: none;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 5px 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Diagnóstico de Scraper de Bring a Trailer</h1>
+  <p>Esta herramienta permite diagnosticar el scraper de Bring a Trailer verificando su comportamiento con navegación real.</p>
+  
+  <h2>Tomar captura de pantalla</h2>
+  <form id="screenshotForm">
+    <div>
+      <label for="make">Marca:</label>
+      <input type="text" id="make" name="make" value="porsche" required>
+    </div>
+    <div>
+      <label for="model">Modelo:</label>
+      <input type="text" id="model" name="model" value="911" required>
+    </div>
+    <div>
+      <label for="year">Año (opcional):</label>
+      <input type="text" id="year" name="year" value="1980">
+    </div>
+    <button type="submit">Tomar captura</button>
+  </form>
+  
+  <div class="tab">
+    <button class="tablinks active" onclick="openTab(event, 'screenshotTab')">Captura de pantalla</button>
+    <button class="tablinks" onclick="openTab(event, 'htmlTab')">HTML renderizado</button>
+    <button class="tablinks" onclick="openTab(event, 'jsonTab')">Datos extraídos</button>
+  </div>
+  
+  <div id="screenshotTab" class="tabcontent" style="display:block">
+    <h3>Captura de Bring a Trailer</h3>
+    <div id="screenshotResult"></div>
+  </div>
+  
+  <div id="htmlTab" class="tabcontent">
+    <h3>HTML renderizado</h3>
+    <button id="getHtmlBtn" disabled>Obtener HTML</button>
+    <div id="htmlResult"></div>
+  </div>
+  
+  <div id="jsonTab" class="tabcontent">
+    <h3>Datos extraídos</h3>
+    <button id="getDataBtn">Extraer datos</button>
+    <div id="jsonResult"></div>
+  </div>
+  
+  <script>
+    // Variable para almacenar la URL actual
+    let currentSearchUrl = '';
+    
+    // Manejar el envío del formulario de captura
+    document.getElementById('screenshotForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const make = document.getElementById('make').value;
+      const model = document.getElementById('model').value;
+      const year = document.getElementById('year').value;
+      
+      // Crear URL de búsqueda para referencia
+      const searchQuery = [make, model, year].filter(Boolean).join('+');
+      currentSearchUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
+      
+      // Actualizar UI
+      document.getElementById('screenshotResult').innerHTML = '<p>Tomando captura...</p>';
+      document.getElementById('getHtmlBtn').disabled = false;
+      
+      try {
+        // Construir la URL con los parámetros
+        let url = `/api/bat/screenshot?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}`;
+        if (year) {
+          url += `&year=${encodeURIComponent(year)}`;
+        }
+        
+        // Mostrar la imagen en tiempo real
+        const timestamp = new Date().getTime(); // Para evitar caché
+        document.getElementById('screenshotResult').innerHTML = `
+          <p>URL de búsqueda: <a href="${currentSearchUrl}" target="_blank">${currentSearchUrl}</a></p>
+          <img src="${url}&t=${timestamp}" alt="Captura de BaT">
+        `;
+        
+        // Mostrar pestaña de captura
+        openTab(null, 'screenshotTab');
+      } catch (error) {
+        document.getElementById('screenshotResult').innerHTML = `<p>Error: ${error.message}</p>`;
+      }
+    });
+    
+    // Botón para obtener HTML
+    document.getElementById('getHtmlBtn').addEventListener('click', async function() {
+      if (!currentSearchUrl) {
+        alert('Primero tome una captura de pantalla');
+        return;
+      }
+      
+      document.getElementById('htmlResult').innerHTML = '<p>Obteniendo HTML...</p>';
+      
+      try {
+        const response = await fetch(`/api/bat/html?url=${encodeURIComponent(currentSearchUrl)}`);
+        const html = await response.text();
+        
+        document.getElementById('htmlResult').innerHTML = `
+          <p>HTML de la página (renderizado con JavaScript):</p>
+          <pre>${escapeHtml(html)}</pre>
+        `;
+        
+        // Mostrar pestaña de HTML
+        openTab(null, 'htmlTab');
+      } catch (error) {
+        document.getElementById('htmlResult').innerHTML = `<p>Error: ${error.message}</p>`;
+      }
+    });
+    
+    // Botón para extraer datos
+    document.getElementById('getDataBtn').addEventListener('click', async function() {
+      const make = document.getElementById('make').value;
+      const model = document.getElementById('model').value;
+      const year = document.getElementById('year').value;
+      
+      document.getElementById('jsonResult').innerHTML = '<p>Extrayendo datos...</p>';
+      
+      try {
+        // Construir la URL con los parámetros
+        let url = `/api/bat/test?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}`;
+        if (year) {
+          url += `&year=${encodeURIComponent(year)}`;
+        }
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        document.getElementById('jsonResult').innerHTML = `
+          <p>Resultados extraídos (${data.count} vehículos):</p>
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        `;
+        
+        // Mostrar pestaña de JSON
+        openTab(null, 'jsonTab');
+      } catch (error) {
+        document.getElementById('jsonResult').innerHTML = `<p>Error: ${error.message}</p>`;
+      }
+    });
+    
+    // Función para cambiar entre pestañas
+    function openTab(evt, tabName) {
+      var i, tabcontent, tablinks;
+      
+      // Ocultar todas las pestañas
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      
+      // Quitar la clase "active" de todos los botones
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      
+      // Mostrar la pestaña actual y añadir la clase "active" al botón
+      document.getElementById(tabName).style.display = "block";
+      if (evt) {
+        evt.currentTarget.className += " active";
+      } else {
+        // Si no hay evento, activar el botón por su ID
+        document.querySelector(`button[onclick*="${tabName}"]`).className += " active";
+      }
+    }
+    
+    // Función para escapar HTML
+    function escapeHtml(html) {
+      return html
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

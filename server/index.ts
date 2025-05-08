@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { registerDiagnosticRoutes } from "./diagnosis";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,10 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Registrar rutas de diagnóstico primero
+  registerDiagnosticRoutes(app);
+  
+  // Registrar las rutas principales después
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
