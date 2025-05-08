@@ -16,6 +16,31 @@ import { openAIService } from "./services/openai-service";
 // Cache for search results (TTL: 5 minutes)
 const searchCache = new NodeCache({ stdTTL: 300 });
 
+/**
+ * Función para intercalar los resultados de las diferentes fuentes
+ * @param list1 Primera lista de vehículos
+ * @param list2 Segunda lista de vehículos
+ * @returns Lista intercalada de vehículos
+ */
+function interleaveResults(list1: InsertVehicle[], list2: InsertVehicle[]): InsertVehicle[] {
+  const maxLength = Math.max(list1.length, list2.length);
+  const result: InsertVehicle[] = [];
+  
+  for (let i = 0; i < maxLength; i++) {
+    // Añadir de la primera lista si existe un elemento en esa posición
+    if (i < list1.length) {
+      result.push(list1[i]);
+    }
+    
+    // Añadir de la segunda lista si existe un elemento en esa posición
+    if (i < list2.length) {
+      result.push(list2[i]);
+    }
+  }
+  
+  return result;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // API route for searching vehicles
   app.get("/api/search", async (req: Request, res: Response) => {
@@ -177,17 +202,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`Obtained results: ${ebayResults.length} from eBay Motors, ${bringATrailerResults.length} from Bring a Trailer`);
         
-        // Combinar resultados de eBay Motors y Bring a Trailer
-        let allResults = [
-          ...ebayResults,
-          ...bringATrailerResults
-        ];
-        console.log(`Combined ${allResults.length} total results from eBay Motors and Bring a Trailer`);
+        // Intercalar resultados de eBay Motors y Bring a Trailer
+        let allResults = interleaveResults(ebayResults, bringATrailerResults);
+        
+        console.log(`Combined and interleaved ${allResults.length} total results from eBay Motors and Bring a Trailer`);
+        
+        // Mostrar primeros 10 resultados intercalados para verificar
+        if (allResults.length > 0) {
+          console.log('📊 Muestra de resultados intercalados (primeros 10):');
+          allResults.slice(0, Math.min(10, allResults.length)).forEach((vehicle: InsertVehicle, index: number) => {
+            console.log(`  ${index + 1}. [${vehicle.source}] ${vehicle.title}`);
+          });
+        }
         
         // Log para depurar BringATrailer resultados en detalle
         if (bringATrailerResults.length > 0) {
           console.log('Listado de vehículos de Bring a Trailer:');
-          bringATrailerResults.forEach((vehicle: InsertVehicle, index) => {
+          bringATrailerResults.forEach((vehicle: InsertVehicle, index: number) => {
             console.log(`Vehículo ${index + 1}: ${vehicle.title} - Precio: ${vehicle.price} - Tiempo: ${vehicle.endsIn || "En curso"}`);
           });
         }
