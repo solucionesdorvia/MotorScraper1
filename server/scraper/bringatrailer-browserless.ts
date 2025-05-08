@@ -151,21 +151,16 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
       return [];
     }
     
-    // URL de la API de browserless.io - usando el endpoint de scrape
-    const browserlessUrl = `https://chrome.browserless.io/scrape?token=${process.env.BROWSERLESS_API_KEY}`;
+    // URL de la API de browserless.io - usando el endpoint de content que devuelve HTML completo
+    const browserlessUrl = `https://chrome.browserless.io/content?token=${process.env.BROWSERLESS_API_KEY}`;
     
-    // Configuración de la solicitud - usando un formato más simple para evitar errores de sintaxis
+    // Configuración de la solicitud - enfoque más simple para obtener todo el HTML
     const requestBody = {
       url: searchUrl,
-      elements: [
-        {
-          selector: "#auctions-current-container .listing-card",
-          timeout: 15000
-        }
-      ],
+      waitFor: "#auctions-current-container",
       gotoOptions: {
         waitUntil: "networkidle2",
-        timeout: 25000
+        timeout: 30000
       }
     };
     
@@ -184,34 +179,40 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
     // Procesar la respuesta
     const data = response.data;
     
-    console.log(`📝 Respuesta de browserless: ${JSON.stringify(data).substring(0, 300)}...`);
+    console.log(`📝 Respuesta de browserless (primeros 300 caracteres): ${data.substring(0, 300)}...`);
     
-    // Verificar la estructura de datos
-    if (!data || !data.data || !Array.isArray(data.data)) {
+    // La respuesta es simplemente un string con el HTML completo
+    if (!data || typeof data !== 'string') {
       console.error(`❌ Error en la extracción: Formato de respuesta no válido`);
-      console.log(`Respuesta completa:`, JSON.stringify(data).substring(0, 500));
+      console.log(`Respuesta completa tipo:`, typeof data);
       return [];
     }
     
-    // Obtener los elementos y procesarlos
-    const elementResults = data.data;
-    console.log(`📋 Elementos encontrados: ${elementResults.length}`);
+    console.log(`📝 Longitud del HTML recibido: ${data.length} caracteres`);
+    
+    // Crear un DOM virtual con el HTML completo recibido
+    const { JSDOM } = require('jsdom');
+    const dom = new JSDOM(data);
+    const document = dom.window.document;
     
     // Crear un array para almacenar los resultados procesados
     const processedResults = [];
     
-    // Iterar sobre cada elemento encontrado
-    for (const element of elementResults) {
-      // Verificar que el elemento tenga HTML
-      if (!element.html) {
-        console.log(`⚠️ Elemento sin HTML, saltando...`);
-        continue;
-      }
-      
-      // Crear un DOM virtual con el HTML recibido
-      const { JSDOM } = require('jsdom');
-      const dom = new JSDOM(element.html);
-      const card = dom.window.document.querySelector('.listing-card');
+    // Buscar el contenedor de listados actuales
+    const container = document.querySelector('#auctions-current-container');
+    if (!container) {
+      console.error(`❌ No se encontró el contenedor de subastas actuales`);
+      return [];
+    }
+    
+    // Buscar todas las tarjetas de listado
+    const cards = container.querySelectorAll('.listing-card:not([style*="display:none"])') || [];
+    console.log(`📋 Encontradas ${cards.length} tarjetas de listado visibles`);
+    
+    // Iterar sobre cada tarjeta
+    // Convertir de NodeList a Array para asegurar que el bucle funcione correctamente
+    const cardsArray = Array.from(cards);
+    for (const card of cardsArray) {
       
       if (!card) {
         console.log(`⚠️ No se encontró la tarjeta en el HTML recibido`);
