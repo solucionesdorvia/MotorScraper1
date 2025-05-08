@@ -29,7 +29,7 @@ function App() {
       <FavoritesProvider>
         <TooltipProvider>
           <Toaster />
-          <div className="min-h-screen flex flex-col bg-background text-foreground">
+          <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">
               <Router />
