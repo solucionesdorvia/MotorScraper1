@@ -1,89 +1,77 @@
 /**
- * Scraper con navegación real para Bring a Trailer
- * Utiliza Puppeteer para navegar por el sitio y extraer datos de subastas activas
+ * Scraper directo para Bring a Trailer
+ * Este script utiliza peticiones HTTP directas para extraer datos en tiempo real
+ * en lugar de usar un navegador completo.
  * 
- * IMPORTANTE: Este scraper utiliza un navegador headless real para acceder
- * a Bring a Trailer y extraer datos de subastas activas en tiempo real.
- * Se utiliza puppeteer-extra con plugin stealth para evadir detecciones.
+ * IMPORTANTE: Todos los datos son extraídos en tiempo real con cada consulta.
  */
 import { type InsertVehicle } from "@shared/schema";
-import puppeteer from 'puppeteer';
-import puppeteerExtra from 'puppeteer-extra';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import axios from 'axios';
+import { JSDOM } from 'jsdom';
 
 /**
- * Extrae subastas activas de Bring a Trailer en tiempo real usando navegación real
+ * Extrae subastas activas de Bring a Trailer usando peticiones HTTP directas
  * 
  * @param make - Marca del vehículo (ej: 'ford')
  * @param model - Modelo del vehículo (ej: 'mustang')
  * @param year - Año del vehículo (opcional)
  * @returns Array de vehículos encontrados
  */
-export async function scrapeBringATrailerRealTime(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
-  console.log(`🔍 Iniciando scraper en tiempo real para Bring a Trailer - Búsqueda: ${make} ${model} ${year || ''}`);
-  
-  // Array para almacenar los vehículos encontrados
-  const vehicles: InsertVehicle[] = [];
-  
-  // Construir URL de búsqueda
-  const searchQuery = [make, model, year].filter(Boolean).join('+');
-  const searchUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
-  
-  console.log(`📡 Accediendo a URL: ${searchUrl}`);
-  
-  let browser;
+export async function scrapeBringATrailerDirect(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   try {
-    // Lanzar navegador headless con puppeteer-extra y StealthPlugin
-    console.log(`🌐 Iniciando navegador headless con protección contra detección...`);
+    console.log(`🔍 Iniciando scraper directo para Bring a Trailer - Búsqueda: ${make} ${model} ${year || ''}`);
     
-    // Configurar puppeteer-extra con plugin stealth para evadir detecciones
-    puppeteerExtra.use(StealthPlugin());
+    // Array para almacenar los vehículos encontrados
+    const vehicles: InsertVehicle[] = [];
     
-    // Lanzar navegador usando puppeteer-extra
-    browser = await puppeteerExtra.launch({
-      headless: true,
-      args: [
-        '--no-sandbox', 
-        '--disable-setuid-sandbox',
-        '--disable-web-security',
-        '--disable-features=IsolateOrigins,site-per-process',
-        '--disable-site-isolation-trials'
-      ]
+    // Construir URL de búsqueda
+    const searchQuery = [make, model, year].filter(Boolean).join('+');
+    const searchUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
+    
+    console.log(`📡 Accediendo a URL: ${searchUrl}`);
+    
+    // Configurar headers para simular un navegador real
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+      'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+      'Sec-Ch-Ua-Mobile': '?0',
+      'Sec-Ch-Ua-Platform': '"Windows"',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+      'Sec-Fetch-User': '?1',
+      'Upgrade-Insecure-Requests': '1'
+    };
+    
+    // Realizar solicitud HTTP con timeout extendido
+    const response = await axios.get(searchUrl, {
+      headers,
+      timeout: 30000
     });
     
-    // Crear una nueva página
-    const page = await browser.newPage();
+    console.log(`✅ Respuesta recibida con status: ${response.status}`);
     
-    // Configurar timeout más largo para dar tiempo a que la página cargue
-    page.setDefaultNavigationTimeout(60000);
-    
-    // Navegar a la URL de búsqueda
-    console.log(`⏳ Navegando a Bring a Trailer y esperando a que la página cargue...`);
-    await page.goto(searchUrl, {
-      waitUntil: 'networkidle2'
-    });
-    
-    // Esperar a que los elementos de listado se carguen
-    console.log(`⏳ Esperando a que se carguen los listados de subastas...`);
-    await page.waitForSelector('.listings-container', { timeout: 30000 }).catch(() => {
-      console.log(`⚠️ Tiempo de espera agotado al buscar contenedor de listados`);
-    });
-    
-    // Esperar tiempo adicional para asegurar que Knockout.js haya cargado los datos
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Crear DOM a partir del HTML
+    const dom = new JSDOM(response.data);
+    const document = dom.window.document;
     
     // Extraer contenedor de subastas actuales
     console.log(`🔎 Buscando contenedor de subastas actuales...`);
-    const auctionsContainer = await page.$('#auctions-current-container');
+    
+    // Contenedor principal de subastas activas
+    const auctionsContainer = document.querySelector('#auctions-current-container');
     
     if (!auctionsContainer) {
       console.log(`⚠️ No se encontró el contenedor de subastas actuales`);
       return [];
     }
     
-    // Extraer listados de autos
-    console.log(`🔎 Extrayendo listados de subastas activas...`);
-    const listingCards = await auctionsContainer.$$('.listing-card');
+    // Extraer tarjetas de listado
+    const listingCards = auctionsContainer.querySelectorAll('.listing-card');
     
     if (!listingCards || listingCards.length === 0) {
       console.log(`⚠️ No se encontraron tarjetas de listado`);
@@ -97,14 +85,8 @@ export async function scrapeBringATrailerRealTime(make: string, model: string, y
       const card = listingCards[i];
       
       // Extraer título
-      const titleElement = await card.$('h3');
-      let title = "";
-      if (titleElement) {
-        const titleText = await page.evaluate(el => el.textContent, titleElement);
-        if (titleText) {
-          title = titleText;
-        }
-      }
+      const titleElement = card.querySelector('h3');
+      const title = titleElement ? titleElement.textContent || "" : "";
       
       // Verificar si el título es relevante para la búsqueda
       if (!isRelevant(title, make, model, year)) {
@@ -114,47 +96,33 @@ export async function scrapeBringATrailerRealTime(make: string, model: string, y
       
       console.log(`✅ Listado relevante encontrado: ${title}`);
       
-      // Extraer URL de la página de subasta
-      const href = await page.evaluate(el => el.getAttribute('href'), card);
+      // URL de la subasta
+      const href = card.getAttribute('href');
       
-      // Extraer imagen
-      const imgElement = await card.$('.thumbnail img');
+      // Imagen
+      const imgElement = card.querySelector('.thumbnail img');
       let imageUrl = "";
       if (imgElement) {
-        const imgSrc = await page.evaluate(el => el.getAttribute('src'), imgElement);
-        if (imgSrc) {
-          imageUrl = imgSrc;
-        }
+        imageUrl = imgElement.getAttribute('src') || "";
       }
       
-      // Extraer puja actual
-      const bidElement = await card.$('.bidding-bid .bid-formatted');
-      let bidText = "";
+      // Puja actual
+      const bidElement = card.querySelector('.bidding-bid .bid-formatted');
       let currentBid: number | null = null;
       if (bidElement) {
-        const bidTextContent = await page.evaluate(el => el.textContent, bidElement);
-        if (bidTextContent) {
-          bidText = bidTextContent;
-        }
-        // Extraer valor numérico de la puja
+        const bidText = bidElement.textContent || "";
         const bidMatch = bidText.match(/\$([0-9,]+)/);
         if (bidMatch && bidMatch[1]) {
           currentBid = parseInt(bidMatch[1].replace(/,/g, ''), 10);
         }
       }
       
-      // Extraer tiempo restante
-      const countdownElement = await card.$('.bidding-countdown .countdown-text');
-      let endsIn: string | null = null;
-      if (countdownElement) {
-        const timeText = await page.evaluate(el => el.textContent, countdownElement);
-        if (timeText) {
-          endsIn = timeText;
-        }
-      }
+      // Tiempo restante
+      const countdownElement = card.querySelector('.bidding-countdown .countdown-text');
+      const endsIn = countdownElement ? countdownElement.textContent || null : null;
       
-      // Extraer estado 'No Reserve'
-      const noReserveElement = await card.$('.item-tag-noreserve');
+      // Estado "No Reserve"
+      const noReserveElement = card.querySelector('.item-tag-noreserve');
       const hasNoReserve = !!noReserveElement;
       
       // Extraer información adicional del título
@@ -165,41 +133,36 @@ export async function scrapeBringATrailerRealTime(make: string, model: string, y
         title: title,
         make: make,
         model: model,
+        price: currentBid,
+        year: extractedYear || (year ? parseInt(year, 10) : null),
+        mileage: null,
+        transmission: transmission,
+        bodyType: bodyType,
+        color: null,
+        fuelType: null,
+        location: "Estados Unidos",
+        vin: null,
+        dealerName: null,
         source: "bringatrailer",
         sourceUrl: href || `https://bringatrailer.com/search/${searchQuery}`,
         imageUrl: imageUrl,
-        location: "Estados Unidos", // BaT es principalmente de EE.UU.
-        price: currentBid, // El precio es la puja actual
-        year: extractedYear || (year ? parseInt(year, 10) : null),
-        mileage: null, // No disponible en la tarjeta de listado
-        transmission: transmission,
-        bodyType: bodyType,
-        color: null, // No disponible en la tarjeta de listado
-        fuelType: null, // No disponible en la tarjeta de listado
-        vin: null, // No disponible en la tarjeta de listado
-        dealerName: null, // No disponible en la tarjeta de listado
-        hasDeals: hasNoReserve, // Usar "No Reserve" como indicador de ofertas
-        isAuction: true, // BaT siempre es una subasta
+        hasDeals: hasNoReserve,
+        isAuction: true,
         currentBid: currentBid,
         endsIn: endsIn
       };
       
+      console.log(`✅ Vehículo procesado: ${vehicle.title} (Puja: $${vehicle.price}, Tiempo: ${vehicle.endsIn})`);
       vehicles.push(vehicle);
     }
     
     console.log(`✅ Procesamiento completado: Encontrados ${vehicles.length} vehículos relevantes`);
+    return vehicles;
     
   } catch (error) {
     console.error(`❌ Error al extraer datos de Bring a Trailer:`, error);
-  } finally {
-    // Cerrar navegador
-    if (browser) {
-      console.log(`🔒 Cerrando navegador...`);
-      await browser.close();
-    }
+    return [];
   }
-  
-  return vehicles;
 }
 
 /**
