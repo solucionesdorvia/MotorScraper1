@@ -1,5 +1,7 @@
 import { useLocation } from 'wouter';
 import { FaCarSide } from 'react-icons/fa';
+import { FaTools } from 'react-icons/fa';
+import { Button } from "@/components/ui/button";
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import SearchForm from '@/components/search/SearchForm';
@@ -25,6 +27,11 @@ const Home = () => {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">How It Works</h2>
+          
+          {/* Herramientas de Diagnóstico */}
+          <div className="mb-8 text-center">
+            <DiagnosticButton />
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
@@ -106,6 +113,25 @@ const PopularSearchCard = ({ make, model, year, label }: PopularSearchCardProps)
         <h3 className="font-medium">{label}</h3>
       </div>
     </div>
+  );
+};
+
+const DiagnosticButton = () => {
+  const [, setLocation] = useLocation();
+  
+  const handleClick = () => {
+    setLocation('/diagnostic');
+  };
+  
+  return (
+    <Button 
+      variant="outline" 
+      onClick={handleClick}
+      className="flex items-center gap-2"
+    >
+      <FaTools className="text-primary" />
+      <span>Herramienta de Diagnóstico BaT</span>
+    </Button>
   );
 };
 
