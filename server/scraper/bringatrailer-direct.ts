@@ -82,8 +82,89 @@ export async function scrapeBringATrailerDirect(make: string, model: string, yea
     console.log(`🔎 DOM creado, verificando estructura...`);
     console.log(`🔎 Título de la página: ${document.title}`);
     
-    // Extraer contenedor de subastas actuales
-    console.log(`🔎 Buscando contenedor de subastas actuales...`);
+    // Intentar extraer datos de listados desde scripts de Knockout
+    console.log(`🔎 Buscando datos en scripts...`);
+    const scriptElements = document.querySelectorAll('script');
+    let listingsData = null;
+    
+    // Itera a través de todos los scripts buscando datos de Knockout.js
+    for (const script of Array.from(scriptElements)) {
+      const content = script.textContent || '';
+      if (content.includes('bat.currentListings = ') || content.includes('var viewModel = {')) {
+        console.log(`🔍 Encontrado script con posibles datos de listados`);
+        
+        // Buscar datos de listados en el script
+        const matchCurrentListings = content.match(/bat\.currentListings\s*=\s*(\[.*?\]);/s);
+        if (matchCurrentListings && matchCurrentListings[1]) {
+          try {
+            // Intentar parsear los datos JSON encontrados
+            listingsData = JSON.parse(matchCurrentListings[1]);
+            console.log(`✅ Datos de listados encontrados: ${listingsData.length} subastas en script`);
+            
+            // Procesar los datos extraídos del script
+            if (listingsData && Array.isArray(listingsData) && listingsData.length > 0) {
+              console.log(`🔄 Procesando ${listingsData.length} listados desde datos de script`);
+              
+              // Procesar cada listado encontrado
+              for (const item of listingsData) {
+                if (item && item.title) {
+                  const isItemRelevant = isRelevant(item.title, make, model, year);
+                  if (!isItemRelevant) {
+                    console.log(`⚠️ Listado no relevante: ${item.title}`);
+                    continue;
+                  }
+                  
+                  console.log(`✅ Listado relevante encontrado: ${item.title}`);
+                  
+                  // Extraer información adicional del título
+                  const { extractedYear, transmission, bodyType } = extractInfoFromTitle(item.title);
+                  
+                  // Crear objeto de vehículo
+                  const vehicle: InsertVehicle = {
+                    title: item.title,
+                    make: make,
+                    model: model,
+                    price: item.currentBid || null,
+                    year: extractedYear || (year ? parseInt(year, 10) : null),
+                    mileage: null,
+                    transmission: transmission,
+                    bodyType: bodyType,
+                    color: null,
+                    fuelType: null,
+                    location: "Estados Unidos",
+                    vin: null,
+                    dealerName: null,
+                    source: "bringatrailer",
+                    sourceUrl: item.url ? (item.url.startsWith('http') ? item.url : `https://bringatrailer.com${item.url}`) : "",
+                    imageUrl: item.image || item.thumbImage || "",
+                    hasDeals: item.noReserve === true,
+                    isAuction: true,
+                    currentBid: item.currentBid || null,
+                    endsIn: item.timeLeft || null
+                  };
+                  
+                  console.log(`✅ Vehículo procesado desde script: ${vehicle.title} (Puja: $${vehicle.price}, Tiempo: ${vehicle.endsIn})`);
+                  vehicles.push(vehicle);
+                }
+              }
+              
+              // Si hemos encontrado vehículos relevantes, podemos terminar aquí
+              if (vehicles.length > 0) {
+                console.log(`✅ Procesamiento completado desde script: Encontrados ${vehicles.length} vehículos relevantes`);
+                return vehicles;
+              } else {
+                console.log(`ℹ️ No se encontraron vehículos relevantes en los datos del script, probando método DOM`);
+              }
+            }
+          } catch (e) {
+            console.log(`⚠️ Error al parsear datos de listados: ${e.message}`);
+          }
+        }
+      }
+    }
+    
+    // Si no se encontraron datos en los scripts, continuamos con extracción por DOM
+    console.log(`🔎 Usando método alternativo: Buscando contenedor de subastas actuales...`);
     
     // Contenedor principal de subastas activas
     let auctionsContainer = document.querySelector('#auctions-current-container');

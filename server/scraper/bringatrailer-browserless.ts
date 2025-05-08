@@ -206,13 +206,16 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
       return [];
     }
     
-    // Buscar todas las tarjetas de listado
-    const cards = container.querySelectorAll('.listing-card:not([style*="display:none"])') || [];
-    console.log(`📋 Encontradas ${cards.length} tarjetas de listado visibles`);
+    // IMPORTANTE: En Knockout.js las tarjetas inicialmente tienen style="display:none" pero son 
+    // visibles cuando se carga la página porque Knockout.js modifica el DOM
+    // En este caso, debemos obtener TODAS las tarjetas, no solo las visibles
+    const cards = container.querySelectorAll('.listing-card') || [];
+    console.log(`📋 Encontradas ${cards.length} tarjetas de listado en total`);
     
     // Iterar sobre cada tarjeta
     // Convertir de NodeList a Array para asegurar que el bucle funcione correctamente
     const cardsArray = Array.from(cards);
+    console.log(`🔎 Procesando ${cardsArray.length} tarjetas de listado`);
     for (const card of cardsArray) {
       
       if (!card) {
