@@ -151,28 +151,22 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
       return [];
     }
     
-    // URL de la API de browserless.io
-    const browserlessUrl = `https://chrome.browserless.io/function?token=${process.env.BROWSERLESS_API_KEY}`;
+    // URL de la API de browserless.io - usando el endpoint de scrape
+    const browserlessUrl = `https://chrome.browserless.io/scrape?token=${process.env.BROWSERLESS_API_KEY}`;
     
-    // Configuración de la solicitud
+    // Configuración de la solicitud - usando un formato más simple para evitar errores de sintaxis
     const requestBody = {
-      code: `module.exports = async ({ page, context }) => {
-        // Navegar a la URL
-        await page.goto('${searchUrl}', { waitUntil: 'networkidle2' });
-        
-        // Esperar a que se carguen las tarjetas (máximo 15 segundos)
-        await page.waitForSelector('.listing-card', { timeout: 15000 }).catch(() => {});
-        
-        // Esperar unos segundos adicionales para que Knockout.js renderice todo
-        await page.waitForTimeout(5000);
-        
-        // Ejecutar script para extraer datos
-        return await page.evaluate(() => {
-          ${scriptToExecute}
-          return extractData();
-        });
-      }`,
-      context: {}
+      url: searchUrl,
+      elements: [
+        {
+          selector: "#auctions-current-container .listing-card",
+          timeout: 15000
+        }
+      ],
+      gotoOptions: {
+        waitUntil: "networkidle2",
+        timeout: 25000
+      }
     };
     
     // Enviar solicitud a browserless.io
@@ -190,22 +184,95 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
     // Procesar la respuesta
     const data = response.data;
     
-    // Verificar si hay un error
-    if (data.error) {
-      console.error(`❌ Error en la extracción: ${data.error}`);
+    console.log(`📝 Respuesta de browserless: ${JSON.stringify(data).substring(0, 300)}...`);
+    
+    // Verificar la estructura de datos
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      console.error(`❌ Error en la extracción: Formato de respuesta no válido`);
+      console.log(`Respuesta completa:`, JSON.stringify(data).substring(0, 500));
       return [];
     }
     
-    // Verificar si hay resultados
-    if (!data.results || !Array.isArray(data.results) || data.results.length === 0) {
-      console.log(`ℹ️ No se encontraron resultados en la extracción`);
+    // Obtener los elementos y procesarlos
+    const elementResults = data.data;
+    console.log(`📋 Elementos encontrados: ${elementResults.length}`);
+    
+    // Crear un array para almacenar los resultados procesados
+    const processedResults = [];
+    
+    // Iterar sobre cada elemento encontrado
+    for (const element of elementResults) {
+      // Verificar que el elemento tenga HTML
+      if (!element.html) {
+        console.log(`⚠️ Elemento sin HTML, saltando...`);
+        continue;
+      }
+      
+      // Crear un DOM virtual con el HTML recibido
+      const { JSDOM } = require('jsdom');
+      const dom = new JSDOM(element.html);
+      const card = dom.window.document.querySelector('.listing-card');
+      
+      if (!card) {
+        console.log(`⚠️ No se encontró la tarjeta en el HTML recibido`);
+        continue;
+      }
+      
+      // Extraer la información del elemento
+      const titleElement = card.querySelector('h3');
+      const title = titleElement ? titleElement.textContent.trim() : "";
+      
+      // Solo procesar si tenemos un título
+      if (!title) {
+        console.log(`⚠️ Elemento sin título, saltando...`);
+        continue;
+      }
+      
+      const href = card.getAttribute('href') || "";
+      
+      const imgElement = card.querySelector('.thumbnail img');
+      const imageUrl = imgElement ? imgElement.getAttribute('src') : "";
+      
+      const bidElement = card.querySelector('.bidding-bid .bid-formatted');
+      let currentBid = null;
+      if (bidElement) {
+        const bidText = bidElement.textContent;
+        const bidMatch = bidText.match(/\$([0-9,]+)/);
+        if (bidMatch && bidMatch[1]) {
+          currentBid = parseInt(bidMatch[1].replace(/,/g, ''), 10);
+        }
+      }
+      
+      const countdownElement = card.querySelector('.bidding-countdown .countdown-text');
+      const endsIn = countdownElement ? countdownElement.textContent.trim() : null;
+      
+      const noReserveElement = card.querySelector('.item-tag-noreserve');
+      const hasNoReserve = !!noReserveElement;
+      
+      // Crear un objeto con los datos extraídos
+      const item = {
+        title,
+        href,
+        imageUrl,
+        currentBid,
+        endsIn,
+        hasNoReserve
+      };
+      
+      console.log(`✅ Procesado: ${title}`);
+      processedResults.push(item);
+    }
+    
+    // Verificar si hay resultados procesados
+    if (processedResults.length === 0) {
+      console.log(`ℹ️ No se encontraron resultados visibles en la extracción`);
       return [];
     }
     
-    console.log(`✅ Extracción exitosa: ${data.count} listados encontrados`);
+    console.log(`✅ Extracción exitosa: ${processedResults.length} listados encontrados`);
     
     // Procesar cada resultado
-    for (const item of data.results) {
+    for (const item of processedResults) {
       // Verificar que el título sea relevante para la búsqueda
       if (!isRelevant(item.title, make, model, year)) {
         console.log(`⚠️ Listado no relevante: ${item.title}`);
