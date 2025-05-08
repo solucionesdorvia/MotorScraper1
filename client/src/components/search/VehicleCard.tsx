@@ -1,18 +1,33 @@
-import { useState } from 'react';
 import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar } from 'react-icons/fa';
 import { Vehicle } from '@shared/schema';
 import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl, buildEbayUrl, buildEdmundsUrl, buildCarsUrl, buildHemmingsUrl, buildBringATrailerUrl, buildClassicCarsUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useFavorites } from '@/lib/favorites-context';
+import { useToast } from '@/hooks/use-toast';
+import { Link } from 'wouter';
 
 type VehicleCardProps = {
   vehicle: Vehicle;
 };
 
 const VehicleCard = ({ vehicle }: VehicleCardProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const { toast } = useToast();
   
   const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+    if (isFavorite(vehicle.id)) {
+      removeFavorite(vehicle.id);
+      toast({
+        title: "Eliminado de favoritos",
+        description: "Se ha eliminado el vehículo de tu lista de favoritos",
+      });
+    } else {
+      addFavorite(vehicle);
+      toast({
+        title: "Añadido a favoritos",
+        description: "Se ha añadido el vehículo a tu lista de favoritos",
+      });
+    }
   };
   
   const openSourcePage = () => {
@@ -75,7 +90,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
             className="bg-neutral-200 p-1 rounded-full cursor-pointer hover:bg-neutral-300"
             onClick={toggleFavorite}
           >
-            {isFavorite ? (
+            {isFavorite(vehicle.id) ? (
               <FaHeart className="text-red-500" />
             ) : (
               <FaRegHeart className="text-neutral-600" />

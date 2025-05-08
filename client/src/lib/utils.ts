@@ -1,205 +1,223 @@
-import { type ClassValue, clsx } from "clsx";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * Combina clases de Tailwind de manera eficiente
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(price: number | undefined): string {
-  if (!price) return 'N/A';
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+/**
+ * Formatea un precio en dólares
+ */
+export function formatPrice(price: number | null | undefined): string {
+  if (price === null || price === undefined) return "N/A";
+  
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price);
 }
 
-export function formatMileage(mileage: number | undefined): string {
-  if (!mileage) return 'N/A';
-  return new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 0,
-  }).format(mileage) + ' mi';
+/**
+ * Formatea el kilometraje
+ */
+export function formatMileage(mileage: number | null | undefined): string {
+  if (mileage === null || mileage === undefined) return "N/A";
+  return new Intl.NumberFormat("es-ES").format(mileage) + " km";
 }
 
-export function getDefaultImageUrl(make: string): string {
-  // Crear una URL que dependa de la marca para tener diferentes placeholders por marca
-  let brandColor = "#4f46e5"; // Color predeterminado (Indigo)
+/**
+ * Devuelve una clase CSS para un tipo de fuente
+ */
+export function getSourceClassName(source: string): string {
+  if (!source) return "bg-neutral-600";
   
-  // Asignar colores según la marca
-  if (make.toLowerCase() === 'ford') brandColor = "#0052cc";
-  if (make.toLowerCase() === 'chevrolet') brandColor = "#d62828";
-  if (make.toLowerCase() === 'toyota') brandColor = "#ce181e";
-  if (make.toLowerCase() === 'honda') brandColor = "#047857";
-  if (make.toLowerCase() === 'bmw') brandColor = "#0369a1";
-  if (make.toLowerCase() === 'mercedes-benz') brandColor = "#27272a";
+  const sourceLower = source.toLowerCase();
+  if (sourceLower.includes("ebay")) return "bg-blue-600";
+  if (sourceLower.includes("bring") || sourceLower === "bringatrailer") return "bg-red-600";
+  if (sourceLower.includes("hemmings")) return "bg-green-600";
+  if (sourceLower.includes("classic")) return "bg-purple-600";
+  if (sourceLower.includes("edmunds")) return "bg-orange-600";
   
-  // Usar una imagen base64 pre-codificada según la marca
-  if (make.toLowerCase() === 'ford') {
-    return "data:image/svg+xml,%3Csvg width='800' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='800' height='600' fill='%23f8fafc'/%3E%3Crect x='100' y='100' width='600' height='400' rx='20' fill='%230052cc' opacity='0.1'/%3E%3Cpath d='M400 175 L500 300 L450 300 L450 400 L350 400 L350 300 L300 300 Z' fill='%230052cc'/%3E%3Ctext x='400' y='500' font-family='Arial' font-size='24' text-anchor='middle' fill='%230052cc'%3EFORD%3C/text%3E%3Ctext x='400' y='530' font-family='Arial' font-size='16' text-anchor='middle' fill='%2364748b'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
-  }
-  
-  if (make.toLowerCase() === 'chevrolet') {
-    return "data:image/svg+xml,%3Csvg width='800' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='800' height='600' fill='%23f8fafc'/%3E%3Crect x='100' y='100' width='600' height='400' rx='20' fill='%23d62828' opacity='0.1'/%3E%3Cpath d='M400 175 L500 300 L450 300 L450 400 L350 400 L350 300 L300 300 Z' fill='%23d62828'/%3E%3Ctext x='400' y='500' font-family='Arial' font-size='24' text-anchor='middle' fill='%23d62828'%3ECHEVROLET%3C/text%3E%3Ctext x='400' y='530' font-family='Arial' font-size='16' text-anchor='middle' fill='%2364748b'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
-  }
-  
-  // Imagen predeterminada para cualquier otra marca
-  return "data:image/svg+xml,%3Csvg width='800' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='800' height='600' fill='%23f8fafc'/%3E%3Crect x='100' y='100' width='600' height='400' rx='20' fill='%234f46e5' opacity='0.1'/%3E%3Cpath d='M400 175 L500 300 L450 300 L450 400 L350 400 L350 300 L300 300 Z' fill='%234f46e5'/%3E%3Ctext x='400' y='500' font-family='Arial' font-size='24' text-anchor='middle' fill='%234f46e5'%3E" + make.toUpperCase() + "%3C/text%3E%3Ctext x='400' y='530' font-family='Arial' font-size='16' text-anchor='middle' fill='%2364748b'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
+  return "bg-neutral-600";
 }
 
+/**
+ * Devuelve una etiqueta para un tipo de fuente
+ */
 export function getSourceLabel(source: string): string {
-  if (source === 'ebay') return 'eBay Motors';
-  if (source === 'edmunds') return 'Edmunds';
-  if (source === 'cars.com') return 'Cars.com';
-  if (source === 'hemmings.com') return 'Hemmings';
-  if (source === 'bringatrailer' || source === 'bringatrailer.com') return 'Bring a Trailer';
-  if (source === 'classiccars.com') return 'Classic Cars';
+  if (!source) return "Desconocido";
+  
+  const sourceLower = source.toLowerCase();
+  if (sourceLower.includes("ebay")) return "eBay Motors";
+  if (sourceLower.includes("bring") || sourceLower === "bringatrailer") return "Bring a Trailer";
+  if (sourceLower.includes("hemmings")) return "Hemmings";
+  if (sourceLower.includes("classic")) return "ClassicCars";
+  if (sourceLower.includes("edmunds")) return "Edmunds";
+  
   return source;
 }
 
-export function getSourceClassName(source: string): string {
-  if (source === 'ebay') return 'bg-label-ebay';
-  if (source === 'edmunds') return 'bg-label-edmunds';
-  if (source === 'cars.com') return 'bg-label-cars';
-  if (source === 'hemmings.com') return 'bg-label-hemmings';
-  if (source === 'bringatrailer' || source === 'bringatrailer.com') return 'bg-label-bat';
-  if (source === 'classiccars.com') return 'bg-label-classiccars';
-  return 'bg-gray-500';
+/**
+ * Devuelve una URL predeterminada para una imagen según la marca
+ */
+export function getDefaultImageUrl(make: string): string {
+  return "https://via.placeholder.com/300x200?text=No+Image";
 }
 
-export function truncateText(text: string, maxLength: number): string {
-  if (!text) return '';
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
-}
-
-export function buildSearchUrl(
-  make: string | undefined, 
-  model: string | undefined, 
-  year: string | undefined,
-  ebay: boolean = true,
-  edmunds: boolean = true,
-  hemmings: boolean = true,
-  bringatrailer: boolean = true,
-  classiccars: boolean = true
-): string {
-  const params = new URLSearchParams();
-  
-  if (make) params.append('make', make);
-  if (model) params.append('model', model);
-  if (year) params.append('year', year);
-  if (!ebay) params.append('ebay', 'false');
-  if (!edmunds) params.append('edmunds', 'false');
-  if (!hemmings) params.append('hemmings', 'false');
-  if (!bringatrailer) params.append('bringatrailer', 'false');
-  if (!classiccars) params.append('classiccars', 'false');
-  
-  return `/search?${params.toString()}`;
-}
-
+/**
+ * Construye una URL para eBay Motors
+ */
 export function buildEbayUrl(make: string, model: string, year?: string): string {
-  const query = `${make} ${model} ${year || ''}`.trim();
-  return `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}&_sacat=0&_from=R40&_trksid=m570.l1313`;
+  const query = year ? `${year} ${make} ${model}` : `${make} ${model}`;
+  return `https://www.ebay.com/sch/Cars-Trucks/6001/i.html?_nkw=${encodeURIComponent(query)}`;
 }
 
+/**
+ * Construye una URL para Edmunds
+ */
 export function buildEdmundsUrl(make: string, model: string, year?: string): string {
-  const yearParam = year ? `${year}-${year}` : '';
-  return `https://www.edmunds.com/inventory/srp.html?inventorytype=cpo%2Cused&year=${yearParam}&make=${encodeURIComponent(make)}&model=${encodeURIComponent(make)}%7C${encodeURIComponent(model)}&radius=100`;
+  return `https://www.edmunds.com/used-${make.toLowerCase()}-${model.toLowerCase()}/${year ? year + '/' : ''}`;
 }
 
+/**
+ * Construye una URL para Cars.com
+ */
 export function buildCarsUrl(make: string, model: string, year?: string): string {
-  const yearParam = year ? `&year_min=${year}&year_max=${year}` : '';
-  return `https://www.cars.com/shopping/results/?dealer_id=&keyword=${encodeURIComponent(make)}+${encodeURIComponent(model)}&list_price_max=&list_price_min=&makes[]=${encodeURIComponent(make)}&maximum_distance=all&mileage_max=&models[]=${encodeURIComponent(model)}${yearParam}&page_size=20&sort=best_match_desc&stock_type=all&year_max=&year_min=&zip=`;
+  return `https://www.cars.com/shopping/results/?stock_type=used&makes[]=${make.toLowerCase()}&models[]=${model.toLowerCase()}${year ? '&year_min=' + year + '&year_max=' + year : ''}`;
 }
 
+/**
+ * Construye una URL para Hemmings
+ */
 export function buildHemmingsUrl(make: string, model: string, year?: string): string {
-  return `https://www.hemmings.com/classifieds/cars-for-sale`;
+  const query = year ? `${year} ${make} ${model}` : `${make} ${model}`;
+  return `https://www.hemmings.com/classifieds/?q=${encodeURIComponent(query)}`;
 }
 
+/**
+ * Construye una URL para Bring a Trailer
+ */
 export function buildBringATrailerUrl(make: string, model: string, year?: string): string {
-  const yearParam = year ? `&q=${year}` : '';
-  return `https://bringatrailer.com/search/?s=${encodeURIComponent(make)}+${encodeURIComponent(model)}${yearParam}`;
+  const query = year ? `${make} ${model} ${year}` : `${make} ${model}`;
+  return `https://bringatrailer.com/auctions/?search=${query.replace(/ /g, '+')}`;
 }
 
+/**
+ * Construye una URL para ClassicCars.com
+ */
 export function buildClassicCarsUrl(make: string, model: string, year?: string): string {
-  const yearParam = year ? `&year=${year}-${year}` : '';
-  return `https://classiccars.com/listings?term=${encodeURIComponent(make)}+${encodeURIComponent(model)}${yearParam}`;
+  return `https://classiccars.com/listings/find/${year || ''}/${make.toLowerCase()}/${model.toLowerCase()}`;
 }
 
-export const carMakes = [
-  { value: "ford", label: "Ford" },
-  { value: "chevrolet", label: "Chevrolet" },
-  { value: "toyota", label: "Toyota" },
-  { value: "honda", label: "Honda" },
-  { value: "dodge", label: "Dodge" },
-  { value: "bmw", label: "BMW" },
-  { value: "mercedes-benz", label: "Mercedes-Benz" },
-  { value: "audi", label: "Audi" },
-  { value: "nissan", label: "Nissan" },
-  { value: "jeep", label: "Jeep" },
-  { value: "lexus", label: "Lexus" },
-  { value: "subaru", label: "Subaru" },
-  { value: "volkswagen", label: "Volkswagen" },
-  { value: "kia", label: "Kia" },
-  { value: "hyundai", label: "Hyundai" },
-];
-
-export const fordModels = [
-  { value: "mustang", label: "Mustang" },
-  { value: "f-150", label: "F-150" },
-  { value: "explorer", label: "Explorer" },
-  { value: "escape", label: "Escape" },
-  { value: "edge", label: "Edge" },
-  { value: "bronco", label: "Bronco" },
-  { value: "ranger", label: "Ranger" },
-  { value: "expedition", label: "Expedition" },
-  { value: "fusion", label: "Fusion" },
-  { value: "focus", label: "Focus" },
-];
-
+/**
+ * Lista de años para vehículos clásicos (1900-1995) 
+ */
 export const years = [
-  // Años 1995-1900
-  ...Array.from({ length: 96 }, (_, i) => {
-    const year = 1995 - i;
-    return { value: year.toString(), label: year.toString() };
-  })
+  { value: "1995", label: "1995" },
+  { value: "1994", label: "1994" },
+  { value: "1993", label: "1993" },
+  { value: "1992", label: "1992" },
+  { value: "1991", label: "1991" },
+  { value: "1990", label: "1990" },
+  { value: "1989", label: "1989" },
+  { value: "1988", label: "1988" },
+  { value: "1987", label: "1987" },
+  { value: "1986", label: "1986" },
+  { value: "1985", label: "1985" },
+  { value: "1984", label: "1984" },
+  { value: "1983", label: "1983" },
+  { value: "1982", label: "1982" },
+  { value: "1981", label: "1981" },
+  { value: "1980", label: "1980" },
+  { value: "1979", label: "1979" },
+  { value: "1978", label: "1978" },
+  { value: "1977", label: "1977" },
+  { value: "1976", label: "1976" },
+  { value: "1975", label: "1975" },
+  { value: "1974", label: "1974" },
+  { value: "1973", label: "1973" },
+  { value: "1972", label: "1972" },
+  { value: "1971", label: "1971" },
+  { value: "1970", label: "1970" },
+  { value: "1969", label: "1969" },
+  { value: "1968", label: "1968" },
+  { value: "1967", label: "1967" },
+  { value: "1966", label: "1966" },
+  { value: "1965", label: "1965" },
+  { value: "1964", label: "1964" },
+  { value: "1963", label: "1963" },
+  { value: "1962", label: "1962" },
+  { value: "1961", label: "1961" },
+  { value: "1960", label: "1960" },
+  { value: "1955", label: "1955" },
+  { value: "1950", label: "1950" },
+  { value: "1945", label: "1945" },
+  { value: "1940", label: "1940" },
+  { value: "1935", label: "1935" },
+  { value: "1930", label: "1930" },
+  { value: "1925", label: "1925" },
+  { value: "1920", label: "1920" },
+  { value: "1915", label: "1915" },
+  { value: "1910", label: "1910" },
+  { value: "1905", label: "1905" },
+  { value: "1900", label: "1900" },
 ];
 
+/**
+ * Lista de tipos de carrocería
+ */
 export const bodyTypes = [
-  { value: "coupe", label: "Coupe" },
+  { value: "sedan", label: "Sedán" },
+  { value: "coupe", label: "Coupé" },
   { value: "convertible", label: "Convertible" },
-  { value: "sedan", label: "Sedan" },
-  { value: "suv", label: "SUV" },
-  { value: "truck", label: "Truck" },
-  { value: "van", label: "Van" },
   { value: "wagon", label: "Wagon" },
   { value: "hatchback", label: "Hatchback" },
-  { value: "fastback", label: "Fastback" },
+  { value: "suv", label: "SUV" },
+  { value: "pickup", label: "Pickup" },
+  { value: "van", label: "Van/Minivan" },
 ];
 
-export const transmissions = [
-  { value: "automatic", label: "Automatic" },
-  { value: "manual", label: "Manual" },
-  { value: "cvt", label: "CVT" },
-  { value: "dual_clutch", label: "Dual Clutch" },
-];
-
+/**
+ * Lista de colores disponibles
+ */
 export const colors = [
-  { value: "black", label: "Black", bg: "bg-black" },
-  { value: "white", label: "White", bg: "bg-white" },
-  { value: "silver", label: "Silver", bg: "bg-gray-300" },
-  { value: "gray", label: "Gray", bg: "bg-gray-500" },
-  { value: "red", label: "Red", bg: "bg-red-600" },
-  { value: "blue", label: "Blue", bg: "bg-blue-600" },
-  { value: "green", label: "Green", bg: "bg-green-600" },
-  { value: "yellow", label: "Yellow", bg: "bg-yellow-500" },
-  { value: "orange", label: "Orange", bg: "bg-orange-600" },
+  { value: "black", label: "Negro" },
+  { value: "white", label: "Blanco" },
+  { value: "gray", label: "Gris" },
+  { value: "silver", label: "Plata" },
+  { value: "red", label: "Rojo" },
+  { value: "blue", label: "Azul" },
+  { value: "green", label: "Verde" },
+  { value: "yellow", label: "Amarillo" },
+  { value: "orange", label: "Naranja" },
+  { value: "brown", label: "Marrón" },
+  { value: "purple", label: "Púrpura" },
+  { value: "gold", label: "Dorado" },
 ];
 
+/**
+ * Lista de transmisiones disponibles
+ */
+export const transmissions = [
+  { value: "automatic", label: "Automática" },
+  { value: "manual", label: "Manual" },
+  { value: "semi-automatic", label: "Semi-automática" },
+  { value: "cvt", label: "CVT" },
+  { value: "dual-clutch", label: "Doble embrague" },
+];
+
+/**
+ * Opciones de ordenación
+ */
 export const sortOptions = [
-  { value: "relevance", label: "Relevance" },
-  { value: "price_asc", label: "Price: Low to High" },
-  { value: "price_desc", label: "Price: High to Low" },
-  { value: "mileage_asc", label: "Mileage: Low to High" },
-  { value: "year_desc", label: "Newest Listings" },
+  { value: "relevance", label: "Relevancia" },
+  { value: "price_asc", label: "Precio: menor a mayor" },
+  { value: "price_desc", label: "Precio: mayor a menor" },
+  { value: "year_asc", label: "Año: antiguo a nuevo" },
+  { value: "year_desc", label: "Año: nuevo a antiguo" },
 ];

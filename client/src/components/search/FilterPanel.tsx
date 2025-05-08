@@ -243,7 +243,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
                 <div 
                   key={color.value}
                   title={color.label}
-                  className={`w-6 h-6 rounded-full ${color.bg} cursor-pointer border border-neutral-300`}
+                  className={`w-6 h-6 rounded-full cursor-pointer border border-neutral-300`}
                   onClick={() => {
                     const currentColors = form.getValues().color;
                     if (currentColors.includes(color.value)) {
@@ -253,7 +253,8 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
                     }
                   }}
                   style={{
-                    boxShadow: form.getValues().color.includes(color.value) ? '0 0 0 2px var(--primary-color)' : 'none',
+                    backgroundColor: color.value,
+                    boxShadow: form.getValues().color.includes(color.value) ? '0 0 0 2px var(--primary)' : 'none',
                   }}
                 />
               ))}
