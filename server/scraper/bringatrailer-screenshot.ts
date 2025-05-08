@@ -19,9 +19,9 @@ export async function takeScreenshotOfBaT(make: string, model: string, year?: st
   try {
     console.log(`📸 Tomando captura de pantalla de BaT para: ${make} ${model} ${year || ''}`);
     
-    // Construir URL de búsqueda
+    // Construir URL de búsqueda - IMPORTANTE: BaT requiere "+" como separador en lugar de "%2B"
     const searchQuery = [make, model, year].filter(Boolean).join('+');
-    const searchUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
+    const searchUrl = `https://bringatrailer.com/auctions/?search=${searchQuery}`;
     
     console.log(`🔍 URL de búsqueda: ${searchUrl}`);
     

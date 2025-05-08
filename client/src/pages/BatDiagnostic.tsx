@@ -26,9 +26,9 @@ export default function BatDiagnostic() {
     setError(null);
     
     try {
-      // Construir URL de búsqueda para referencia
+      // Construir URL de búsqueda para referencia - IMPORTANTE: BaT requiere "+" como separador en lugar de "%2B"
       const searchQuery = [make, model, year].filter(Boolean).join('+');
-      const searchUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
+      const searchUrl = `https://bringatrailer.com/auctions/?search=${searchQuery}`;
       setCurrentUrl(searchUrl);
       
       // Construir URL para la captura de pantalla

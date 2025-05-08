@@ -23,9 +23,9 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
     // Array para almacenar los vehículos encontrados
     const vehicles: InsertVehicle[] = [];
     
-    // Construir URL de búsqueda para Bring a Trailer
+    // Construir URL de búsqueda para Bring a Trailer - IMPORTANTE: BaT requiere "+" como separador en lugar de "%2B"
     const searchQuery = [make, model, year].filter(Boolean).join('+');
-    const searchUrl = `https://bringatrailer.com/auctions/?search=${encodeURIComponent(searchQuery)}`;
+    const searchUrl = `https://bringatrailer.com/auctions/?search=${searchQuery}`;
     
     console.log(`📡 Preparando solicitud a browserless.io para: ${searchUrl}`);
     

@@ -433,8 +433,9 @@ export async function scrapeBringATrailer(make: string, model: string, year?: st
 function buildUrl(make: string, model: string, year?: string): string {
   const terms = make === model ? make : `${make} ${model}`;
   const search = year ? `${terms} ${year}` : terms;
-  // Usamos el parámetro view=all para obtener todos los resultados y no solo los destacados
-  return `https://bringatrailer.com/search/?view=all&s=${search.replace(/ /g, '%20')}`;
+  // IMPORTANTE: BaT requiere "+" como separador en lugar de "%20" para mostrar resultados correctamente
+  // Usamos el formato de auctions/?search= que funciona mejor que /search/?s=
+  return `https://bringatrailer.com/auctions/?search=${search.replace(/ /g, '+')}`;
 }
 
 function isRelevant(title: string, make: string, model: string, year?: string): boolean {
