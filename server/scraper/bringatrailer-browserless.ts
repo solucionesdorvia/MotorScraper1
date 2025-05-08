@@ -276,10 +276,25 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
     
     console.log(`✅ Extracción exitosa: ${processedResults.length} listados encontrados`);
     
+    // Variables para estadísticas
+    let totalProcesados = 0;
+    let filtradosPorAnio = 0;
+    let filtradosPorRelevancia = 0;
+    
     // Procesar cada resultado
     for (const item of processedResults) {
+      totalProcesados++;
+      
       // Verificar que el título sea relevante para la búsqueda
       if (!isRelevant(item.title, make, model, year)) {
+        // Si el año fue extraído, verificar si fue filtrado por año
+        const { extractedYear } = extractInfoFromTitle(item.title);
+        if (extractedYear && (extractedYear < 1900 || extractedYear > 1995)) {
+          filtradosPorAnio++;
+        } else {
+          filtradosPorRelevancia++;
+        }
+        
         console.log(`⚠️ Listado no relevante: ${item.title}`);
         continue;
       }
@@ -317,7 +332,17 @@ export async function scrapeBringATrailerWithBrowserlessAPI(make: string, model:
       vehicles.push(vehicle);
     }
     
+    // Mostrar estadísticas de filtrado
     console.log(`✅ Procesamiento completado: Encontrados ${vehicles.length} vehículos relevantes`);
+    console.log(`ℹ️ BaT: Estadísticas de filtrado - Total: ${totalProcesados}, Filtrados por año (fuera de 1900-1995): ${filtradosPorAnio}, Filtrados por relevancia: ${filtradosPorRelevancia}`);
+    
+    // Calcular porcentajes si hay datos
+    if (totalProcesados > 0) {
+      const porcentajeAceptados = Math.round((vehicles.length / totalProcesados) * 100);
+      const porcentajeFiltrados = Math.round(((filtradosPorAnio + filtradosPorRelevancia) / totalProcesados) * 100);
+      console.log(`📊 BaT: Tasa de aceptación: ${porcentajeAceptados}%, Tasa de filtrado: ${porcentajeFiltrados}%`);
+    }
+    
     return vehicles;
     
   } catch (error) {
@@ -352,6 +377,15 @@ function isRelevant(title: string, make: string, model: string, year?: string): 
   } else {
     // Para modelos más largos, es suficiente con que esté incluido
     if (!titleLower.includes(modelLower)) {
+      return false;
+    }
+  }
+  
+  // Extraer año del título para verificar rango de antigüedad (1900-1995)
+  const { extractedYear } = extractInfoFromTitle(title);
+  if (extractedYear) {
+    if (extractedYear < 1900 || extractedYear > 1995) {
+      console.log(`⏳ Filtrando vehículo fuera del rango de años (1900-1995): "${title}" - Año: ${extractedYear}`);
       return false;
     }
   }
