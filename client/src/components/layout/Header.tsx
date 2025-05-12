@@ -11,24 +11,24 @@ const Header = () => {
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
               <FaCarSide className="text-primary text-2xl" />
-              <h1 className="text-xl font-bold text-neutral-800">AutoScout</h1>
+              <h1 className="text-xl font-bold text-neutral-800">ImportacionPrueba</h1>
             </div>
           </Link>
           
           <div className="hidden md:flex items-center gap-4">
             <Link href="/how-it-works">
               <button className="text-neutral-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-                How It Works
+                ¿Cómo Funciona?
               </button>
             </Link>
             <Link href="/about">
               <button className="text-neutral-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">
-                About
+                Nosotros
               </button>
             </Link>
             <Link href="/signin">
               <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">
-                Sign In
+                Contactar
               </button>
             </Link>
           </div>
@@ -44,7 +44,7 @@ const Header = () => {
                 <Link href="/">
                   <div className="flex items-center gap-2 mb-6">
                     <FaCarSide className="text-primary text-2xl" />
-                    <h1 className="text-xl font-bold text-neutral-800">AutoScout</h1>
+                    <h1 className="text-xl font-bold text-neutral-800">ImportacionPrueba</h1>
                   </div>
                 </Link>
                 <Link href="/how-it-works">
