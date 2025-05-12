@@ -49,17 +49,17 @@ const Header = () => {
                 </Link>
                 <Link href="/how-it-works">
                   <button className="w-full text-left py-2 px-4 hover:bg-neutral-100 rounded-md text-neutral-700">
-                    How It Works
+                    ¿Cómo Funciona?
                   </button>
                 </Link>
                 <Link href="/about">
                   <button className="w-full text-left py-2 px-4 hover:bg-neutral-100 rounded-md text-neutral-700">
-                    About
+                    Nosotros
                   </button>
                 </Link>
                 <Link href="/signin">
                   <button className="w-full mt-2 btn-primary">
-                    Sign In
+                    Contactar
                   </button>
                 </Link>
               </div>
