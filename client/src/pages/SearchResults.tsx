@@ -169,7 +169,7 @@ const SearchResults = () => {
                 <p className="text-neutral-600 text-sm mb-4">Si necesitas asistencia con tu búsqueda o importación, contacta con nuestro equipo de especialistas.</p>
                 <a 
                   href="mailto:contacto@clasicar.com.ar" 
-                  className="bg-secondary text-white text-sm font-medium py-2 px-4 rounded-md inline-flex items-center gap-2 hover:bg-secondary/90 transition-colors"
+                  className="bg-primary text-white text-sm font-medium py-2 px-4 rounded-md inline-flex items-center gap-2 hover:bg-primary/90 transition-colors"
                 >
                   Contactar
                 </a>
@@ -191,7 +191,7 @@ const SearchResults = () => {
               {isLoading ? (
                 <>
                   <div className="bg-white rounded-lg shadow-md p-6 text-center mb-6 slide-up">
-                    <div className="inline-block loader-spin h-12 w-12 border-4 border-neutral-300 border-t-secondary rounded-full"></div>
+                    <div className="inline-block loader-spin h-12 w-12 border-4 border-neutral-300 border-t-primary rounded-full"></div>
                     <p className="mt-4 text-neutral-600">Buscando vehículos en múltiples fuentes...</p>
                     <p className="text-sm text-neutral-500 mt-2">Estamos consultando en tiempo real eBay Motors y Bring a Trailer</p>
                   </div>
