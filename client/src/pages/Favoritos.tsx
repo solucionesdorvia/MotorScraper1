@@ -403,7 +403,7 @@ const Favoritos = () => {
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button 
-                  className="bg-secondary hover:bg-secondary/90 text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                   onClick={() => window.location.href = '/busqueda'}
                 >
                   Buscar Vehículos

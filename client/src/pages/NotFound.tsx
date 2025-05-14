@@ -14,7 +14,7 @@ const NotFound = () => {
       <section className="flex-grow flex items-center justify-center py-16 bg-neutral-100">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-secondary p-8 text-center">
+            <div className="bg-primary p-8 text-center">
               <div className="bg-white/10 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaCarSide className="text-white text-4xl" />
               </div>
@@ -30,7 +30,7 @@ const NotFound = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
                 <Button 
-                  className="bg-secondary hover:bg-secondary/90 text-white font-medium py-3 flex items-center justify-center gap-2"
+                  className="bg-primary hover:bg-primary/90 text-white font-medium py-3 flex items-center justify-center gap-2"
                   onClick={() => setLocation('/')}
                 >
                   <FaHome />
@@ -38,7 +38,7 @@ const NotFound = () => {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="border-secondary text-secondary hover:bg-secondary/10 font-medium py-3 flex items-center justify-center gap-2"
+                  className="border-primary text-primary hover:bg-primary/10 font-medium py-3 flex items-center justify-center gap-2"
                   onClick={() => setLocation('/busqueda')}
                 >
                   <FaSearch />
@@ -47,7 +47,7 @@ const NotFound = () => {
               </div>
               
               <button 
-                className="mt-6 text-neutral-500 hover:text-secondary flex items-center gap-2 mx-auto"
+                className="mt-6 text-neutral-500 hover:text-primary flex items-center gap-2 mx-auto"
                 onClick={() => window.history.back()}
               >
                 <FaArrowLeft className="text-sm" />
@@ -58,7 +58,7 @@ const NotFound = () => {
           
           <div className="mt-12 text-center">
             <p className="text-neutral-500 text-sm">
-              Si crees que esto es un error, por favor <a href="/contact" className="text-secondary hover:underline">contáctanos</a>.
+              Si crees que esto es un error, por favor <a href="/contact" className="text-primary hover:underline">contáctanos</a>.
             </p>
           </div>
         </div>
