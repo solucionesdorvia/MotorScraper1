@@ -1,0 +1,121 @@
+# Documentación de Páginas y Secciones
+
+## 1. Página de Inicio (Home.js)
+### Secciones:
+1. **Hero Section**
+   - Título principal: "El buscador para importar vehículos clásicos a Argentina"
+   - Botones de acción:
+     - "Buscar Vehículos" (redirige a /busqueda)
+     - "Guía de Importación" (redirige a /guia-importacion)
+
+2. **¿Por qué usar ClasicAR?**
+   - Tres características principales:
+     - Verificación de Elegibilidad
+     - Ahorro de Tiempo
+     - Costos Transparentes
+
+3. **¿Cómo Funciona?**
+   - Tres pasos principales:
+     - Busca: Filtros para encontrar autos
+     - Verifica: Detalles y elegibilidad
+     - Importa: Guía paso a paso
+
+4. **Acerca de**
+   - Información del desarrollador
+   - Enlaces de contacto:
+     - Email
+     - Twitter
+     - WhatsApp
+
+## 2. Página de Búsqueda (Busqueda.js)
+### Secciones:
+1. **Filtros de Búsqueda**
+   - Filtros por:
+     - Marca
+     - Modelo
+     - Año
+     - Precio
+     - Estado
+     - Ubicación
+
+2. **Resultados de Búsqueda**
+   - Grid de vehículos
+   - Información básica de cada vehículo
+   - Opciones de ordenamiento
+
+## 3. Página de Detalle de Vehículo (DetalleVehiculo.js)
+### Secciones:
+1. **Galería de Imágenes**
+   - Imágenes del vehículo
+   - Vista 360° (si está disponible)
+
+2. **Información del Vehículo**
+   - Características técnicas
+   - Historial
+   - Estado actual
+   - Precio y costos de importación
+
+3. **Calculadora de Importación**
+   - Estimación de costos
+   - Impuestos aplicables
+   - Tiempo estimado de importación
+
+## 4. Guía de Importación (GuiaImportacion.js)
+### Secciones:
+1. **Requisitos Generales**
+   - Documentación necesaria
+   - Condiciones del vehículo
+   - Restricciones
+
+2. **Proceso de Importación**
+   - Pasos detallados
+   - Documentación requerida
+   - Plazos y tiempos
+
+3. **Costos y Aranceles**
+   - Desglose de costos
+   - Impuestos aplicables
+   - Gastos adicionales
+
+## 5. Página de Perfil (Perfil.js)
+### Secciones:
+1. **Información Personal**
+   - Datos del usuario
+   - Preferencias
+
+2. **Vehículos Favoritos**
+   - Lista de vehículos guardados
+   - Historial de búsquedas
+
+3. **Configuración**
+   - Preferencias de notificación
+   - Configuración de cuenta
+
+## 6. Página de Favoritos (Favoritos.js)
+### Secciones:
+1. **Lista de Favoritos**
+   - Grid de vehículos guardados
+   - Opciones de ordenamiento
+   - Filtros rápidos
+
+## 7. Página 404 (NotFound.js)
+### Secciones:
+1. **Mensaje de Error**
+   - Mensaje amigable
+   - Botón para volver al inicio
+
+## Componentes Compartidos
+1. **Header/Navbar**
+   - Logo
+   - Menú de navegación
+   - Botones de autenticación
+
+2. **Footer**
+   - Enlaces rápidos
+   - Información de contacto
+   - Redes sociales
+
+3. **Componentes de Autenticación**
+   - Login
+   - Registro
+   - Recuperación de contraseña 
