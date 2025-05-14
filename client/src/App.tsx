@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { FavoritesProvider } from "@/lib/favorites-context";
-import Navbar from "@/components/layout/Navbar";
 import Home from "@/pages/Home";
 import SearchResults from "@/pages/SearchResults";
 import Favorites from "@/pages/Favorites";
@@ -14,8 +13,21 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      {/* Mantenemos compatibilidad con la ruta original */}
       <Route path="/search" component={SearchResults} />
+      {/* Nueva ruta en español */}
+      <Route path="/busqueda" component={SearchResults} />
+      {/* Mantenemos compatibilidad con la ruta original */}
       <Route path="/favorites" component={Favorites} />
+      {/* Nueva ruta en español */}
+      <Route path="/favoritos" component={Favorites} />
+      {/* Rutas para las nuevas secciones (Temporalmente redirigen a NotFound) */}
+      <Route path="/guia-importacion" component={NotFound} />
+      <Route path="/requisitos" component={NotFound} />
+      <Route path="/aranceles" component={NotFound} />
+      <Route path="/restricciones" component={NotFound} />
+      <Route path="/terminos" component={NotFound} />
+      <Route path="/perfil" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -28,7 +40,6 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <div className="min-h-screen flex flex-col">
-            <Navbar />
             <main className="flex-1">
               <Router />
             </main>

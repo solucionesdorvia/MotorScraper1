@@ -101,7 +101,7 @@ const SearchForm = ({
       searchParams.set('classiccars', 'false');
     }
     
-    setLocation(`/search?${searchParams.toString()}`);
+    setLocation(`/busqueda?${searchParams.toString()}`);
   };
   
   return (

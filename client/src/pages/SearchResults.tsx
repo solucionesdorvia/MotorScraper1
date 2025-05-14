@@ -11,7 +11,7 @@ import VehicleCardSkeleton from '@/components/search/VehicleCardSkeleton';
 import ResultsHeader from '@/components/search/ResultsHeader';
 import Pagination from '@/components/search/Pagination';
 import { searchParamsSchema, filterSchema, FilterParams, Vehicle } from '@shared/schema';
-import { buildSearchUrl } from '@/lib/utils';
+// Eliminada la importación no utilizada
 import { Loader2 } from 'lucide-react';
 
 const SearchResults = () => {
@@ -70,14 +70,14 @@ const SearchResults = () => {
   // Handle page change
   const handlePageChange = (newPage: number) => {
     searchParams.set('page', newPage.toString());
-    setLocation(`/search?${searchParams.toString()}`);
+    setLocation(`/busqueda?${searchParams.toString()}`);
   };
   
   // Handle sort change
   const handleSortChange = (newSort: string) => {
     searchParams.set('sort', newSort);
     searchParams.set('page', '1'); // Reset to page 1 when sort changes
-    setLocation(`/search?${searchParams.toString()}`);
+    setLocation(`/busqueda?${searchParams.toString()}`);
   };
   
   // Handle filter application
@@ -106,7 +106,7 @@ const SearchResults = () => {
     
     // Reset to page 1 when filters change
     searchParams.set('page', '1');
-    setLocation(`/search?${searchParams.toString()}`);
+    setLocation(`/busqueda?${searchParams.toString()}`);
   };
   
   // Handle filter reset
@@ -124,15 +124,18 @@ const SearchResults = () => {
     
     // Reset to page 1
     searchParams.set('page', '1');
-    setLocation(`/search?${searchParams.toString()}`);
+    setLocation(`/busqueda?${searchParams.toString()}`);
   };
   
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <section className="bg-gradient-primary py-6">
+      <section className="bg-gradient-to-r from-secondary/95 to-secondary py-8">
         <div className="container mx-auto px-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-6">
+            Vehículos Clásicos para Importar
+          </h1>
           <SearchForm 
             defaultQuery={query || `${make} ${model}`.trim()}
             defaultYear={year}
@@ -146,52 +149,73 @@ const SearchResults = () => {
         </div>
       </section>
       
-      <section className="py-8 flex-grow" id="results">
+      <section className="py-10 flex-grow bg-neutral-100" id="results">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-6">
-            <FilterPanel 
-              onApplyFilters={handleApplyFilters}
-              onResetFilters={handleResetFilters}
-              initialFilters={filters}
-              sources={sources}
-              onSourceChange={setSources}
-            />
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-1/4">
+              <div className="bg-white rounded-lg shadow-md p-5 mb-5">
+                <h2 className="text-xl font-semibold mb-4 text-neutral-800">Filtros de Búsqueda</h2>
+                <FilterPanel 
+                  onApplyFilters={handleApplyFilters}
+                  onResetFilters={handleResetFilters}
+                  initialFilters={filters}
+                  sources={sources}
+                  onSourceChange={setSources}
+                />
+              </div>
+              
+              <div className="bg-white rounded-lg shadow-md p-5">
+                <h2 className="text-lg font-semibold mb-4 text-neutral-800">¿Necesitas ayuda?</h2>
+                <p className="text-neutral-600 text-sm mb-4">Si necesitas asistencia con tu búsqueda o importación, contacta con nuestro equipo de especialistas.</p>
+                <a 
+                  href="mailto:contacto@clasicar.com.ar" 
+                  className="bg-secondary text-white text-sm font-medium py-2 px-4 rounded-md inline-flex items-center gap-2 hover:bg-secondary/90 transition-colors"
+                >
+                  Contactar
+                </a>
+              </div>
+            </div>
             
             <div className="lg:w-3/4">
-              <ResultsHeader 
-                make={make}
-                model={model}
-                year={year}
-                totalResults={totalResults}
-                onSortChange={handleSortChange}
-                currentSort={sort}
-              />
+              <div className="bg-white rounded-lg shadow-md p-5 mb-6">
+                <ResultsHeader 
+                  make={make}
+                  model={model}
+                  year={year}
+                  totalResults={totalResults}
+                  onSortChange={handleSortChange}
+                  currentSort={sort}
+                />
+              </div>
               
               {isLoading ? (
                 <>
-                  <div className="bg-white rounded-lg shadow p-6 text-center mb-6 slide-up">
-                    <div className="inline-block loader-spin h-12 w-12 border-4 border-neutral-300 border-t-primary rounded-full"></div>
+                  <div className="bg-white rounded-lg shadow-md p-6 text-center mb-6 slide-up">
+                    <div className="inline-block loader-spin h-12 w-12 border-4 border-neutral-300 border-t-secondary rounded-full"></div>
                     <p className="mt-4 text-neutral-600">Buscando vehículos en múltiples fuentes...</p>
+                    <p className="text-sm text-neutral-500 mt-2">Estamos consultando en tiempo real eBay Motors y Bring a Trailer</p>
                   </div>
                   
                   {/* Esqueletos para simular la carga de resultados */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[...Array(6)].map((_, index) => (
                       <VehicleCardSkeleton key={index} />
                     ))}
                   </div>
                 </>
               ) : error ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center slide-up">
-                  <p className="text-red-600">Ha ocurrido un error al buscar resultados. Por favor, inténtalo de nuevo.</p>
+                <div className="bg-white rounded-lg shadow-md p-8 text-center slide-up">
+                  <p className="text-red-600 mb-2">Ha ocurrido un error al buscar resultados.</p>
+                  <p className="text-neutral-600">Por favor, verifica tu conexión a internet e inténtalo de nuevo.</p>
                 </div>
               ) : vehicles.length === 0 ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center slide-up">
-                  <p className="text-neutral-600">No se encontraron vehículos que coincidan con tus criterios. Intenta ajustar tu búsqueda o filtros.</p>
+                <div className="bg-white rounded-lg shadow-md p-8 text-center slide-up">
+                  <h3 className="text-xl font-semibold mb-3 text-neutral-800">No se encontraron vehículos</h3>
+                  <p className="text-neutral-600 max-w-lg mx-auto">No se encontraron vehículos que coincidan con tus criterios. Intenta ajustar tu búsqueda o filtros para encontrar más opciones.</p>
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 staggered-grid">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 staggered-grid">
                     {vehicles.map((vehicle) => (
                       <div key={vehicle.id} className="staggered-item">
                         <VehicleCard vehicle={vehicle} />
@@ -199,7 +223,7 @@ const SearchResults = () => {
                     ))}
                   </div>
                   
-                  <div className="mt-8 fade-in">
+                  <div className="mt-8 fade-in bg-white rounded-lg shadow-md p-4">
                     <Pagination 
                       currentPage={page} 
                       totalPages={totalPages}
