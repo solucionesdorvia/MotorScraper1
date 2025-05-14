@@ -189,7 +189,7 @@ const Favoritos = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <section className="bg-gradient-to-r from-secondary/95 to-secondary py-8">
+      <section className="bg-gradient-to-r from-primary/95 to-primary py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
@@ -201,7 +201,7 @@ const Favoritos = () => {
               </p>
             </div>
             <Button 
-              className="mt-4 md:mt-0 bg-white text-secondary hover:bg-gray-100"
+              className="mt-4 md:mt-0 bg-white text-primary hover:bg-gray-100"
               onClick={() => window.location.href = '/busqueda'}
             >
               <FaSearch className="mr-2" />
@@ -233,7 +233,7 @@ const Favoritos = () => {
                   className={`flex items-center gap-2 ${showFilters ? 'bg-neutral-100' : ''}`}
                   onClick={() => setShowFilters(!showFilters)}
                 >
-                  <FaFilter className={showFilters ? 'text-secondary' : ''} />
+                  <FaFilter className={showFilters ? 'text-primary' : ''} />
                   <span>Filtros</span>
                 </Button>
                 
@@ -309,7 +309,7 @@ const Favoritos = () => {
                     Limpiar Filtros
                   </Button>
                   <Button
-                    className="bg-secondary hover:bg-secondary/90 text-white"
+                    className="bg-primary hover:bg-primary/90 text-white"
                     onClick={() => setShowFilters(false)}
                   >
                     Aplicar Filtros
@@ -329,7 +329,7 @@ const Favoritos = () => {
                 {filteredVehicles.length !== vehiculosFavoritos.length && (
                   <Button 
                     variant="ghost" 
-                    className="text-secondary text-sm"
+                    className="text-primary text-sm"
                     onClick={handleClearFilters}
                   >
                     Limpiar Filtros
@@ -363,7 +363,7 @@ const Favoritos = () => {
                     </div>
                     <div className="p-4">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-secondary font-bold text-lg">
+                        <span className="text-primary font-bold text-lg">
                           {formatPrice(vehiculo.price)}
                         </span>
                         <span className="bg-neutral-100 text-neutral-600 px-2 py-1 rounded text-xs">
@@ -379,7 +379,7 @@ const Favoritos = () => {
                           href={vehiculo.url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="bg-secondary hover:bg-secondary/90 text-white text-sm py-2 px-3 rounded-md flex items-center justify-center gap-1"
+                          className="bg-primary hover:bg-primary/90 text-white text-sm py-2 px-3 rounded-md flex items-center justify-center gap-1"
                         >
                           <FaExternalLinkAlt className="h-3 w-3" />
                           <span>Ver Original</span>

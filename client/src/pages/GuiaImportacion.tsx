@@ -180,7 +180,7 @@ const GuiaImportacion = () => {
                   <div className="space-y-8 mb-8">
                     <div className="flex flex-col md:flex-row gap-6">
                       <div className="md:w-16 flex justify-center">
-                        <div className="bg-secondary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
+                        <div className="bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
                           1
                         </div>
                       </div>
@@ -248,7 +248,7 @@ const GuiaImportacion = () => {
 
                     <div className="flex flex-col md:flex-row gap-6">
                       <div className="md:w-16 flex justify-center">
-                        <div className="bg-secondary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
+                        <div className="bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
                           3
                         </div>
                       </div>
@@ -282,7 +282,7 @@ const GuiaImportacion = () => {
 
                     <div className="flex flex-col md:flex-row gap-6">
                       <div className="md:w-16 flex justify-center">
-                        <div className="bg-secondary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
+                        <div className="bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
                           4
                         </div>
                       </div>
