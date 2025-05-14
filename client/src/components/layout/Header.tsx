@@ -10,7 +10,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              <FaCarSide className="text-secondary text-2xl" />
+              <FaCarSide className="text-primary text-2xl" />
               <h1 className="text-xl font-bold text-neutral-800">ClasicAR</h1>
             </div>
           </Link>

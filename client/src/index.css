@@ -21,7 +21,7 @@
   --primary: 217 61% 51%;
   --primary-hover: 217 61% 40%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 0 73% 57%;
+  --secondary: 210 9% 45%; /* 6c757d */
   --secondary-foreground: 0 0% 100%;
   --accent: 60 4.8% 95.9%;
   --accent-foreground: 24 9.8% 10%;
@@ -33,9 +33,9 @@
   /* Variables específicas de ClasicAR */
   --primary-color: #3b71ca;
   --primary-hover: #2c58a0;
-  --secondary-color: #f02d2d;
+  --secondary-color: #6c757d;
   --success-color: #14a44d;
-  --error-color: #dc4c64;
+  --danger-color: #dc4c64;
   --warning-color: #e4a11b;
   --info-color: #54b4d3;
   --dark-color: #14141f;
