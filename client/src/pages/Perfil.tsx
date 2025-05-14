@@ -314,7 +314,7 @@ const Perfil = () => {
                         Aún no has guardado ningún vehículo como favorito. Explora nuestro catálogo y guarda los vehículos que te interesen.
                       </p>
                       <Button 
-                        className="bg-secondary hover:bg-secondary/90 text-white"
+                        className="bg-primary hover:bg-primary/90 text-white"
                         onClick={() => window.location.href = '/busqueda'}
                       >
                         Buscar Vehículos
@@ -329,7 +329,7 @@ const Perfil = () => {
                         <div className="p-4 border-b border-neutral-200">
                           <div className="flex justify-between items-center">
                             <span className="font-medium">Historial de Búsquedas</span>
-                            <Button variant="ghost" size="sm" className="text-secondary text-sm">
+                            <Button variant="ghost" size="sm" className="text-primary text-sm">
                               Borrar Historial
                             </Button>
                           </div>
@@ -366,8 +366,8 @@ const Perfil = () => {
                     <div>
                       <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200 mb-6">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="bg-secondary/10 p-3 rounded-full">
-                            <FaBell className="text-secondary text-xl" />
+                          <div className="bg-primary/10 p-3 rounded-full">
+                            <FaBell className="text-primary text-xl" />
                           </div>
                           <h3 className="text-xl font-semibold">Notificaciones</h3>
                         </div>
@@ -406,8 +406,8 @@ const Perfil = () => {
                       
                       <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="bg-secondary/10 p-3 rounded-full">
-                            <FaShieldAlt className="text-secondary text-xl" />
+                          <div className="bg-primary/10 p-3 rounded-full">
+                            <FaShieldAlt className="text-primary text-xl" />
                           </div>
                           <h3 className="text-xl font-semibold">Privacidad</h3>
                         </div>
@@ -441,8 +441,8 @@ const Perfil = () => {
                     <div>
                       <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200 mb-6">
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="bg-secondary/10 p-3 rounded-full">
-                            <FaCarSide className="text-secondary text-xl" />
+                          <div className="bg-primary/10 p-3 rounded-full">
+                            <FaCarSide className="text-primary text-xl" />
                           </div>
                           <h3 className="text-xl font-semibold">Preferencias de Búsqueda</h3>
                         </div>
@@ -523,7 +523,7 @@ const Perfil = () => {
                   </div>
                   
                   <div className="flex justify-end mt-8">
-                    <Button className="bg-secondary hover:bg-secondary/90 text-white">
+                    <Button className="bg-primary hover:bg-primary/90 text-white">
                       Guardar Preferencias
                     </Button>
                   </div>
