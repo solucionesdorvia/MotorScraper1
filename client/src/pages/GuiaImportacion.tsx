@@ -14,7 +14,7 @@ const GuiaImportacion = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-secondary/95 to-secondary py-12">
+      <section className="bg-gradient-to-r from-primary/95 to-primary py-12">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Guía de Importación de Vehículos Clásicos
@@ -34,21 +34,21 @@ const GuiaImportacion = () => {
                 <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 h-auto bg-transparent gap-2">
                   <TabsTrigger 
                     value="requisitos" 
-                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'requisitos' ? 'bg-secondary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
+                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'requisitos' ? 'bg-primary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
                   >
                     <FaClipboardCheck className="mr-2" />
                     Requisitos Generales
                   </TabsTrigger>
                   <TabsTrigger 
                     value="proceso" 
-                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'proceso' ? 'bg-secondary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
+                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'proceso' ? 'bg-primary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
                   >
                     <FaShip className="mr-2" />
                     Proceso de Importación
                   </TabsTrigger>
                   <TabsTrigger 
                     value="costos" 
-                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'costos' ? 'bg-secondary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
+                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'costos' ? 'bg-primary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
                   >
                     <FaMoneyBillWave className="mr-2" />
                     Costos y Aranceles
@@ -75,19 +75,19 @@ const GuiaImportacion = () => {
                       </div>
                       <ul className="space-y-2 text-neutral-700">
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>Fabricado entre 1900 y 1995 (antigüedad mínima de 30 años)</p>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>En condiciones originales o restaurado respetando las especificaciones de fábrica</p>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>Motor en funcionamiento y en buen estado general</p>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>Carrocería sin modificaciones estructurales significativas</p>
                         </li>
                       </ul>
@@ -102,19 +102,19 @@ const GuiaImportacion = () => {
                       </div>
                       <ul className="space-y-2 text-neutral-700">
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>Título de propiedad del vehículo (Title) o documentación equivalente</p>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>Factura de compra (Bill of Sale) con datos completos</p>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>Certificado de baja de patente del país de origen (si aplica)</p>
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-secondary mt-1">•</span>
+                          <span className="text-primary mt-1">•</span>
                           <p>Documentación que acredite la antigüedad del vehículo</p>
                         </li>
                       </ul>
@@ -189,19 +189,19 @@ const GuiaImportacion = () => {
                         <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200">
                           <ul className="space-y-3 text-neutral-700">
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Verificar que el vehículo cumpla con los requisitos para importación</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Solicitar toda la documentación original al vendedor</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Realizar una inspección técnica previa a la compra</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Formalizar la compra con contrato detallado</p>
                             </li>
                           </ul>
@@ -214,7 +214,7 @@ const GuiaImportacion = () => {
 
                     <div className="flex flex-col md:flex-row gap-6">
                       <div className="md:w-16 flex justify-center">
-                        <div className="bg-secondary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
+                        <div className="bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
                           2
                         </div>
                       </div>
@@ -223,19 +223,19 @@ const GuiaImportacion = () => {
                         <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200">
                           <ul className="space-y-3 text-neutral-700">
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Contratar transporte desde el punto de compra hasta el puerto</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Asegurar el vehículo para el transporte internacional</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Coordinar con agente de carga para reserva de contenedor</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Preparar vehículo para el transporte (vaciado de fluidos, etc.)</p>
                             </li>
                           </ul>
@@ -257,19 +257,19 @@ const GuiaImportacion = () => {
                         <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200">
                           <ul className="space-y-3 text-neutral-700">
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Presentar solicitud de importación ante Aduana Argentina</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Gestionar certificado de antigüedad por perito especializado</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Pagar aranceles e impuestos de importación</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Inspección física del vehículo por autoridades aduaneras</p>
                             </li>
                           </ul>
@@ -291,19 +291,19 @@ const GuiaImportacion = () => {
                         <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200">
                           <ul className="space-y-3 text-neutral-700">
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Realizar verificación policial del vehículo</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Tramitar alta en Registro Automotor</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Obtener placa patente (regular o de colección)</p>
                             </li>
                             <li className="flex items-start gap-2">
-                              <span className="text-secondary mt-1">•</span>
+                              <span className="text-primary mt-1">•</span>
                               <p>Contratar seguro para vehículo importado</p>
                             </li>
                           </ul>
