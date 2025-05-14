@@ -263,7 +263,7 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
           
           <Button 
             type="submit" 
-            className="mt-6 w-full btn-primary"
+            className="mt-6 w-full bg-primary hover:bg-primary/90 text-white font-semibold"
           >
             Aplicar Filtros
           </Button>
