@@ -85,21 +85,21 @@ const Perfil = () => {
                 <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 h-auto bg-transparent gap-2">
                   <TabsTrigger 
                     value="datos" 
-                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'datos' ? 'bg-secondary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
+                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'datos' ? 'bg-primary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
                   >
                     <FaUser className="mr-2" />
                     Datos Personales
                   </TabsTrigger>
                   <TabsTrigger 
                     value="favoritos" 
-                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'favoritos' ? 'bg-secondary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
+                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'favoritos' ? 'bg-primary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
                   >
                     <FaHeart className="mr-2" />
                     Mis Favoritos
                   </TabsTrigger>
                   <TabsTrigger 
                     value="config" 
-                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'config' ? 'bg-secondary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
+                    className={`py-3 text-sm md:text-base font-medium rounded-md ${activeTab === 'config' ? 'bg-primary text-white' : 'bg-neutral-700 text-white/80 hover:bg-neutral-600'}`}
                   >
                     <FaCog className="mr-2" />
                     Configuración
@@ -119,7 +119,7 @@ const Perfil = () => {
                         </div>
                         <h3 className="text-xl font-semibold mb-1">{userData.nombre}</h3>
                         <p className="text-neutral-500 text-sm mb-4">Miembro desde {userData.fechaRegistro}</p>
-                        <Button className="bg-secondary hover:bg-secondary/90 text-white w-full mb-2">
+                        <Button className="bg-primary hover:bg-primary/90 text-white w-full mb-2">
                           Cambiar Foto
                         </Button>
                         <Button variant="outline" className="w-full">
@@ -198,7 +198,7 @@ const Perfil = () => {
                           </div>
                           
                           <div className="flex justify-end">
-                            <Button className="bg-secondary hover:bg-secondary/90 text-white">
+                            <Button className="bg-primary hover:bg-primary/90 text-white">
                               Guardar Cambios
                             </Button>
                           </div>
@@ -238,7 +238,7 @@ const Perfil = () => {
                           </div>
                           
                           <div className="flex justify-end">
-                            <Button className="bg-secondary hover:bg-secondary/90 text-white">
+                            <Button className="bg-primary hover:bg-primary/90 text-white">
                               Actualizar Contraseña
                             </Button>
                           </div>
@@ -252,7 +252,7 @@ const Perfil = () => {
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold text-neutral-800">Mis Vehículos Favoritos</h2>
                     <Button variant="outline" className="flex items-center gap-2">
-                      <FaHistory className="text-secondary" />
+                      <FaHistory className="text-primary" />
                       <span>Historial de Búsquedas</span>
                     </Button>
                   </div>
@@ -283,7 +283,7 @@ const Perfil = () => {
                           </div>
                           <div className="p-4">
                             <div className="flex justify-between items-center mb-2">
-                              <span className="text-secondary font-bold text-lg">
+                              <span className="text-primary font-bold text-lg">
                                 {formatPrice(vehiculo.price)}
                               </span>
                               <span className="bg-neutral-100 text-neutral-600 px-2 py-1 rounded text-xs">
@@ -295,7 +295,7 @@ const Perfil = () => {
                               <span>Ubicación: {vehiculo.location}</span>
                             </p>
                             <div className="grid grid-cols-2 gap-2">
-                              <Button className="bg-secondary hover:bg-secondary/90 text-white text-sm">
+                              <Button className="bg-primary hover:bg-primary/90 text-white text-sm">
                                 Ver Detalles
                               </Button>
                               <Button variant="outline" className="text-sm">
