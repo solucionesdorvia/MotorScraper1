@@ -15,13 +15,13 @@ const Footer = () => {
               Verificamos elegibilidad y simplificamos el proceso.
             </p>
             <div className="flex mt-4 gap-4">
-              <a href="#" className="text-neutral-300 hover:text-secondary">
+              <a href="#" className="text-neutral-300 hover:text-primary">
                 <FaFacebookF />
               </a>
-              <a href="#" className="text-neutral-300 hover:text-secondary">
+              <a href="#" className="text-neutral-300 hover:text-primary">
                 <FaTwitter />
               </a>
-              <a href="#" className="text-neutral-300 hover:text-secondary">
+              <a href="#" className="text-neutral-300 hover:text-primary">
                 <FaInstagram />
               </a>
             </div>
@@ -51,22 +51,22 @@ const Footer = () => {
             <h3 className="footer-heading">Contacto</h3>
             <div className="space-y-3 text-sm mt-4">
               <div className="flex items-center gap-2">
-                <FaEnvelope className="text-secondary" />
-                <a href="mailto:contacto@clasicar.com.ar" className="hover:text-secondary">contacto@clasicar.com.ar</a>
+                <FaEnvelope className="text-primary" />
+                <a href="mailto:contacto@clasicar.com.ar" className="hover:text-primary">contacto@clasicar.com.ar</a>
               </div>
               <div className="flex items-center gap-2">
-                <FaWhatsapp className="text-secondary" />
-                <a href="https://wa.me/5491112345678" className="hover:text-secondary">+54 9 11 1234-5678</a>
+                <FaWhatsapp className="text-primary" />
+                <a href="https://wa.me/5491112345678" className="hover:text-primary">+54 9 11 1234-5678</a>
               </div>
               <form className="flex mt-4">
                 <Input 
                   type="email" 
                   placeholder="Tu email" 
-                  className="px-3 py-2 text-sm bg-neutral-700 border border-neutral-600 text-white rounded-l-md focus:outline-none focus:ring-1 focus:ring-secondary w-full"
+                  className="px-3 py-2 text-sm bg-neutral-700 border border-neutral-600 text-white rounded-l-md focus:outline-none focus:ring-1 focus:ring-primary w-full"
                 />
                 <Button 
                   type="submit" 
-                  className="bg-secondary text-white px-4 py-2 text-sm font-medium rounded-r-md hover:bg-secondary/90 rounded-l-none"
+                  className="bg-primary text-white px-4 py-2 text-sm font-medium rounded-r-md hover:bg-primary/90 rounded-l-none"
                 >
                   Enviar
                 </Button>

@@ -17,23 +17,23 @@ const Header = () => {
           
           <div className="hidden md:flex items-center gap-6">
             <Link href="/busqueda">
-              <button className="text-neutral-700 hover:text-secondary px-3 py-2 text-sm font-medium">
+              <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium">
                 Buscar Vehículos
               </button>
             </Link>
             <Link href="/guia-importacion">
-              <button className="text-neutral-700 hover:text-secondary px-3 py-2 text-sm font-medium">
+              <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium">
                 Guía de Importación
               </button>
             </Link>
             <Link href="/favoritos">
-              <button className="text-neutral-700 hover:text-secondary px-3 py-2 text-sm font-medium flex items-center gap-1">
+              <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-1">
                 <FaHeart className="text-sm" />
                 <span>Favoritos</span>
               </button>
             </Link>
             <Link href="/perfil">
-              <button className="bg-secondary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary/90 transition-colors flex items-center gap-1">
+              <button className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-1">
                 <FaUserCircle />
                 <span>Mi Cuenta</span>
               </button>
@@ -42,7 +42,7 @@ const Header = () => {
           
           <Sheet>
             <SheetTrigger asChild>
-              <button className="md:hidden text-neutral-800 hover:text-secondary">
+              <button className="md:hidden text-neutral-800 hover:text-primary">
                 <FaBars className="text-xl" />
               </button>
             </SheetTrigger>
@@ -50,7 +50,7 @@ const Header = () => {
               <div className="flex flex-col gap-4 mt-8">
                 <Link href="/">
                   <div className="flex items-center gap-2 mb-6">
-                    <FaCarSide className="text-secondary text-2xl" />
+                    <FaCarSide className="text-primary text-2xl" />
                     <h1 className="text-xl font-bold text-neutral-800">ClasicAR</h1>
                   </div>
                 </Link>
@@ -66,12 +66,12 @@ const Header = () => {
                 </Link>
                 <Link href="/favoritos">
                   <button className="w-full text-left py-2 px-4 hover:bg-neutral-100 rounded-md text-neutral-700 flex items-center gap-2">
-                    <FaHeart className="text-secondary" />
+                    <FaHeart className="text-primary" />
                     <span>Favoritos</span>
                   </button>
                 </Link>
                 <Link href="/perfil">
-                  <button className="w-full mt-2 btn-secondary flex items-center justify-center gap-2">
+                  <button className="w-full mt-2 bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
                     <FaUserCircle />
                     <span>Mi Cuenta</span>
                   </button>
