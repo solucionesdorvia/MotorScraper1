@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 
 const Favoritos = () => {
   // Utilizamos el contexto de favoritos para obtener los vehículos guardados
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, addFavorite, removeFavorite } = useFavorites();
   
   // Estado para los filtros
   const [searchTerm, setSearchTerm] = useState('');
@@ -175,8 +175,7 @@ const Favoritos = () => {
   
   // Función para eliminar un favorito
   const handleRemoveFavorite = (id: number) => {
-    // Utilizaríamos toggleFavorite del contexto en una implementación real
-    alert(`Vehículo ${id} eliminado de favoritos`);
+    removeFavorite(id);
   };
   
   // Función para limpiar todos los filtros
