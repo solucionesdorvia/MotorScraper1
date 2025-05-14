@@ -153,7 +153,7 @@ const SearchForm = ({
           
           <Button 
             type="submit" 
-            className="bg-secondary hover:bg-secondary/90 text-white font-semibold py-3 px-6 rounded-md transition-colors flex items-center justify-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-md transition-colors flex items-center justify-center gap-2"
           >
             <FaSearch />
             <span>Buscar</span>
