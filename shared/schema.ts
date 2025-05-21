@@ -154,6 +154,9 @@ export const users = pgTable("users", {
   password: varchar("password").notNull(),
   nombre: varchar("nombre"),
   apellido: varchar("apellido"),
+  profileImageUrl: text("profile_image_url"),
+  socialProvider: varchar("social_provider"), // 'twitter', 'google', 'apple', null para usuarios locales
+  socialId: varchar("social_id"), // ID de usuario en el proveedor social
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

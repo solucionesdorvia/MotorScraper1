@@ -36,6 +36,19 @@ export interface IStorage {
   createUser(userData: InsertUser): Promise<User>;
   getUserByEmail(email: string): Promise<User | undefined>;
   verifyUser(email: string, password: string): Promise<User | undefined>;
+  getUser(id: number): Promise<User | undefined>;
+  
+  // Social Authentication operations
+  getUserBySocialId(provider: string, socialId: string): Promise<User | undefined>;
+  createSocialUser(userData: {
+    email: string;
+    nombre: string | null;
+    apellido: string | null;
+    password: string;
+    socialProvider: string;
+    socialId: string;
+    profileImageUrl: string | null;
+  }): Promise<User>;
   
   // Favorites operations
   addFavorite(userId: number, vehicleId: number): Promise<Favorite>;
