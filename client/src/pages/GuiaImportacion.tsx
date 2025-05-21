@@ -342,7 +342,7 @@ const GuiaImportacion = () => {
                   </div>
 
                   <div className="text-center mt-8">
-                    <Button className="bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-md">
+                    <Button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-md">
                       Solicitar Asistencia en Importación
                     </Button>
                   </div>
@@ -419,7 +419,7 @@ const GuiaImportacion = () => {
                       </div>
                     </div>
                     <div className="text-center">
-                      <Button className="bg-secondary hover:bg-secondary/90 text-white px-4 py-2 rounded-md">
+                      <Button className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md">
                         Calcular Costos
                       </Button>
                     </div>
@@ -485,8 +485,8 @@ const GuiaImportacion = () => {
 
                   <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200 mb-8">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-secondary/10 p-3 rounded-full">
-                        <FaCalculator className="text-secondary text-xl" />
+                      <div className="bg-primary/10 p-3 rounded-full">
+                        <FaCalculator className="text-primary text-xl" />
                       </div>
                       <h3 className="text-xl font-semibold">Ejemplo Práctico</h3>
                     </div>
@@ -524,13 +524,13 @@ const GuiaImportacion = () => {
                       </div>
                       <div className="flex justify-between py-2 font-bold text-lg">
                         <span>COSTO TOTAL APROXIMADO:</span>
-                        <span className="text-secondary">USD 38,575</span>
+                        <span className="text-primary">USD 38,575</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="text-center mt-8">
-                    <Button className="bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-md">
+                    <Button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-md">
                       Consultar con un Experto
                     </Button>
                   </div>
@@ -552,7 +552,7 @@ const GuiaImportacion = () => {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
-              className="bg-white text-secondary hover:bg-gray-100 font-semibold py-3 px-6 rounded-md transition-colors text-base"
+              className="bg-white text-primary hover:bg-gray-100 font-semibold py-3 px-6 rounded-md transition-colors text-base"
               onClick={() => window.location.href = '/busqueda'}
             >
               Buscar Vehículos
