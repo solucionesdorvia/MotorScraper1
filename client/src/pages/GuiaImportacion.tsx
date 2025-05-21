@@ -68,8 +68,8 @@ const GuiaImportacion = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="bg-secondary/10 p-3 rounded-full">
-                          <FaCarSide className="text-secondary text-xl" />
+                        <div className="bg-primary/10 p-3 rounded-full">
+                          <FaCarSide className="text-primary text-xl" />
                         </div>
                         <h3 className="text-xl font-semibold">Condiciones del Vehículo</h3>
                       </div>
@@ -95,8 +95,8 @@ const GuiaImportacion = () => {
 
                     <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200">
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="bg-secondary/10 p-3 rounded-full">
-                          <FaFileAlt className="text-secondary text-xl" />
+                        <div className="bg-primary/10 p-3 rounded-full">
+                          <FaFileAlt className="text-primary text-xl" />
                         </div>
                         <h3 className="text-xl font-semibold">Documentación Necesaria</h3>
                       </div>
@@ -163,7 +163,7 @@ const GuiaImportacion = () => {
                   </div>
 
                   <div className="text-center mt-8">
-                    <Button className="bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-md">
+                    <Button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-md">
                       Descargar Lista de Requisitos (PDF)
                     </Button>
                   </div>
@@ -317,8 +317,8 @@ const GuiaImportacion = () => {
 
                   <div className="bg-neutral-50 p-5 rounded-lg border border-neutral-200 mb-8">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-secondary/10 p-3 rounded-full">
-                        <FaCalendarAlt className="text-secondary text-xl" />
+                      <div className="bg-primary/10 p-3 rounded-full">
+                        <FaCalendarAlt className="text-primary text-xl" />
                       </div>
                       <h3 className="text-xl font-semibold">Tiempos Estimados</h3>
                     </div>
@@ -326,15 +326,15 @@ const GuiaImportacion = () => {
                       <p className="mb-2">El proceso completo de importación puede tomar:</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="border border-neutral-200 rounded-md p-3 text-center">
-                          <p className="text-secondary font-bold text-lg">2-3 meses</p>
+                          <p className="text-primary font-bold text-lg">2-3 meses</p>
                           <p className="text-sm">Caso optimista</p>
                         </div>
                         <div className="border border-neutral-200 rounded-md p-3 text-center bg-neutral-100">
-                          <p className="text-secondary font-bold text-lg">3-4 meses</p>
+                          <p className="text-primary font-bold text-lg">3-4 meses</p>
                           <p className="text-sm">Caso promedio</p>
                         </div>
                         <div className="border border-neutral-200 rounded-md p-3 text-center">
-                          <p className="text-secondary font-bold text-lg">4-6 meses</p>
+                          <p className="text-primary font-bold text-lg">4-6 meses</p>
                           <p className="text-sm">Caso complejo</p>
                         </div>
                       </div>
