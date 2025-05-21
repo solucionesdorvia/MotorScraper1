@@ -547,9 +547,14 @@ export class DatabaseStorage implements IStorage {
     }
     
     // Count total results
-    const countQuery = db.select({ count: sql`count(*)` }).from(vehicles);
-    const countResult = await countQuery;
-    const totalResults = Number(countResult[0]?.count ?? 0);
+    let totalResults = 0;
+    try {
+      const countResults = await db.execute(sql`SELECT COUNT(*) FROM vehicles`);
+      totalResults = parseInt(countResults.rows[0]?.[0] as string, 10) || 0;
+    } catch (error) {
+      console.error('Error al contar resultados:', error);
+      totalResults = 0;
+    }
     
     // Apply sorting
     if (searchParams.sort) {
