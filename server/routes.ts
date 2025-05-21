@@ -46,6 +46,258 @@ function interleaveResults(list1: InsertVehicle[], list2: InsertVehicle[]): Inse
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Configurar middleware para sesiones
+  const PgSession = connectPg(session);
+  app.use(cookieParser());
+  app.use(session({
+    store: new PgSession({
+      pool,
+      tableName: 'sessions'
+    }),
+    secret: process.env.SESSION_SECRET || 'clasicarsecret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true
+    }
+  }));
+
+  // API route for user registration
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
+    try {
+      const userData = insertUserSchema.safeParse(req.body);
+      
+      if (!userData.success) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Datos de usuario inválidos", 
+          errors: userData.error.errors 
+        });
+      }
+      
+      // Verificar si el correo ya existe
+      const existingUser = await storage.getUserByEmail(userData.data.email);
+      if (existingUser) {
+        return res.status(409).json({ 
+          success: false,
+          message: "El correo electrónico ya está registrado" 
+        });
+      }
+      
+      // Crear el usuario
+      const user = await storage.createUser(userData.data);
+      
+      // Iniciar sesión
+      req.session.userId = user.id;
+      
+      // Responder con datos del usuario (excepto contraseña)
+      const { password, ...userWithoutPassword } = user;
+      res.status(201).json({
+        success: true,
+        message: "Usuario registrado correctamente",
+        user: userWithoutPassword
+      });
+    } catch (error) {
+      console.error('Error al registrar usuario:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error al registrar el usuario" 
+      });
+    }
+  });
+  
+  // API route for user login
+  app.post("/api/auth/login", async (req: Request, res: Response) => {
+    try {
+      const loginData = userLoginSchema.safeParse(req.body);
+      
+      if (!loginData.success) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Datos de inicio de sesión inválidos", 
+          errors: loginData.error.errors 
+        });
+      }
+      
+      // Verificar credenciales
+      const user = await storage.verifyUser(loginData.data.email, loginData.data.password);
+      
+      if (!user) {
+        return res.status(401).json({ 
+          success: false,
+          message: "Correo electrónico o contraseña incorrectos" 
+        });
+      }
+      
+      // Iniciar sesión
+      req.session.userId = user.id;
+      
+      // Responder con datos del usuario (excepto contraseña)
+      const { password, ...userWithoutPassword } = user;
+      res.json({
+        success: true,
+        message: "Inicio de sesión exitoso",
+        user: userWithoutPassword
+      });
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error al iniciar sesión" 
+      });
+    }
+  });
+  
+  // API route for user logout
+  app.post("/api/auth/logout", (req: Request, res: Response) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ 
+          success: false,
+          message: "Error al cerrar sesión" 
+        });
+      }
+      
+      res.json({ 
+        success: true,
+        message: "Sesión cerrada correctamente" 
+      });
+    });
+  });
+  
+  // API route to get current user
+  app.get("/api/auth/me", async (req: Request, res: Response) => {
+    try {
+      // Verificar si hay una sesión activa
+      if (!req.session.userId) {
+        return res.status(401).json({ 
+          success: false,
+          message: "No hay sesión activa" 
+        });
+      }
+      
+      // Obtener datos del usuario
+      const user = await storage.getUser(req.session.userId);
+      
+      if (!user) {
+        // Eliminar sesión si el usuario no existe
+        req.session.destroy(() => {});
+        return res.status(401).json({ 
+          success: false,
+          message: "Usuario no encontrado" 
+        });
+      }
+      
+      // Responder con datos del usuario (excepto contraseña)
+      const { password, ...userWithoutPassword } = user;
+      res.json({
+        success: true,
+        user: userWithoutPassword
+      });
+    } catch (error) {
+      console.error('Error al obtener usuario actual:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error al obtener información del usuario" 
+      });
+    }
+  });
+  
+  // API route for favorites
+  app.post("/api/favorites", async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ 
+          success: false,
+          message: "Debe iniciar sesión para guardar favoritos" 
+        });
+      }
+      
+      const { vehicleId } = req.body;
+      
+      if (!vehicleId) {
+        return res.status(400).json({ 
+          success: false,
+          message: "ID de vehículo no proporcionado" 
+        });
+      }
+      
+      const favorite = await storage.addFavorite(req.session.userId, vehicleId);
+      
+      res.status(201).json({
+        success: true,
+        message: "Vehículo guardado en favoritos",
+        favorite
+      });
+    } catch (error) {
+      console.error('Error al guardar favorito:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error al guardar en favoritos" 
+      });
+    }
+  });
+  
+  // API route to remove a favorite
+  app.delete("/api/favorites/:vehicleId", async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ 
+          success: false,
+          message: "Debe iniciar sesión para eliminar favoritos" 
+        });
+      }
+      
+      const vehicleId = parseInt(req.params.vehicleId);
+      
+      if (isNaN(vehicleId)) {
+        return res.status(400).json({ 
+          success: false,
+          message: "ID de vehículo inválido" 
+        });
+      }
+      
+      await storage.removeFavorite(req.session.userId, vehicleId);
+      
+      res.json({
+        success: true,
+        message: "Vehículo eliminado de favoritos"
+      });
+    } catch (error) {
+      console.error('Error al eliminar favorito:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error al eliminar de favoritos" 
+      });
+    }
+  });
+  
+  // API route to get user favorites
+  app.get("/api/favorites", async (req: Request, res: Response) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ 
+          success: false,
+          message: "Debe iniciar sesión para ver favoritos" 
+        });
+      }
+      
+      const favorites = await storage.getUserFavorites(req.session.userId);
+      
+      res.json({
+        success: true,
+        favorites
+      });
+    } catch (error) {
+      console.error('Error al obtener favoritos:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error al obtener favoritos" 
+      });
+    }
+  });
   // API route for searching vehicles
   app.get("/api/search", async (req: Request, res: Response) => {
     try {
