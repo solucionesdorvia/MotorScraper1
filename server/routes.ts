@@ -8,10 +8,14 @@ import { scrapeHemmings } from "./scraper/hemmings";
 import { scrapeBringATrailer } from "./scraper/bringatrailer";
 import { scrapeClassicCars } from "./scraper/classiccars";
 import { takeScreenshotOfBaT, diagnosticGetHTML } from "./scraper/bringatrailer-screenshot";
-import { searchParamsSchema, filterSchema, insertSearchHistorySchema, InsertVehicle } from "@shared/schema";
+import { searchParamsSchema, filterSchema, insertSearchHistorySchema, insertUserSchema, userLoginSchema, InsertVehicle } from "@shared/schema";
 import { z } from "zod";
 import NodeCache from "node-cache";
 import { openAIService } from "./services/openai-service";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
+import cookieParser from "cookie-parser";
 
 // Cache for search results (TTL: 5 minutes)
 const searchCache = new NodeCache({ stdTTL: 300 });
