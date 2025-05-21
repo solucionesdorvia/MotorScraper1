@@ -88,14 +88,57 @@ export default function Login() {
               {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
           </div>
-          
-          <div className="text-center text-sm">
-            ¿No tienes una cuenta?{' '}
-            <Link to="/register" className="text-primary hover:text-primary-dark">
-              Regístrate aquí
-            </Link>
-          </div>
         </form>
+
+        <div className="mt-4 mb-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">O continuar con</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 mb-6">
+          <a 
+            href="/api/auth/google" 
+            className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <svg className="h-5 w-5 mr-2" fill="#4285F4" viewBox="0 0 24 24">
+              <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" />
+            </svg>
+            <span>Google</span>
+          </a>
+
+          <a 
+            href="/api/auth/twitter" 
+            className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <svg className="h-5 w-5 mr-2" fill="#1DA1F2" viewBox="0 0 24 24">
+              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+            </svg>
+            <span>Twitter</span>
+          </a>
+
+          <a 
+            href="/api/auth/apple" 
+            className="flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <svg className="h-5 w-5 mr-2" fill="#000000" viewBox="0 0 24 24">
+              <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z" />
+            </svg>
+            <span>Apple</span>
+          </a>
+        </div>
+        
+        <div className="text-center text-sm">
+          ¿No tienes una cuenta?{' '}
+          <Link to="/register" className="text-primary hover:text-primary-dark">
+            Regístrate aquí
+          </Link>
+        </div>
       </div>
     </div>
   );
