@@ -7,7 +7,9 @@ import { FavoritesProvider } from "@/lib/favorites-context";
 import Home from "@/pages/Home";
 import SearchResults from "@/pages/SearchResults";
 import Favorites from "@/pages/Favorites";
-import NotFound from "@/pages/not-found";
+import GuiaImportacion from "@/pages/GuiaImportacion";
+import Perfil from "@/pages/Perfil";
+import NotFound from "@/pages/NotFound";
 
 function Router() {
   return (
@@ -21,13 +23,13 @@ function Router() {
       <Route path="/favorites" component={Favorites} />
       {/* Nueva ruta en español */}
       <Route path="/favoritos" component={Favorites} />
-      {/* Rutas para las nuevas secciones (Temporalmente redirigen a NotFound) */}
-      <Route path="/guia-importacion" component={NotFound} />
-      <Route path="/requisitos" component={NotFound} />
-      <Route path="/aranceles" component={NotFound} />
-      <Route path="/restricciones" component={NotFound} />
+      {/* Rutas para las secciones principales */}
+      <Route path="/guia-importacion" component={GuiaImportacion} />
+      <Route path="/requisitos" component={GuiaImportacion} />
+      <Route path="/aranceles" component={GuiaImportacion} />
+      <Route path="/restricciones" component={GuiaImportacion} />
       <Route path="/terminos" component={NotFound} />
-      <Route path="/perfil" component={NotFound} />
+      <Route path="/perfil" component={Perfil} />
       <Route component={NotFound} />
     </Switch>
   );

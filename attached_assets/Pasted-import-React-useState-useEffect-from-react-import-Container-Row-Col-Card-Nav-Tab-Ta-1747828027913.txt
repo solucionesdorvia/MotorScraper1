@@ -1,0 +1,513 @@
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Nav, Tab, Table, Alert } from 'react-bootstrap';
+import { FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa';
+
+const GuiaImportacion = () => {
+  const [activeTab, setActiveTab] = useState('requisitos');
+  const [calculationType, setCalculationType] = useState('estimation');
+  
+  // Porcentajes y valores fijos para cálculos
+  const SHIPPING_PERCENTAGE = 0.10; // 10% del precio del vehículo
+  const CUSTOMS_DUTY_PERCENTAGE = 0.05; // 5% del precio del vehículo
+  const TAXES_PERCENTAGE = 0.105; // 10.5% del precio del vehículo
+  const FIXED_FEES = 800; // Valor fijo para honorarios
+  const FIXED_CIVAC = 600; // Valor fijo para certificado CIVAC
+  
+  // Valores predeterminados fijos para la estimación
+  const DEFAULT_PRICE = 42500;
+  
+  // Estado para valores de estimación (fijos)
+  const estimationData = {
+    price: DEFAULT_PRICE,
+    shipping: DEFAULT_PRICE * SHIPPING_PERCENTAGE,
+    customsDuty: DEFAULT_PRICE * CUSTOMS_DUTY_PERCENTAGE,
+    taxes: DEFAULT_PRICE * TAXES_PERCENTAGE,
+    fees: FIXED_FEES,
+    civacCertificate: FIXED_CIVAC
+  };
+  
+  // Estado para valores personalizados (modificables)
+  const [customData, setCustomData] = useState({
+    price: DEFAULT_PRICE,
+    shipping: DEFAULT_PRICE * SHIPPING_PERCENTAGE,
+    customsDuty: DEFAULT_PRICE * CUSTOMS_DUTY_PERCENTAGE,
+    taxes: DEFAULT_PRICE * TAXES_PERCENTAGE,
+    fees: FIXED_FEES,
+    civacCertificate: FIXED_CIVAC
+  });
+  
+  // Determinar qué conjunto de datos usar según la pestaña activa
+  const vehicleData = calculationType === 'estimation' ? estimationData : customData;
+  
+  // Calcular el costo total
+  const totalCost = vehicleData.price + 
+                  vehicleData.shipping + 
+                  vehicleData.customsDuty + 
+                  vehicleData.taxes + 
+                  vehicleData.fees + 
+                  vehicleData.civacCertificate;
+  
+  // Actualizar los campos de la calculadora personalizada
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const price = name === 'price' ? parseFloat(value) || 0 : customData.price;
+    
+    // Si estamos cambiando el precio, recalcular todos los valores dependientes
+    if (name === 'price') {
+      const shipping = price * SHIPPING_PERCENTAGE;
+      const customsDuty = price * CUSTOMS_DUTY_PERCENTAGE;
+      const taxes = price * TAXES_PERCENTAGE;
+      
+      setCustomData({
+        price: price,
+        shipping: parseFloat(shipping.toFixed(2)),
+        customsDuty: parseFloat(customsDuty.toFixed(2)),
+        taxes: parseFloat(taxes.toFixed(2)),
+        fees: FIXED_FEES,
+        civacCertificate: FIXED_CIVAC
+      });
+    } else {
+      // Para otros campos, actualizar solo ese campo
+      setCustomData({
+        ...customData,
+        [name]: parseFloat(value) || 0
+      });
+    }
+  };
+  
+  return (
+    <Container className="py-5">
+      <Row className="mb-4">
+        <Col>
+          <div className="v0-block">
+            <h1 className="mb-3">Lo que necesitas saber para importar vehículos clásicos a Argentina</h1>
+          </div>
+        </Col>
+      </Row>
+
+      <div className="bg-white shadow-sm mb-5">
+        <Nav className="border-bottom" fill>
+          <Nav.Item>
+            <Nav.Link 
+              className={`border-0 px-4 py-3 ${activeTab === 'requisitos' ? 'text-primary fw-bold border-primary border-bottom border-3' : 'text-dark'}`}
+              onClick={() => setActiveTab('requisitos')}
+            >
+              Requisitos
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link 
+              className={`border-0 px-4 py-3 ${activeTab === 'proceso' ? 'text-primary fw-bold border-primary border-bottom border-3' : 'text-dark'}`}
+              onClick={() => setActiveTab('proceso')}
+            >
+              Proceso
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link 
+              className={`border-0 px-4 py-3 ${activeTab === 'costos' ? 'text-primary fw-bold border-primary border-bottom border-3' : 'text-dark'}`}
+              onClick={() => setActiveTab('costos')}
+            >
+              Calculadora
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+
+        <div className="p-4">
+          {activeTab === 'requisitos' && (
+            <div>
+              <h2 className="mb-4">Requisitos para Importar</h2>
+              <p className="text-muted mb-4">Documentación y condiciones necesarias para importar vehículos clásicos a Argentina</p>
+              
+              <div className="mb-4 p-4 bg-light rounded">
+                <div className="d-flex align-items-center mb-3">
+                  <FaInfoCircle className="text-primary me-3" size={24} />
+                  <div>
+                    <h5 className="mb-0 fw-bold">Importante</h5>
+                    <p className="mb-0">Para importar un vehículo clásico a Argentina, este debe tener más de 30 años de antigüedad.</p>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="mb-3">Documentación del Vehículo</h3>
+              <ul className="list-unstyled mb-4">
+                <li className="mb-3">• Título de propiedad original</li>
+                <li className="mb-3">• Factura de compra</li>
+                <li className="mb-3">• Certificado de baja del registro automotor del país de origen</li>
+                <li className="mb-3">• Documentación que acredite la antigüedad del vehículo</li>
+                <li className="mb-3">• Fotos detalladas del vehículo (incluyendo número de chasis y motor)</li>
+                <li className="mb-3">• CINCO (5) fotografías del exterior del vehículo: frontal, trasera, lateral derecho, lateral izquierdo y placa identificatoria</li>
+                <li className="mb-3">• Factura Proforma o comercial donde se observe el valor FOB en Dólares Estadounidenses y figuren los datos del vehículo</li>
+              </ul>
+
+              <h3 className="mb-3">Requisitos del Importador</h3>
+              <ul className="list-unstyled mb-4">
+                <li className="mb-3">• CUIT/CUIL activo</li>
+                <li className="mb-3">• Estar inscripto como importador en el Registro de Importadores y Exportadores de la República Argentina</li>
+                <li className="mb-3">• Contar con clave fiscal nivel 3 o superior</li>
+                <li className="mb-3">• Tener domicilio fiscal electrónico</li>
+              </ul>
+              
+              <div className="mb-4 p-4 bg-light rounded">
+                <div>
+                  <h5 className="mb-2 fw-bold">Documentación adicional para personas físicas:</h5>
+                  <ul className="list-unstyled">
+                    <li className="mb-2">- Copia de DNI</li>
+                    <li className="mb-2">- Documentación de apoderados o representantes legales (si corresponde)</li>
+                  </ul>
+                  
+                  <h5 className="mt-3 mb-2 fw-bold">Documentación adicional para personas jurídicas:</h5>
+                  <ul className="list-unstyled">
+                    <li className="mb-2">- Documentación de apoderados o representantes legales según el Reglamento de Procedimientos Administrativos</li>
+                  </ul>
+                </div>
+              </div>
+
+              <h3 className="mb-3">Restricciones y Condiciones</h3>
+              <ul className="list-unstyled mb-4">
+                <li className="mb-3">• El vehículo debe tener más de 30 años de antigüedad</li>
+                <li className="mb-3">• Debe estar en condiciones de circular o ser restaurado</li>
+                <li className="mb-3">• No puede ser utilizado para transporte comercial</li>
+                <li className="mb-3">• Debe cumplir con las normas de seguridad vial básicas</li>
+                <li className="mb-3">• Límite de una importación de vehículo clásico por persona por año</li>
+                <li className="mb-3">• El vehículo está sujeto al Régimen de comprobación de destino por parte de la Dirección General de Aduanas por el término de DOS (2) años</li>
+                <li className="mb-3">• Queda prohibida la enajenación a título gratuito u oneroso durante el plazo de dos años</li>
+              </ul>
+              
+              <h3 className="mb-3">Certificados Necesarios</h3>
+              <div className="mb-4">
+                <div className="p-4 bg-light rounded mb-3">
+                  <h5 className="mb-2 fw-bold">Certificado de Importación de Vehículos Automotores Clásicos (CIVAC)</h5>
+                  <p className="mb-0">
+                    Documento emitido por la Dirección de Importaciones que autoriza la importación del vehículo 
+                    clásico. Tiene validez de UN (1) año a partir de la fecha de emisión.
+                  </p>
+                </div>
+                
+                <div className="p-4 bg-light rounded">
+                  <h5 className="mb-2 fw-bold">Acreditación de Vehículo Automotor Clásico (AVAC)</h5>
+                  <p className="mb-0">
+                    Certificado emitido por entidades reconocidas que confirma que el vehículo califica como un 
+                    automotor clásico y/o de "interés histórico". Este documento es necesario para la tramitación del CIVAC.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="d-flex justify-content-between">
+                <button className="btn btn-dark px-4 py-2" disabled title="Disponible próximamente">Descargar Requisitos</button>
+                <button className="btn btn-outline-primary px-4 py-2" onClick={() => setActiveTab('proceso')}>Ver Proceso de Importación</button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'proceso' && (
+            <div>
+              <h2 className="mb-4">Proceso de Importación</h2>
+              <p className="text-muted mb-4">Pasos para importar un vehículo clásico a Argentina</p>
+
+              <Row className="mb-4">
+                <Col md={8}>
+                  <div className="mb-4">
+                    {[1, 2, 3, 4, 5, 6, 7].map((step) => (
+                      <div key={step} className="position-relative ps-5 mb-5">
+                        <div className="position-absolute start-0 top-0 d-flex align-items-center justify-content-center bg-primary rounded-circle text-white fw-bold" style={{width: "40px", height: "40px"}}>
+                          {step}
+                        </div>
+                        
+                        {step < 7 && (
+                          <div className="position-absolute start-0 ms-5 top-0 pt-5 h-100 border-start border-2 border-light"></div>
+                        )}
+                        
+                        {step === 1 && (
+                          <div className="pt-1 ps-3">
+                            <h5 className="mb-2">Verificación de Elegibilidad</h5>
+                            <p className="text-muted">Confirma que el vehículo cumple con los requisitos para ser considerado un vehículo clásico en Argentina (fabricado antes de 1995).</p>
+                          </div>
+                        )}
+                        {step === 2 && (
+                          <div className="pt-1 ps-3">
+                            <h5 className="mb-2">Compra del Vehículo</h5>
+                            <p className="text-muted">Adquiere el vehículo en EE.UU. y asegúrate de obtener toda la documentación necesaria (título, factura de compra, etc.).</p>
+                          </div>
+                        )}
+                        {step === 3 && (
+                          <div className="pt-1 ps-3">
+                            <h5 className="mb-2">Transporte a Puerto</h5>
+                            <p className="text-muted">Coordina el transporte del vehículo al puerto de embarque en EE.UU.</p>
+                          </div>
+                        )}
+                        {step === 4 && (
+                          <div className="pt-1 ps-3">
+                            <h5 className="mb-2">Envío Marítimo</h5>
+                            <p className="text-muted">Contrata un servicio de transporte marítimo para llevar el vehículo a Argentina.</p>
+                          </div>
+                        )}
+                        {step === 5 && (
+                          <div className="pt-1 ps-3">
+                            <h5 className="mb-2">Trámite de CIVAC</h5>
+                            <p className="text-muted">Solicita el Certificado de Importación de Vehículos Antiguos de Colección (CIVAC) ante la Dirección Nacional de los Registros Nacionales de la Propiedad Automotor.</p>
+                          </div>
+                        )}
+                        {step === 6 && (
+                          <div className="pt-1 ps-3">
+                            <h5 className="mb-2">Despacho Aduanero</h5>
+                            <p className="text-muted">Realiza los trámites aduaneros para la nacionalización del vehículo.</p>
+                          </div>
+                        )}
+                        {step === 7 && (
+                          <div className="pt-1 ps-3">
+                            <h5 className="mb-2">Registro y Patentamiento</h5>
+                            <p className="text-muted">Registra el vehículo en el Registro Nacional de la Propiedad Automotor y obtén la patente argentina.</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </Col>
+                <Col md={4}>
+                  <Card className="border-0 shadow-sm mb-4">
+                    <Card.Body>
+                      <h4 className="mb-3">Tiempos Estimados</h4>
+                      <p className="text-muted mb-4">Duración aproximada de cada etapa del proceso</p>
+
+                      <div className="border-bottom pb-2 mb-2 d-flex justify-content-between">
+                        <span>Verificación de Elegibilidad</span>
+                        <span className="text-muted">1-2 semanas</span>
+                      </div>
+                      <div className="border-bottom pb-2 mb-2 d-flex justify-content-between">
+                        <span>Compra y documentación</span>
+                        <span className="text-muted">1-4 semanas</span>
+                      </div>
+                      <div className="border-bottom pb-2 mb-2 d-flex justify-content-between">
+                        <span>Transporte al puerto</span>
+                        <span className="text-muted">1-2 semanas</span>
+                      </div>
+                      <div className="border-bottom pb-2 mb-2 d-flex justify-content-between">
+                        <span>Envío marítimo</span>
+                        <span className="text-muted">3-6 semanas</span>
+                      </div>
+                      <div className="border-bottom pb-2 mb-2 d-flex justify-content-between">
+                        <span>Trámite de CIVAC</span>
+                        <span className="text-muted">2-4 semanas</span>
+                      </div>
+                      <div className="border-bottom pb-2 mb-2 d-flex justify-content-between">
+                        <span>Despacho aduanero</span>
+                        <span className="text-muted">1-3 semanas</span>
+                      </div>
+                      <div className="border-bottom pb-2 mb-2 d-flex justify-content-between">
+                        <span>Registro y patentamiento</span>
+                        <span className="text-muted">1-2 semanas</span>
+                      </div>
+
+                      <div className="d-flex justify-content-between pt-3 border-top mt-2">
+                        <h5 className="mb-0">Tiempo total estimado</h5>
+                        <h5 className="mb-0">9-21 semanas</h5>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                  
+                  <Alert variant="primary" className="border-0 bg-light">
+                    <h5 className="mb-3 fw-bold">Información Importante</h5>
+                    <p className="mb-3">
+                      Los tiempos estimados pueden variar dependiendo de:
+                    </p>
+                    <ul className="mb-3">
+                      <li className="mb-2">Disponibilidad de documentación</li>
+                      <li className="mb-2">Temporada de envíos marítimos</li>
+                      <li className="mb-2">Tiempos de procesamiento aduanero</li>
+                      <li className="mb-2">Respuesta de entidades autorizadas para certificación</li>
+                    </ul>
+                    <p className="mb-0">
+                      Recuerda que cada vehículo es un caso único y puede requerir gestiones adicionales.
+                    </p>
+                  </Alert>
+                </Col>
+              </Row>
+              
+              <Card className="border-0 shadow-sm mb-4">
+                <Card.Body>
+                  <h3 className="mb-4">Solicitud de CIVAC</h3>
+                  <p className="text-muted mb-4">
+                    El Certificado de Importación de Vehículo Automotor Clásico (CIVAC) es un documento fundamental 
+                    en el proceso de importación. Para obtenerlo, deberás presentar:
+                  </p>
+                  
+                  <div className="bg-light p-4 rounded mb-4">
+                    <h5 className="fw-bold mb-3">Documentación necesaria:</h5>
+                    <ol className="ps-3">
+                      <li className="mb-2">Formulario de solicitud completo</li>
+                      <li className="mb-2">Título de propiedad del vehículo</li>
+                      <li className="mb-2">Fotografías del vehículo (5 fotos exteriores y número de chasis/motor)</li>
+                      <li className="mb-2">Factura comercial con valor FOB en dólares</li>
+                      <li className="mb-2">Acreditación de Vehículo Automotor Clásico (AVAC)</li>
+                    </ol>
+                  </div>
+                  
+                  <p className="text-muted">
+                    La validez del CIVAC es de UN (1) año a partir de la fecha de emisión. Una vez emitido, el vehículo 
+                    está sujeto al Régimen de comprobación de destino por parte de la Dirección General de Aduanas por 
+                    el término de DOS (2) años, quedando prohibida en dicho lapso su enajenación a título gratuito u oneroso.
+                  </p>
+                </Card.Body>
+              </Card>
+              
+              <div className="d-flex justify-content-between">
+                <button className="btn btn-dark px-4 py-2" onClick={() => setActiveTab('requisitos')}>
+                  Ver Requisitos
+                </button>
+                <button className="btn btn-outline-primary px-4 py-2" onClick={() => setActiveTab('costos')}>
+                  Calcular Costos
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'costos' && (
+            <div>
+              <h2 className="mb-4">Calculadora de Costos de Importación</h2>
+              <p className="text-muted mb-4">Calcula el costo aproximado de importar tu vehículo clásico a Argentina</p>
+              
+              <Row className="mb-4">
+                <Col xs={12}>
+                  <div className="bg-primary text-white p-0 rounded">
+                    <Row className="g-0">
+                      <Col xs={6}>
+                        <button 
+                          className={`btn ${calculationType === 'estimation' ? 'btn-primary' : 'btn-light text-dark'} w-100 py-3 rounded-0 rounded-start`}
+                          onClick={() => setCalculationType('estimation')}
+                        >
+                          Estimación
+                        </button>
+                      </Col>
+                      <Col xs={6}>
+                        <button 
+                          className={`btn ${calculationType === 'custom' ? 'btn-primary' : 'btn-light text-dark'} w-100 py-3 rounded-0 rounded-end`}
+                          onClick={() => setCalculationType('custom')}
+                        >
+                          Personalizado
+                        </button>
+                      </Col>
+                    </Row>
+                  </div>
+                </Col>
+              </Row>
+              
+              <div className="bg-light p-4 rounded mb-4">
+                <Row>
+                  <Col xs={1} className="text-center">
+                    <FaInfoCircle size={24} className="text-primary mt-1" />
+                  </Col>
+                  <Col xs={11}>
+                    <h5 className="mb-1 fw-bold">Información</h5>
+                    <p className="mb-0">
+                      {calculationType === 'estimation' 
+                        ? "Esta es una estimación basada en un vehículo clásico de $42,500 USD. Utiliza la pestaña 'Personalizado' para ajustar el precio según tu situación específica."
+                        : "Ingresa el precio de tu vehículo para calcular automáticamente todos los costos asociados a la importación."}
+                    </p>
+                  </Col>
+                </Row>
+              </div>
+              
+              <div className="mb-4">
+                <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <div>
+                    <span className="fw-medium">Precio del vehículo</span>
+                  </div>
+                  {calculationType === 'custom' ? (
+                    <div className="d-flex align-items-center">
+                      <div className="input-group" style={{width: "180px"}}>
+                        <span className="input-group-text">$</span>
+                        <input 
+                          type="text" 
+                          name="price"
+                          value={customData.price}
+                          onChange={(e) => {
+                            // Solo permitir números y puntos decimales
+                            const value = e.target.value.replace(/[^0-9.]/g, '');
+                            const numericValue = parseFloat(value) || 0;
+                            handleInputChange({ target: { name: 'price', value: numericValue } });
+                          }}
+                          className="form-control text-end"
+                          placeholder="0.00"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="fw-bold">${vehicleData.price.toLocaleString()}</span>
+                  )}
+                </div>
+                
+                <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <div>
+                    <span className="fw-medium">Flete y seguro</span>
+                    <p className="text-muted small mb-0">10% del valor del vehículo</p>
+                  </div>
+                  <span className="fw-bold">${vehicleData.shipping.toLocaleString()}</span>
+                </div>
+                
+                <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <div>
+                    <span className="fw-medium">Arancel aduanero</span>
+                    <p className="text-muted small mb-0">5% del valor del vehículo</p>
+                  </div>
+                  <span className="fw-bold">${vehicleData.customsDuty.toLocaleString()}</span>
+                </div>
+                
+                <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <div>
+                    <span className="fw-medium">Impuestos</span>
+                    <p className="text-muted small mb-0">10.5% del valor del vehículo</p>
+                  </div>
+                  <span className="fw-bold">${vehicleData.taxes.toLocaleString()}</span>
+                </div>
+                
+                <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <div>
+                    <span className="fw-medium">Honorarios y trámites</span>
+                    <p className="text-muted small mb-0">Costo fijo</p>
+                  </div>
+                  <span className="fw-bold">${vehicleData.fees.toLocaleString()}</span>
+                </div>
+                
+                <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
+                  <div>
+                    <span className="fw-medium">Certificado CIVAC</span>
+                    <p className="text-muted small mb-0">Costo fijo</p>
+                  </div>
+                  <span className="fw-bold">${vehicleData.civacCertificate.toLocaleString()}</span>
+                </div>
+                
+                <div className="d-flex justify-content-between align-items-center p-4 mt-4 bg-primary bg-opacity-10 rounded">
+                  <h5 className="mb-0 fw-bold text-primary">Costo total estimado</h5>
+                  <h4 className="mb-0 fw-bold text-primary">${totalCost.toLocaleString()}</h4>
+                </div>
+              </div>
+              
+              <Alert variant="primary" className="border-0 bg-light mb-4">
+                <Row>
+                  <Col xs={1} className="text-center">
+                    <FaExclamationTriangle size={24} className="text-primary mt-1" />
+                  </Col>
+                  <Col xs={11}>
+                    <h5 className="mb-1 fw-bold">Importante</h5>
+                    <p className="mb-0">
+                      Los costos pueden variar según el tipo de cambio, modificaciones en las regulaciones aduaneras y otros factores.
+                      Recomendamos consultar con un despachante de aduana para obtener una cotización precisa.
+                    </p>
+                  </Col>
+                </Row>
+              </Alert>
+              
+              <div className="d-flex justify-content-between">
+                <button className="btn btn-dark px-4 py-2" disabled title="Disponible próximamente">Solicitar Cotización Exacta</button>
+                <button className="btn btn-outline-primary px-4 py-2" onClick={() => setActiveTab('proceso')}>Ver Proceso de Importación</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </Container>
+  );
+};
+
+export default GuiaImportacion;

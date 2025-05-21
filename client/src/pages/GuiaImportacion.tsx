@@ -1,13 +1,86 @@
-import { useState } from 'react';
-import { FaFileAlt, FaClipboardCheck, FaMoneyBillWave, FaCalendarAlt, FaCarSide, FaShip, FaIdCard, FaCalculator } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaInfoCircle, FaExclamationTriangle, FaFileAlt, FaClipboardCheck, FaMoneyBillWave, FaCalendarAlt, FaCarSide, FaShip, FaIdCard, FaCalculator } from 'react-icons/fa';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const GuiaImportacion = () => {
   const [activeTab, setActiveTab] = useState('requisitos');
+  const [calculationType, setCalculationType] = useState('estimation');
+  
+  // Porcentajes y valores fijos para cálculos
+  const SHIPPING_PERCENTAGE = 0.10; // 10% del precio del vehículo
+  const CUSTOMS_DUTY_PERCENTAGE = 0.05; // 5% del precio del vehículo
+  const TAXES_PERCENTAGE = 0.105; // 10.5% del precio del vehículo
+  const FIXED_FEES = 800; // Valor fijo para honorarios
+  const FIXED_CIVAC = 600; // Valor fijo para certificado CIVAC
+  
+  // Valores predeterminados fijos para la estimación
+  const DEFAULT_PRICE = 42500;
+  
+  // Estado para valores de estimación (fijos)
+  const estimationData = {
+    price: DEFAULT_PRICE,
+    shipping: DEFAULT_PRICE * SHIPPING_PERCENTAGE,
+    customsDuty: DEFAULT_PRICE * CUSTOMS_DUTY_PERCENTAGE,
+    taxes: DEFAULT_PRICE * TAXES_PERCENTAGE,
+    fees: FIXED_FEES,
+    civacCertificate: FIXED_CIVAC
+  };
+  
+  // Estado para valores personalizados (modificables)
+  const [customData, setCustomData] = useState({
+    price: DEFAULT_PRICE,
+    shipping: DEFAULT_PRICE * SHIPPING_PERCENTAGE,
+    customsDuty: DEFAULT_PRICE * CUSTOMS_DUTY_PERCENTAGE,
+    taxes: DEFAULT_PRICE * TAXES_PERCENTAGE,
+    fees: FIXED_FEES,
+    civacCertificate: FIXED_CIVAC
+  });
+  
+  // Determinar qué conjunto de datos usar según la pestaña activa
+  const vehicleData = calculationType === 'estimation' ? estimationData : customData;
+  
+  // Calcular el costo total
+  const totalCost = vehicleData.price + 
+                    vehicleData.shipping + 
+                    vehicleData.customsDuty + 
+                    vehicleData.taxes + 
+                    vehicleData.fees + 
+                    vehicleData.civacCertificate;
+  
+  // Actualizar los campos de la calculadora personalizada
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const numValue = parseFloat(value) || 0;
+    const price = name === 'price' ? numValue : customData.price;
+    
+    // Si estamos cambiando el precio, recalcular todos los valores dependientes
+    if (name === 'price') {
+      const shipping = price * SHIPPING_PERCENTAGE;
+      const customsDuty = price * CUSTOMS_DUTY_PERCENTAGE;
+      const taxes = price * TAXES_PERCENTAGE;
+      
+      setCustomData({
+        price: price,
+        shipping: parseFloat(shipping.toFixed(2)),
+        customsDuty: parseFloat(customsDuty.toFixed(2)),
+        taxes: parseFloat(taxes.toFixed(2)),
+        fees: FIXED_FEES,
+        civacCertificate: FIXED_CIVAC
+      });
+    } else {
+      // Para otros campos, actualizar solo ese campo
+      setCustomData({
+        ...customData,
+        [name]: numValue
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">

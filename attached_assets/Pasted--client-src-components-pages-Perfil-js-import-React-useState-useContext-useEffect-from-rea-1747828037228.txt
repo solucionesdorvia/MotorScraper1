@@ -1,0 +1,418 @@
+// client/src/components/pages/Perfil.js
+import React, { useState, useContext, useEffect } from 'react';
+import { Container, Row, Col, Card, Form, Button, Spinner, Alert, Tabs, Tab, ListGroup, Badge, Image } from 'react-bootstrap';
+import { 
+  FaUser, 
+  FaEnvelope, 
+  FaLock, 
+  FaSave, 
+  FaBell, 
+  FaSearch, 
+  FaClock,
+  FaTrash,
+  FaEye,
+  FaCamera,
+  FaHeart
+} from 'react-icons/fa';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/auth/authContext';
+import axios from 'axios';
+
+const Perfil = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
+  const { user, isAuthenticated, loadUser } = authContext;
+
+  // Estados para datos de perfil
+  const [perfilData, setPerfilData] = useState({
+    nombre: '',
+    email: ''
+  });
+  
+  // Estados para cambio de contraseña
+  const [passwordData, setPasswordData] = useState({
+    passwordActual: '',
+    nuevaPassword: '',
+    confirmPassword: ''
+  });
+  
+  // Estados para las búsquedas guardadas
+  const [busquedasGuardadas, setBusquedasGuardadas] = useState([]);
+  const [loadingBusquedas, setLoadingBusquedas] = useState(true);
+  
+  // Estados para las notificaciones
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [loadingNotificaciones, setLoadingNotificaciones] = useState(true);
+  
+  // Estados para el formulario
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [validated, setValidated] = useState(false);
+
+  const [favoritos, setFavoritos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+
+  // Cargar datos del usuario cuando el componente se monte
+  useEffect(() => {
+    if (user) {
+      setPerfilData({
+        nombre: user.nombre || '',
+        email: user.email || ''
+      });
+      cargarFavoritos();
+    }
+
+    // Simulación de carga de búsquedas guardadas
+    setTimeout(() => {
+      const busquedasEjemplo = [
+        {
+          _id: '1',
+          nombre: 'Mustang 1960-1970',
+          filtros: {
+            marca: 'Ford',
+            modelo: 'Mustang',
+            anioDesde: 1960,
+            anioHasta: 1970
+          },
+          fechaCreacion: new Date('2023-05-10'),
+          ultimaEjecucion: new Date('2023-05-18'),
+          notificacionesActivas: true
+        },
+        {
+          _id: '2',
+          nombre: 'Corvette clásicos',
+          filtros: {
+            marca: 'Chevrolet',
+            modelo: 'Corvette',
+            anioDesde: 1953,
+            anioHasta: 1982
+          },
+          fechaCreacion: new Date('2023-05-12'),
+          ultimaEjecucion: new Date('2023-05-15'),
+          notificacionesActivas: false
+        }
+      ];
+      
+      setBusquedasGuardadas(busquedasEjemplo);
+      setLoadingBusquedas(false);
+    }, 1000);
+
+    // Simulación de carga de notificaciones
+    setTimeout(() => {
+      const notificacionesEjemplo = [
+        {
+          _id: '1',
+          mensaje: 'Nuevo Ford Mustang 1969 encontrado que coincide con tu búsqueda',
+          fecha: new Date('2023-05-18'),
+          leida: false
+        },
+        {
+          _id: '2',
+          mensaje: 'El precio del Chevrolet Impala 1964 que guardaste ha bajado un 5%',
+          fecha: new Date('2023-05-16'),
+          leida: true
+        },
+        {
+          _id: '3',
+          mensaje: 'Tu búsqueda "Corvette clásicos" encontró 3 nuevos resultados',
+          fecha: new Date('2023-05-15'),
+          leida: true
+        }
+      ];
+      
+      setNotificaciones(notificacionesEjemplo);
+      setLoadingNotificaciones(false);
+    }, 1500);
+
+    useEffect(() => {
+      // Verificar si hay un token en la URL (para autenticación con Google)
+      const params = new URLSearchParams(location.search);
+      const token = params.get('token');
+      
+      if (token) {
+        // Guardar el token en localStorage
+        localStorage.setItem('token', token);
+        // Cargar el usuario
+        loadUser();
+        // Limpiar la URL
+        navigate('/perfil', { replace: true });
+      } else if (!isAuthenticated) {
+        navigate('/login');
+      }
+    }, [location, navigate, loadUser, isAuthenticated]);
+  }, [user, location, navigate, loadUser, isAuthenticated]);
+
+  // Monitorear si las contraseñas coinciden
+  useEffect(() => {
+    if (passwordData.nuevaPassword && passwordData.confirmPassword) {
+      setPasswordMatch(passwordData.nuevaPassword === passwordData.confirmPassword);
+    } else {
+      setPasswordMatch(true);
+    }
+  }, [passwordData.nuevaPassword, passwordData.confirmPassword]);
+
+  const handlePerfilChange = (e) => {
+    setPerfilData({ ...perfilData, [e.target.name]: e.target.value });
+  };
+
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+  };
+
+  const handlePerfilSubmit = (e) => {
+    e.preventDefault();
+    
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+      setValidated(true);
+      return;
+    }
+    
+    setSubmitting(true);
+    setError(null);
+    setSuccess(null);
+    
+    // Simulación de actualización de perfil
+    setTimeout(() => {
+      setSubmitting(false);
+      setSuccess('Perfil actualizado correctamente');
+      
+      // Limpiar mensaje de éxito después de 3 segundos
+      setTimeout(() => setSuccess(null), 3000);
+    }, 1000);
+  };
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    
+    const form = e.currentTarget;
+    if (form.checkValidity() === false || !passwordMatch) {
+      e.stopPropagation();
+      setValidated(true);
+      return;
+    }
+    
+    setSubmitting(true);
+    setError(null);
+    setSuccess(null);
+    
+    // Simulación de cambio de contraseña
+    setTimeout(() => {
+      setSubmitting(false);
+      setSuccess('Contraseña actualizada correctamente');
+      
+      // Limpiar formulario y mensaje de éxito
+      setPasswordData({
+        passwordActual: '',
+        nuevaPassword: '',
+        confirmPassword: ''
+      });
+      
+      setTimeout(() => setSuccess(null), 3000);
+    }, 1000);
+  };
+
+  // Función para marcar notificación como leída
+  const marcarComoLeida = (id) => {
+    setNotificaciones(
+      notificaciones.map(notif => 
+        notif._id === id ? { ...notif, leida: true } : notif
+      )
+    );
+  };
+
+  // Función para eliminar búsqueda guardada
+  const eliminarBusqueda = (id) => {
+    setBusquedasGuardadas(
+      busquedasGuardadas.filter(busqueda => busqueda._id !== id)
+    );
+  };
+
+  // Función para cambiar estado de notificaciones
+  const toggleNotificaciones = (id) => {
+    setBusquedasGuardadas(
+      busquedasGuardadas.map(busqueda => 
+        busqueda._id === id 
+          ? { ...busqueda, notificacionesActivas: !busqueda.notificacionesActivas } 
+          : busqueda
+      )
+    );
+  };
+
+  const cargarFavoritos = async () => {
+    try {
+      const res = await axios.get('http://localhost:5005/api/perfil/favoritos');
+      setFavoritos(res.data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Error cargando favoritos:', err);
+      setIsLoading(false);
+    }
+  };
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadAvatar = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('avatar', selectedFile);
+
+    try {
+      const res = await axios.post('http://localhost:5005/api/perfil/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      // Actualizar el contexto con la nueva URL del avatar
+      authContext.loadUser();
+    } catch (err) {
+      console.error('Error subiendo avatar:', err);
+    }
+  };
+
+  const eliminarFavorito = async (vehiculoId) => {
+    try {
+      await axios.delete(`http://localhost:5005/api/perfil/favoritos/${vehiculoId}`);
+      cargarFavoritos();
+    } catch (err) {
+      console.error('Error eliminando favorito:', err);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  if (!user) {
+    return (
+      <Container className="text-center py-5">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-3">Cargando perfil...</p>
+      </Container>
+    );
+  }
+
+  return (
+    <Container className="py-5">
+      <Row>
+        <Col md={4}>
+          <Card className="shadow-sm">
+            <Card.Body className="text-center">
+              <div className="position-relative mb-4">
+                <Image
+                  src={previewUrl || user?.avatar || '/default-avatar.png'}
+                  roundedCircle
+                  className="img-fluid"
+                  style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                />
+                <div className="position-absolute bottom-0 end-0">
+                  <label htmlFor="avatar-upload" className="btn btn-primary btn-sm rounded-circle">
+                    <FaCamera />
+                    <input
+                      type="file"
+                      id="avatar-upload"
+                      className="d-none"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                    />
+                  </label>
+                </div>
+              </div>
+              {selectedFile && (
+                <Button 
+                  variant="success" 
+                  size="sm" 
+                  className="mb-3"
+                  onClick={handleUploadAvatar}
+                >
+                  Guardar foto
+                </Button>
+              )}
+              <h3 className="mb-3">{user?.nombre}</h3>
+              <div className="d-flex align-items-center justify-content-center mb-2">
+                <FaEnvelope className="text-muted me-2" />
+                <span>{user?.email}</span>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+        
+        <Col md={8}>
+          <Card className="shadow-sm">
+            <Card.Body>
+              <h4 className="mb-4">
+                <FaHeart className="text-danger me-2" />
+                Vehículos Favoritos
+              </h4>
+              
+              {isLoading ? (
+                <div className="text-center py-4">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                  </div>
+                </div>
+              ) : favoritos.length > 0 ? (
+                <ListGroup variant="flush">
+                  {favoritos.map((vehiculo) => (
+                    <ListGroup.Item 
+                      key={vehiculo._id}
+                      className="d-flex justify-content-between align-items-center py-3"
+                    >
+                      <div className="d-flex align-items-center">
+                        <Image
+                          src={vehiculo.imagen || '/default-car.png'}
+                          className="me-3"
+                          style={{ width: '60px', height: '60px', objectFit: 'cover' }}
+                        />
+                        <div>
+                          <h6 className="mb-0">{vehiculo.marca} {vehiculo.modelo}</h6>
+                          <small className="text-muted">
+                            {vehiculo.año} - {vehiculo.precio}
+                          </small>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => eliminarFavorito(vehiculo._id)}
+                      >
+                        <FaTrash />
+                      </Button>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              ) : (
+                <div className="text-center py-4 text-muted">
+                  <FaHeart size={40} className="mb-3" />
+                  <p>Aún no tienes vehículos favoritos</p>
+                  <Button variant="primary" href="/busqueda">
+                    Explorar vehículos
+                  </Button>
+                </div>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export default Perfil;
