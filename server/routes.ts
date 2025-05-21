@@ -16,6 +16,8 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import { configurePassport } from "./passport-config";
 
 // Cache for search results (TTL: 5 minutes)
 const searchCache = new NodeCache({ stdTTL: 300 });
@@ -63,6 +65,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       httpOnly: true
     }
   }));
+  
+  // Configurar Passport para autenticación social
+  const passportInstance = configurePassport();
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // API route for user registration
   app.post("/api/auth/register", async (req: Request, res: Response) => {
@@ -167,19 +174,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
   
+  // Rutas de autenticación social
+  // Twitter
+  app.get('/api/auth/twitter', passport.authenticate('twitter'));
+  app.get('/api/auth/twitter/callback', 
+    passport.authenticate('twitter', { 
+      successRedirect: '/',
+      failureRedirect: '/login'
+    })
+  );
+  
+  // Google
+  app.get('/api/auth/google', 
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+  );
+  app.get('/api/auth/google/callback', 
+    passport.authenticate('google', { 
+      successRedirect: '/', 
+      failureRedirect: '/login' 
+    })
+  );
+  
+  // Apple
+  app.get('/api/auth/apple', passport.authenticate('apple'));
+  app.get('/api/auth/apple/callback', 
+    passport.authenticate('apple', { 
+      successRedirect: '/', 
+      failureRedirect: '/login' 
+    })
+  );
+
   // API route to get current user
   app.get("/api/auth/me", async (req: Request, res: Response) => {
     try {
       // Verificar si hay una sesión activa
-      if (!req.session.userId) {
+      if (!req.session.userId && !req.user) {
         return res.status(401).json({ 
           success: false,
           message: "No hay sesión activa" 
         });
       }
       
-      // Obtener datos del usuario
-      const user = await storage.getUser(req.session.userId);
+      // Obtener datos del usuario (sesión local o passport)
+      let user;
+      if (req.user) {
+        user = req.user;
+      } else if (req.session.userId) {
+        user = await storage.getUser(req.session.userId);
+      }
       
       if (!user) {
         // Eliminar sesión si el usuario no existe
@@ -191,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Responder con datos del usuario (excepto contraseña)
-      const { password, ...userWithoutPassword } = user;
+      const { password, ...userWithoutPassword } = user as any;
       res.json({
         success: true,
         user: userWithoutPassword
