@@ -547,9 +547,9 @@ export class DatabaseStorage implements IStorage {
     }
     
     // Count total results
-    const countQuery = db.select({ count: db.fn.count() }).from(vehicles);
-    const [{ count }] = await countQuery;
-    const totalResults = Number(count);
+    const countQuery = db.select({ count: sql`count(*)` }).from(vehicles);
+    const countResult = await countQuery;
+    const totalResults = Number(countResult[0]?.count ?? 0);
     
     // Apply sorting
     if (searchParams.sort) {
