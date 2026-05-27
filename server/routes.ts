@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { scrapeEbay } from "./scraper/ebay";
+import { categorizeVehicle } from "./services/categorize";
 import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
@@ -544,6 +545,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         */
         
         if (allResults.length > 0) {
+          // Backfill de vehicleCategory para cualquier scraper que no lo haya seteado.
+          // categorizeVehicle es heurístico y barato; corre por todos por consistencia.
+          allResults = allResults.map(v => ({
+            ...v,
+            vehicleCategory: v.vehicleCategory || categorizeVehicle({
+              year: v.year ?? undefined,
+              fuelType: v.fuelType ?? undefined,
+              title: v.title ?? undefined,
+              make: v.make ?? undefined,
+              bodyType: v.bodyType ?? undefined,
+            }),
+          }));
           await storage.saveVehicles(allResults);
         } else {
           console.log('No results to save');

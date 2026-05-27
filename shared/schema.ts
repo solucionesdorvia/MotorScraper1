@@ -25,7 +25,14 @@ export const vehicles = pgTable("vehicles", {
   isAuction: boolean("is_auction").default(false),
   currentBid: integer("current_bid"),
   endsIn: text("ends_in"),
+  // Categoría del vehículo: 'clasico' | 'moderno' | 'electrico' | 'hibrido' | 'moto' | 'comercial'
+  // Inferida por server/services/categorize.ts. Nullable para compatibilidad con filas existentes.
+  vehicleCategory: text("vehicle_category"),
 });
+
+// Categorías válidas — usadas en filtros y en categorize.ts
+export const VEHICLE_CATEGORIES = ["clasico", "moderno", "electrico", "hibrido", "moto", "comercial"] as const;
+export type VehicleCategory = typeof VEHICLE_CATEGORIES[number];
 
 // Define the search history schema
 export const searchHistory = pgTable("search_history", {
@@ -98,6 +105,24 @@ export const searchParamsSchema = z.object({
     .optional()
     .transform(val => val !== 'false' && val !== false)
     .default(true),
+  // Rango de año opcional — si no se manda, no se filtra (post-pivot v1).
+  minYear: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => {
+      if (val === undefined || val === '') return undefined;
+      return typeof val === 'string' ? parseInt(val, 10) : val;
+    }),
+  maxYear: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => {
+      if (val === undefined || val === '') return undefined;
+      return typeof val === 'string' ? parseInt(val, 10) : val;
+    }),
+  // Categoría(s) del vehículo. Acepta una sola o lista separada por coma.
+  category: z.union([
+    z.string().array(),
+    z.string().transform(val => val ? val.split(',').map(s => s.trim()).filter(Boolean) : [])
+  ]).optional(),
   page: z.union([z.number(), z.string()])
     .optional()
     .transform(val => typeof val === 'string' ? parseInt(val, 10) : val)
@@ -134,6 +159,24 @@ export const filterSchema = z.object({
   color: z.union([
     z.string().array(),
     z.string().transform(val => val ? val.split(',') : [])
+  ]).optional(),
+  // Rango de año del vehículo (UI lo expone en FilterPanel).
+  minYear: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => {
+      if (val === undefined || val === '') return undefined;
+      return typeof val === 'string' ? parseInt(val, 10) : val;
+    }),
+  maxYear: z.union([z.number(), z.string()])
+    .optional()
+    .transform(val => {
+      if (val === undefined || val === '') return undefined;
+      return typeof val === 'string' ? parseInt(val, 10) : val;
+    }),
+  // Categoría(s) — mismo formato que en searchParamsSchema.
+  vehicleCategory: z.union([
+    z.string().array(),
+    z.string().transform(val => val ? val.split(',').map(s => s.trim()).filter(Boolean) : [])
   ]).optional(),
 });
 

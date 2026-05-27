@@ -249,11 +249,28 @@ export class MemStorage implements IStorage {
     }
     
     if (filterParams.color && filterParams.color.length > 0) {
-      filteredVehicles = filteredVehicles.filter(v => 
+      filteredVehicles = filteredVehicles.filter(v =>
         v.color !== null && filterParams.color!.includes(v.color as string)
       );
     }
-    
+
+    // Filtros nuevos (post-pivot): rango de año y categoría de vehículo.
+    if (filterParams.minYear !== undefined) {
+      filteredVehicles = filteredVehicles.filter(v =>
+        v.year !== null && (v.year as number) >= (filterParams.minYear as number)
+      );
+    }
+    if (filterParams.maxYear !== undefined) {
+      filteredVehicles = filteredVehicles.filter(v =>
+        v.year !== null && (v.year as number) <= (filterParams.maxYear as number)
+      );
+    }
+    if (filterParams.vehicleCategory && filterParams.vehicleCategory.length > 0) {
+      filteredVehicles = filteredVehicles.filter(v =>
+        v.vehicleCategory !== null && filterParams.vehicleCategory!.includes(v.vehicleCategory as string)
+      );
+    }
+
     // Sort results
     if (searchParams.sort) {
       switch (searchParams.sort) {
@@ -545,7 +562,19 @@ export class DatabaseStorage implements IStorage {
       const conditions = filterParams.color.map(c => eq(vehicles.color, c));
       query = query.where(or(...conditions));
     }
-    
+
+    // Filtros post-pivot: rango de año + categoría de vehículo.
+    if (filterParams.minYear !== undefined) {
+      query = query.where(gt(vehicles.year, (filterParams.minYear as number) - 1));
+    }
+    if (filterParams.maxYear !== undefined) {
+      query = query.where(lt(vehicles.year, (filterParams.maxYear as number) + 1));
+    }
+    if (filterParams.vehicleCategory && filterParams.vehicleCategory.length > 0) {
+      const conditions = filterParams.vehicleCategory.map(c => eq(vehicles.vehicleCategory, c));
+      query = query.where(or(...conditions));
+    }
+
     // Count total results
     let totalResults = 0;
     try {

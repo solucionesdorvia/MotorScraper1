@@ -35,14 +35,26 @@ const FilterAccordion = ({ title, children, defaultOpen = false }: FilterAccordi
   );
 };
 
+const CATEGORY_OPTIONS = [
+  { value: 'clasico', label: 'Clásico' },
+  { value: 'moderno', label: 'Moderno' },
+  { value: 'electrico', label: 'Eléctrico' },
+  { value: 'hibrido', label: 'Híbrido' },
+  { value: 'moto', label: 'Moto' },
+  { value: 'comercial', label: 'Comercial' },
+] as const;
+
 const filterSchema = z.object({
   minPrice: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
   maxPrice: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
   minMileage: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
   maxMileage: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
+  minYear: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
+  maxYear: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
   bodyType: z.array(z.string()).default([]),
   transmission: z.array(z.string()).default([]),
   color: z.array(z.string()).default([]),
+  vehicleCategory: z.array(z.string()).default([]),
 });
 
 type FilterPanelProps = {
@@ -67,21 +79,27 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
       maxPrice: initialFilters?.maxPrice ? initialFilters.maxPrice.toString() : '',
       minMileage: initialFilters?.minMileage ? initialFilters.minMileage.toString() : '',
       maxMileage: initialFilters?.maxMileage ? initialFilters.maxMileage.toString() : '',
+      minYear: initialFilters?.minYear ? initialFilters.minYear.toString() : '',
+      maxYear: initialFilters?.maxYear ? initialFilters.maxYear.toString() : '',
       bodyType: initialFilters?.bodyType || [],
       transmission: initialFilters?.transmission || [],
       color: initialFilters?.color || [],
+      vehicleCategory: initialFilters?.vehicleCategory || [],
     },
   });
-  
+
   const onSubmit = (data: z.infer<typeof filterSchema>) => {
     onApplyFilters({
       minPrice: data.minPrice,
       maxPrice: data.maxPrice,
       minMileage: data.minMileage,
       maxMileage: data.maxMileage,
+      minYear: data.minYear,
+      maxYear: data.maxYear,
       bodyType: data.bodyType,
       transmission: data.transmission,
       color: data.color,
+      vehicleCategory: data.vehicleCategory,
     });
   };
   
@@ -181,6 +199,76 @@ const FilterPanel = ({ onApplyFilters, onResetFilters, initialFilters, sources, 
             </div>
           </FilterAccordion>
           
+          <FilterAccordion title="Año" defaultOpen={true}>
+            <div className="flex items-center gap-2">
+              <FormField
+                control={form.control}
+                name="minYear"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Desde"
+                        min={1900}
+                        max={new Date().getFullYear() + 1}
+                        {...field}
+                        className="p-2 border border-neutral-300 rounded-md text-sm"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <span className="text-neutral-500">-</span>
+              <FormField
+                control={form.control}
+                name="maxYear"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Hasta"
+                        min={1900}
+                        max={new Date().getFullYear() + 1}
+                        {...field}
+                        className="p-2 border border-neutral-300 rounded-md text-sm"
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </FilterAccordion>
+
+          <FilterAccordion title="Categoría">
+            <div className="space-y-2">
+              {CATEGORY_OPTIONS.map((cat) => (
+                <FormField
+                  key={cat.value}
+                  control={form.control}
+                  name="vehicleCategory"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value?.includes(cat.value)}
+                          onCheckedChange={(checked) => {
+                            return checked
+                              ? field.onChange([...field.value, cat.value])
+                              : field.onChange(field.value?.filter((value) => value !== cat.value))
+                          }}
+                          className="form-checkbox h-4 w-4 text-primary rounded border-neutral-300"
+                        />
+                      </FormControl>
+                      <FormLabel className="ml-2 text-sm">{cat.label}</FormLabel>
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </div>
+          </FilterAccordion>
+
           <FilterAccordion title="Tipo de Carrocería">
             <div className="space-y-2">
               {bodyTypes.map((bodyType) => (

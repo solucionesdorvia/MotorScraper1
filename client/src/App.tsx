@@ -5,7 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { FavoritesProvider } from "@/lib/favorites-context";
 import { AuthProvider } from "@/hooks/useAuth";
-import Navbar from "@/components/Navbar";
+// Nota: el Navbar global se eliminó porque las páginas ya rendereaban su propio
+// <Header /> + <Footer /> y se mostraban duplicadas. Header maneja la nav.
 import Home from "@/pages/Home";
 import SearchResults from "@/pages/SearchResults";
 import Favorites from "@/pages/Favorites";
@@ -50,7 +51,6 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <div className="min-h-screen flex flex-col">
-              <Navbar />
               <main className="flex-1">
                 <Router />
               </main>

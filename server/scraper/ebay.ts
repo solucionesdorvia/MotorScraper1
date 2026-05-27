@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { InsertVehicle } from '@shared/schema';
+import { categorizeVehicle } from '../services/categorize';
 
 export async function scrapeEbay(make: string, model: string, year?: string): Promise<InsertVehicle[]> {
   try {
@@ -104,6 +105,7 @@ export async function scrapeEbay(make: string, model: string, year?: string): Pr
         vin,
         hasDeals,
         dealerName: extractDealerName(itemDetails),
+        vehicleCategory: categorizeVehicle({ year: extractedYear, fuelType, title, make, bodyType }),
       });
     });
     
@@ -146,20 +148,23 @@ function isRelevantListing(title: string, make: string, model: string, year?: st
     }
   }
   
-  // Comprobar si el vehículo es antiguo (1900-1995)
+  // Filtro de año: solo descartar años evidentemente inválidos.
+  // Antes filtrábamos 1900-1995 (modo "solo clásicos"); ahora aceptamos cualquier año
+  // real, y el filtrado por rango lo hace el cliente vía minYear/maxYear.
   const extractedYear = extractYear(title);
   if (extractedYear) {
-    if (extractedYear < 1900 || extractedYear > 1995) {
-      console.log(`Filtrando vehículo fuera del rango de años (1900-1995): "${title}" - Año: ${extractedYear}`);
+    const currentYear = new Date().getFullYear();
+    if (extractedYear < 1900 || extractedYear > currentYear + 1) {
+      console.log(`Filtrando vehículo con año inválido: "${title}" - Año: ${extractedYear}`);
       return false;
     }
   }
-  
+
   // Si year es proporcionado, verificar que el título lo contenga
   if (year) {
     return hasMakeAndModel && lowerTitle.includes(year);
   }
-  
+
   return hasMakeAndModel;
 }
 
