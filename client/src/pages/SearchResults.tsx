@@ -134,7 +134,7 @@ const SearchResults = () => {
       <section className="bg-gradient-to-r from-secondary/95 to-secondary py-8">
         <div className="container mx-auto px-4">
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-6">
-            Vehículos Clásicos para Importar
+            Vehículos para Importar
           </h1>
           <SearchForm 
             defaultQuery={query || `${make} ${model}`.trim()}

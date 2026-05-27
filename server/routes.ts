@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { scrapeEbay } from "./scraper/ebay";
 import { categorizeVehicle } from "./services/categorize";
+import { buildEcomexQuoteLink } from "./services/ecomex-link";
 import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
@@ -579,6 +580,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint
   app.get("/api/health", (_req: Request, res: Response) => {
     res.json({ status: "ok" });
+  });
+
+  // === PARTNERSHIP E-COMEX ===
+  // Devuelve la URL al cotizador de ecomex prefijada con los datos del vehículo.
+  // El cliente abre esa URL en una nueva tab (target=_blank) desde la ficha.
+  app.get("/api/ecomex/quote-link", (req: Request, res: Response) => {
+    const { make, model, year } = req.query;
+    const url = buildEcomexQuoteLink({
+      make: typeof make === 'string' ? make : undefined,
+      model: typeof model === 'string' ? model : undefined,
+      year: typeof year === 'string' ? year : undefined,
+    });
+    res.json({ url });
   });
   
   // Endpoint para probar el nuevo scraper unificado de Bring a Trailer con navegación real

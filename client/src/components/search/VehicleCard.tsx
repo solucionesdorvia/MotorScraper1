@@ -1,10 +1,21 @@
-import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar } from 'react-icons/fa';
+import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar, FaHandshake } from 'react-icons/fa';
 import { Vehicle } from '@shared/schema';
 import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl, buildEbayUrl, buildEdmundsUrl, buildCarsUrl, buildHemmingsUrl, buildBringATrailerUrl, buildClassicCarsUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useFavorites } from '@/lib/favorites-context';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
+
+// Badge de categoría: clasico|moderno|electrico|hibrido|moto|comercial → label + color tailwind.
+// Mapeo en línea para que no dependa de fuentes externas.
+const CATEGORY_DISPLAY: Record<string, { label: string; cls: string }> = {
+  clasico: { label: 'Clásico', cls: 'bg-amber-600' },
+  moderno: { label: 'Moderno', cls: 'bg-blue-600' },
+  electrico: { label: 'Eléctrico', cls: 'bg-emerald-600' },
+  hibrido: { label: 'Híbrido', cls: 'bg-teal-600' },
+  moto: { label: 'Moto', cls: 'bg-rose-600' },
+  comercial: { label: 'Comercial', cls: 'bg-slate-600' },
+};
 
 type VehicleCardProps = {
   vehicle: Vehicle;
@@ -30,6 +41,29 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
     }
   };
   
+  /**
+   * Abre el cotizador de E-COMEX con los datos del vehículo prefijados.
+   * Llama /api/ecomex/quote-link para que el backend construya la URL canónica
+   * (con tracking de origen 'clasicar').
+   */
+  const openEcomexQuote = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (vehicle.make) params.set('make', vehicle.make);
+      if (vehicle.model) params.set('model', vehicle.model);
+      if (vehicle.year) params.set('year', String(vehicle.year));
+      const res = await fetch(`/api/ecomex/quote-link?${params.toString()}`);
+      const data = await res.json();
+      if (data?.url) {
+        window.open(data.url, '_blank', 'noopener,noreferrer');
+      } else {
+        toast({ title: 'No se pudo abrir el cotizador', description: 'Intentá de nuevo en un momento.' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'No se pudo conectar con el cotizador.' });
+    }
+  };
+
   const openSourcePage = () => {
     if (vehicle.sourceUrl) {
       window.open(vehicle.sourceUrl, '_blank');
@@ -58,12 +92,19 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
   
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 relative">
-      <div className={`absolute top-2 left-2 ${getSourceClassName(vehicle.source)} text-white text-xs font-medium px-2 py-1 rounded`}>
-        {getSourceLabel(vehicle.source)}
+      <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+        <div className={`${getSourceClassName(vehicle.source)} text-white text-xs font-medium px-2 py-1 rounded`}>
+          {getSourceLabel(vehicle.source)}
+        </div>
+        {vehicle.vehicleCategory && CATEGORY_DISPLAY[vehicle.vehicleCategory] && (
+          <div className={`${CATEGORY_DISPLAY[vehicle.vehicleCategory].cls} text-white text-xs font-medium px-2 py-1 rounded`}>
+            {CATEGORY_DISPLAY[vehicle.vehicleCategory].label}
+          </div>
+        )}
       </div>
-      
+
       {vehicle.hasDeals && (
-        <div className="bg-yellow-400 absolute top-2 right-2 text-yellow-900 text-xs font-bold px-2 py-1 rounded-sm">
+        <div className="bg-yellow-400 absolute top-2 right-2 text-yellow-900 text-xs font-bold px-2 py-1 rounded-sm z-10">
           SALE
         </div>
       )}
@@ -142,14 +183,23 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
               Fuente: {getSourceLabel(vehicle.source)}
             </span>
           </div>
-          <Button 
-            variant="link" 
+          <Button
+            variant="link"
             className="text-primary text-sm p-0 h-auto font-medium hover:underline flex items-center gap-1"
             onClick={openSourcePage}
           >
             Ver más <FaExternalLinkAlt className="text-xs" />
           </Button>
         </div>
+
+        {/* CTA Cotizar con E-COMEX — visible siempre, abre cotizador con datos prefijados */}
+        <Button
+          className="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2 rounded-md flex items-center justify-center gap-2"
+          onClick={openEcomexQuote}
+        >
+          <FaHandshake />
+          Cotizar importación con E-COMEX
+        </Button>
       </div>
     </div>
   );

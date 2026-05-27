@@ -15,6 +15,7 @@ import Perfil from "@/pages/Perfil";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import NotFound from "@/pages/NotFound";
+import ComoTrabajamos from "@/pages/ComoTrabajamos";
 
 function Router() {
   return (
@@ -35,6 +36,9 @@ function Router() {
       <Route path="/restricciones" component={GuiaImportacion} />
       <Route path="/terminos" component={NotFound} />
       <Route path="/perfil" component={Perfil} />
+      {/* Páginas del repivot v1.1 */}
+      <Route path="/como-trabajamos" component={ComoTrabajamos} />
+      <Route path="/equipo" component={ComoTrabajamos} />
       {/* Rutas de autenticación */}
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />

@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Link } from 'wouter';
-import { FaCarSide, FaBars, FaHeart, FaUserCircle } from 'react-icons/fa';
+import { FaBars, FaHeart, FaUserCircle, FaCamera, FaHandshake } from 'react-icons/fa';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Header = () => {
@@ -9,24 +8,39 @@ const Header = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
+            <div className="flex items-center gap-3 cursor-pointer">
               <img
                 src="/logo-clasicar.png"
                 alt="ClasicAR"
                 className="h-10 w-auto"
               />
+              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-neutral-500 font-medium">
+                <FaHandshake className="text-primary" />
+                Partner oficial de E-COMEX
+              </span>
             </div>
           </Link>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-4">
             <Link href="/busqueda">
               <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium">
-                Buscar Vehículos
+                Buscar
+              </button>
+            </Link>
+            <Link href="/reconocer">
+              <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium flex items-center gap-1">
+                <FaCamera className="text-sm" />
+                Reconocer
+              </button>
+            </Link>
+            <Link href="/como-trabajamos">
+              <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium">
+                Cómo trabajamos
               </button>
             </Link>
             <Link href="/guia-importacion">
               <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium">
-                Guía de Importación
+                Guía
               </button>
             </Link>
             <Link href="/favoritos">
@@ -42,7 +56,7 @@ const Header = () => {
               </button>
             </Link>
           </div>
-          
+
           <Sheet>
             <SheetTrigger asChild>
               <button className="md:hidden text-neutral-800 hover:text-primary">
@@ -63,6 +77,17 @@ const Header = () => {
                 <Link href="/busqueda">
                   <button className="w-full text-left py-2 px-4 hover:bg-neutral-100 rounded-md text-neutral-700">
                     Buscar Vehículos
+                  </button>
+                </Link>
+                <Link href="/reconocer">
+                  <button className="w-full text-left py-2 px-4 hover:bg-neutral-100 rounded-md text-neutral-700 flex items-center gap-2">
+                    <FaCamera className="text-primary" />
+                    <span>Reconocer Vehículo</span>
+                  </button>
+                </Link>
+                <Link href="/como-trabajamos">
+                  <button className="w-full text-left py-2 px-4 hover:bg-neutral-100 rounded-md text-neutral-700">
+                    Cómo Trabajamos
                   </button>
                 </Link>
                 <Link href="/guia-importacion">
