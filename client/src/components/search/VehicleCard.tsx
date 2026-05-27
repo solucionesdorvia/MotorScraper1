@@ -1,10 +1,12 @@
-import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar, FaHandshake } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaCog, FaHeart, FaRegHeart, FaExternalLinkAlt, FaCar, FaHandshake, FaExchangeAlt } from 'react-icons/fa';
 import { Vehicle } from '@shared/schema';
 import { formatPrice, formatMileage, getSourceClassName, getSourceLabel, getDefaultImageUrl, buildEbayUrl, buildEdmundsUrl, buildCarsUrl, buildHemmingsUrl, buildBringATrailerUrl, buildClassicCarsUrl } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useFavorites } from '@/lib/favorites-context';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
+import VariantsSheet from '@/components/VariantsSheet';
 
 // Badge de categoría: clasico|moderno|electrico|hibrido|moto|comercial → label + color tailwind.
 // Mapeo en línea para que no dependa de fuentes externas.
@@ -24,6 +26,7 @@ type VehicleCardProps = {
 const VehicleCard = ({ vehicle }: VehicleCardProps) => {
   const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
   const { toast } = useToast();
+  const [variantsOpen, setVariantsOpen] = useState(false);
   
   const toggleFavorite = () => {
     if (isFavorite(vehicle.id)) {
@@ -192,15 +195,33 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
           </Button>
         </div>
 
-        {/* CTA Cotizar con E-COMEX — visible siempre, abre cotizador con datos prefijados */}
-        <Button
-          className="mt-3 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold py-2 rounded-md flex items-center justify-center gap-2"
-          onClick={openEcomexQuote}
-        >
-          <FaHandshake />
-          Cotizar importación con E-COMEX
-        </Button>
+        {/* CTAs del repivot: cotizar con E-COMEX + ver variantes del mismo modelo */}
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <Button
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-md flex items-center justify-center gap-1.5"
+            onClick={openEcomexQuote}
+          >
+            <FaHandshake />
+            Cotizar con E-COMEX
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full text-xs font-semibold py-2 rounded-md flex items-center justify-center gap-1.5 border-neutral-300"
+            onClick={() => setVariantsOpen(true)}
+          >
+            <FaExchangeAlt />
+            Ver variantes
+          </Button>
+        </div>
       </div>
+
+      <VariantsSheet
+        open={variantsOpen}
+        onOpenChange={setVariantsOpen}
+        make={vehicle.make}
+        model={vehicle.model}
+        excludeId={vehicle.id}
+      />
     </div>
   );
 };

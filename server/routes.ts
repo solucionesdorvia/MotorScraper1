@@ -594,6 +594,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "ok" });
   });
 
+  // === VARIANTES DE UN MODELO ===
+  // Devuelve hasta 12 vehículos similares (mismo make + model, distintos años / sources)
+  // ordenados por precio. Reusa la data ya cacheada en storage: la idea es que el usuario
+  // entra a variantes desde una card que viene de una búsqueda reciente, así que ya hay
+  // listings recientes en memoria/DB. Si está vacío, devuelve [] (no triggerea scrapeo
+  // adicional para mantener la respuesta rápida).
+  app.get("/api/variants", async (req: Request, res: Response) => {
+    try {
+      const { make, model } = req.query;
+      if (!make || typeof make !== 'string') {
+        return res.status(400).json({ error: 'Falta el query param "make"' });
+      }
+      if (!model || typeof model !== 'string') {
+        return res.status(400).json({ error: 'Falta el query param "model"' });
+      }
+
+      // Construimos searchParams mínimos para reusar storage.getVehicles.
+      // Habilitamos todas las fuentes para maximizar resultados; sin year (queremos variantes
+      // de todos los años); sort por precio ascendente; limit 12.
+      const sp = await searchParamsSchema.parseAsync({
+        query: `${make} ${model}`,
+        make,
+        model,
+        ebay: true,
+        edmunds: true,
+        hemmings: true,
+        bringatrailer: true,
+        classiccars: true,
+        page: 1,
+        limit: 12,
+        sort: 'price_asc',
+      });
+      const fp = await filterSchema.parseAsync({});
+      const result = await storage.getVehicles(sp as any, fp as any);
+      res.json(result);
+    } catch (error) {
+      console.error('Error en /api/variants:', error);
+      res.status(500).json({ error: 'No se pudieron obtener variantes.' });
+    }
+  });
+
   // === RECONOCIMIENTO DE VEHÍCULOS (3 modalidades) ===
 
   // POST /api/recognize/photo (multipart): subir 1 imagen, devuelve identificación.
