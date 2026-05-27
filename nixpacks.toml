@@ -1,0 +1,39 @@
+# Configuración Nixpacks para Railway
+# Nota: instalamos las dependencias del sistema necesarias para Puppeteer/Playwright
+# (Chromium headless requiere libs de GTK, fontconfig, etc.)
+
+[phases.setup]
+nixPkgs = [
+  "nodejs_20",
+  "glib",
+  "nss",
+  "nspr",
+  "atk",
+  "cups",
+  "gtk3",
+  "pango",
+  "cairo",
+  "fontconfig",
+  "freetype",
+  "libxkbcommon",
+  "libdrm",
+  "mesa",
+  "alsa-lib",
+  "at-spi2-atk",
+  "expat",
+]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm run start"
+
+[variables]
+# Por defecto Puppeteer descarga su propio Chromium en postinstall; Nix ya provee uno
+# pero conservamos el de Puppeteer para evitar problemas de compatibilidad.
+PUPPETEER_SKIP_DOWNLOAD = "false"
+NODE_ENV = "production"
