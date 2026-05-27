@@ -4,6 +4,18 @@ import { storage } from "./storage";
 import { scrapeEbay } from "./scraper/ebay";
 import { categorizeVehicle } from "./services/categorize";
 import { buildEcomexQuoteLink } from "./services/ecomex-link";
+import { recognizeVehicleFromPhoto } from "./services/recognize-photo";
+import { recognizeVehicleFromChat } from "./services/recognize-chat";
+import { decodeVin } from "./services/recognize-vin";
+import multer from "multer";
+
+// Multer en memoria — la imagen va directo a OpenAI Vision como base64,
+// no necesitamos persistirla. Límite 8MB para evitar abuso (OpenAI igual
+// recomienda <20MB y la calidad satura mucho antes).
+const photoUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024, files: 1 },
+});
 import { scrapeEdmunds } from "./scraper/edmunds";
 import { scrapeCars } from "./scraper/cars";
 import { scrapeHemmings } from "./scraper/hemmings";
@@ -580,6 +592,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint
   app.get("/api/health", (_req: Request, res: Response) => {
     res.json({ status: "ok" });
+  });
+
+  // === RECONOCIMIENTO DE VEHÍCULOS (3 modalidades) ===
+
+  // POST /api/recognize/photo (multipart): subir 1 imagen, devuelve identificación.
+  app.post("/api/recognize/photo", photoUpload.single("image"), async (req: Request, res: Response) => {
+    try {
+      const file = (req as any).file as Express.Multer.File | undefined;
+      if (!file) {
+        return res.status(400).json({ error: 'Falta el archivo de imagen (campo "image")' });
+      }
+      const result = await recognizeVehicleFromPhoto(file.buffer, file.mimetype);
+      res.json(result);
+    } catch (error) {
+      console.error('Error en /api/recognize/photo:', error);
+      res.status(500).json({ error: 'No se pudo identificar el vehículo desde la foto.' });
+    }
+  });
+
+  // POST /api/recognize/chat (JSON): {message, history?} → reply + recommendations.
+  app.post("/api/recognize/chat", async (req: Request, res: Response) => {
+    try {
+      const { message, history } = req.body || {};
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Falta el campo "message" (string)' });
+      }
+      const result = await recognizeVehicleFromChat(message, Array.isArray(history) ? history : []);
+      res.json(result);
+    } catch (error) {
+      console.error('Error en /api/recognize/chat:', error);
+      res.status(500).json({ error: 'El asesor no pudo responder. Intentá de nuevo.' });
+    }
+  });
+
+  // POST /api/recognize/vin (JSON): {vin} → especificaciones del vehículo via NHTSA.
+  app.post("/api/recognize/vin", async (req: Request, res: Response) => {
+    try {
+      const { vin } = req.body || {};
+      if (!vin || typeof vin !== 'string') {
+        return res.status(400).json({ error: 'Falta el campo "vin" (string)' });
+      }
+      const result = await decodeVin(vin);
+      res.json(result);
+    } catch (error) {
+      console.error('Error en /api/recognize/vin:', error);
+      res.status(500).json({ error: 'No se pudo decodificar el VIN.' });
+    }
   });
 
   // === PARTNERSHIP E-COMEX ===

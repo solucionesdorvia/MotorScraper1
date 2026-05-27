@@ -16,6 +16,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import NotFound from "@/pages/NotFound";
 import ComoTrabajamos from "@/pages/ComoTrabajamos";
+import Reconocer from "@/pages/Reconocer";
 
 function Router() {
   return (
@@ -39,6 +40,7 @@ function Router() {
       {/* Páginas del repivot v1.1 */}
       <Route path="/como-trabajamos" component={ComoTrabajamos} />
       <Route path="/equipo" component={ComoTrabajamos} />
+      <Route path="/reconocer" component={Reconocer} />
       {/* Rutas de autenticación */}
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
