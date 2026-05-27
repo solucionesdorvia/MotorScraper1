@@ -24,7 +24,9 @@ nixPkgs = [
 ]
 
 [phases.install]
-cmds = ["npm ci"]
+# IMPORTANTE: --include=dev fuerza que vite, esbuild y plugins se instalen
+# incluso si Railway hereda NODE_ENV=production en el build.
+cmds = ["npm ci --include=dev"]
 
 [phases.build]
 cmds = ["npm run build"]
@@ -36,4 +38,6 @@ cmd = "npm run start"
 # Por defecto Puppeteer descarga su propio Chromium en postinstall; Nix ya provee uno
 # pero conservamos el de Puppeteer para evitar problemas de compatibilidad.
 PUPPETEER_SKIP_DOWNLOAD = "false"
-NODE_ENV = "production"
+# NOTA: NODE_ENV NO se setea acá. El script start de package.json lo pone
+# en runtime (NODE_ENV=production node dist/index.js). Setearlo en el build
+# rompe npm ci (skipea devDependencies → vite no se instala).
