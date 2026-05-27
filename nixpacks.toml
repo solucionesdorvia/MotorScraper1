@@ -26,7 +26,10 @@ nixPkgs = [
 [phases.install]
 # IMPORTANTE: --include=dev fuerza que vite, esbuild y plugins se instalen
 # incluso si Railway hereda NODE_ENV=production en el build.
-cmds = ["npm ci --include=dev"]
+# Usamos `npm install` en vez de `npm ci` para que el lockfile se regenere
+# automáticamente cuando agregamos deps nuevas sin correr npm install local
+# primero. Es ~5-10s más lento pero evita errores de sincronización.
+cmds = ["npm install --include=dev --no-audit --no-fund"]
 
 [phases.build]
 cmds = ["npm run build"]
