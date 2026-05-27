@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { FaBars, FaHeart, FaUserCircle, FaCamera, FaHandshake } from 'react-icons/fa';
+import { FaBars, FaHeart, FaUserCircle, FaCamera } from 'react-icons/fa';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const Header = () => {
@@ -8,16 +8,12 @@ const Header = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link href="/">
-            <div className="flex items-center gap-3 cursor-pointer">
+            <div className="flex items-center gap-2 cursor-pointer">
               <img
                 src="/logo-clasicar.png"
                 alt="ClasicAR"
                 className="h-10 w-auto"
               />
-              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-neutral-500 font-medium">
-                <FaHandshake className="text-primary" />
-                Partner oficial de E-COMEX
-              </span>
             </div>
           </Link>
 
