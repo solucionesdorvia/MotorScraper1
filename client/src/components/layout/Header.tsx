@@ -10,11 +10,14 @@ const Header = () => {
         <div className="flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              <FaCarSide className="text-primary text-2xl" />
-              <h1 className="text-xl font-bold text-neutral-800">ClasicAR</h1>
+              <img
+                src="/logo-clasicar.png"
+                alt="ClasicAR"
+                className="h-10 w-auto"
+              />
             </div>
           </Link>
-          
+
           <div className="hidden md:flex items-center gap-6">
             <Link href="/busqueda">
               <button className="text-neutral-700 hover:text-primary px-3 py-2 text-sm font-medium">
@@ -50,8 +53,11 @@ const Header = () => {
               <div className="flex flex-col gap-4 mt-8">
                 <Link href="/">
                   <div className="flex items-center gap-2 mb-6">
-                    <FaCarSide className="text-primary text-2xl" />
-                    <h1 className="text-xl font-bold text-neutral-800">ClasicAR</h1>
+                    <img
+                      src="/logo-clasicar.png"
+                      alt="ClasicAR"
+                      className="h-10 w-auto"
+                    />
                   </div>
                 </Link>
                 <Link href="/busqueda">

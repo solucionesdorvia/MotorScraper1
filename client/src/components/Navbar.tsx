@@ -22,7 +22,11 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="font-bold text-xl text-primary">ClasicAR</span>
+              <img
+                src="/logo-clasicar.png"
+                alt="ClasicAR"
+                className="h-10 w-auto"
+              />
             </Link>
             
             <div className="hidden md:ml-6 md:flex md:space-x-4">
